@@ -1,0 +1,121 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <!--
+    This jelly script is used for per-project configuration.
+
+    See global.jelly for a general discussion about jelly script.
+  -->
+
+  <f:section title="">
+   <f:radioBlock name="testToRun" value="CLOUD" checked="${instance.isTestType('CLOUD')}" title="Cloud" inline="true">
+   
+   <f:nested>
+   <f:entry title="QTM4J URL" field="qtm4jurl">
+	 <f:textbox />
+   </f:entry>
+   
+   <f:entry title="API Key" field="apikey">
+	 <f:textbox />
+   </f:entry>
+   
+   <f:entry title="File" field="file">
+    <f:textbox />
+  </f:entry>
+   
+   <f:entry title="Test Run" field="testrunname" >
+    <f:textbox />
+  </f:entry>
+   
+   <f:entry title="Platform" field="platform" >
+    <f:textbox />
+  </f:entry>
+   
+   <f:entry title="Labels" field="labels" >
+    <f:textbox />
+  </f:entry>
+  
+  <f:entry title="Versions" field="version" >
+    <f:textbox />
+  </f:entry>
+  
+  <f:entry title="Components" field="component" >
+    <f:textbox />
+  </f:entry>
+  
+   <f:entry title="Sprint" field="sprint" >
+    <f:textbox />
+  </f:entry>
+  
+  <f:entry title="Comment" field="comment" >
+    <f:textbox />
+  </f:entry>
+  
+  <f:entry title="Format" field="selection" >
+  <f:select/>
+  </f:entry>
+  
+  </f:nested>
+   </f:radioBlock>
+
+
+   <f:radioBlock name="testToRun" value="SERVER" checked="${instance.isTestType('SERVER')}" title="Server" inline="true">
+   
+    <f:nested> 
+  <f:entry title="JIRA URL" field="jiraurlserver">
+    <f:textbox />
+  </f:entry>
+  
+  <f:entry title="API Key" field="apikeyserver">
+    <f:textbox />
+  </f:entry>
+  
+  <f:entry title="Username" field="username">
+    <f:textbox />
+  </f:entry>
+  
+   <f:entry title="Password" field="password">
+    <f:password />
+  </f:entry>
+  
+  <f:entry title="File URL" field="fileserver" >
+    <f:textbox />
+  </f:entry>
+  
+   <f:entry title="Test Run" field="testrunnameserver">
+    <f:textbox />
+  </f:entry>
+  
+   <f:entry title="Platform" field="platformserver">
+    <f:textbox />
+  </f:entry>
+  
+   <f:entry title="Labels" field="labelsserver">
+    <f:textbox />
+  </f:entry>
+  
+    <f:entry title="Versions" field="versionserver">
+    <f:textbox />
+  </f:entry>
+  
+    <f:entry title="Components" field="componentserver">
+    <f:textbox />
+  </f:entry>
+  
+   <f:entry title="Sprint" field="sprintserver">
+    <f:textbox />
+  </f:entry>
+  
+  <f:entry title="Comment" field="commentserver">
+    <f:textbox />
+  </f:entry>
+ 
+  <f:entry title="Format" field="selectionserver" >
+  <f:select/>
+  </f:entry>
+  
+  </f:nested>
+   </f:radioBlock>
+</f:section>
+
+
+</j:jelly>
