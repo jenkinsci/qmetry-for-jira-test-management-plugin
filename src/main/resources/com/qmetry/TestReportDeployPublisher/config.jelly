@@ -10,19 +10,19 @@
    <f:radioBlock name="testToRun" value="CLOUD" checked="${instance.isTestType('CLOUD')}" title="Cloud" inline="true">
    
    <f:nested>
-   <f:entry title="QTM4J URL" field="qtm4jurl">
-	 <f:textbox />
+   <f:entry title="QMetry Automation API URL" field="qtm4jurl">
+	 <f:textbox value="https://importresults.qmetry.com/QmetryWisdom/importresults-qtm4j"/>
    </f:entry>
    
    <f:entry title="API Key" field="apikey">
 	 <f:textbox />
    </f:entry>
    
-   <f:entry title="File" field="file">
+   <f:entry title="Test Result File Path" field="file">
     <f:textbox />
   </f:entry>
    
-   <f:entry title="Test Run" field="testrunname" >
+   <f:entry title="Test Run Name" field="testrunname" >
     <f:textbox />
   </f:entry>
    
@@ -77,11 +77,11 @@
     <f:password />
   </f:entry>
   
-  <f:entry title="File URL" field="fileserver" >
+  <f:entry title="Test Result File Path" field="fileserver" >
     <f:textbox />
   </f:entry>
   
-   <f:entry title="Test Run" field="testrunnameserver">
+   <f:entry title="Test Run Name" field="testrunnameserver">
     <f:textbox />
   </f:entry>
   

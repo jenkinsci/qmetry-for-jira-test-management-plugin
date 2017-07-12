@@ -19,23 +19,23 @@
   <licenses>
     <license>
       <name>GNU General Public License v3.0</name>
-      <url>https://github.com/qmetry/qmetry-for-jira-test-management-plugin/blob/master/LICENSE</url>
+      <url>https://github.com/jenkinsci/qmetry-for-jira-test-management-plugin/blob/master/LICENSE</url>
     </license>
   </licenses> 
   
   
    <developers>
     <developer>
-      <id>vbvaghela</id>
-      <name>Vaibhav Vaghela</name>
-      <email>vaibhav.vaghela@infostretch.com</email>
+      <id>dharaghodasara</id>
+      <name>Dhara Ghodasara</name>
+      <email>dhara.ghodasara@infostretch.com</email>
     </developer>
   </developers>
   
   
   <properties>
  	 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-     <jenkins.version>2.32.2</jenkins.version>
+     <jenkins.version>2.0</jenkins.version>
      <maven.javadoc.skip>true</maven.javadoc.skip>
   </properties>
   
@@ -75,9 +75,9 @@
   </build>
  
   <scm>
-    <connection>scm:git:git://github.com/qmetry/qmetry-for-jira-test-management-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com/qmetry/qmetry-for-jira-test-management-plugin.git</developerConnection>
-    <url>https://github.com/qmetry/qmetry-for-jira-test-management-plugin</url>
+    <connection>scm:git:git://github.com/jenkinsci/qmetry-for-jira-test-management-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:jenkinsci/qmetry-for-jira-test-management-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/qmetry-for-jira-test-management-plugin/</url>
   </scm>
  
    <repositories>

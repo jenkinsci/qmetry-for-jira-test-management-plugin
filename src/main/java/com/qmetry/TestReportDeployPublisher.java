@@ -1,38 +1,51 @@
+	
+/*******************************************************************************
+* Copyright 2017 Infostretch Corporation
+*
+* This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+*
+* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+* OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+* OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
+*
+* You should have received a copy of the GNU General Public License along with this program in the name of LICENSE.txt in the root folder of the distribution. If not, see https://opensource.org/licenses/gpl-3.0.html
+*
+*
+* For any inquiry or need additional information, please contact qmetrysupport@infostretch.com
+*******************************************************************************/
 package com.qmetry;
-import hudson.Launcher;
-import hudson.Extension;
-import hudson.FilePath;
-import hudson.util.FormValidation;
-import hudson.util.ListBoxModel;
-import hudson.util.ListBoxModel.Option;
-import hudson.model.AbstractProject;
-import hudson.tasks.Builder;
-import hudson.model.Run;
-import hudson.model.TaskListener;
-import hudson.tasks.Recorder;
-import hudson.tasks.BuildStepDescriptor;
-import hudson.tasks.BuildStepMonitor;
-import hudson.tasks.Publisher;
-import jenkins.tasks.SimpleBuildStep;
-import net.sf.json.JSONObject;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.util.logging.Logger;
 
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.auth.InvalidCredentialsException;
+import javax.servlet.ServletException;
+
 import org.apache.http.ParseException;
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.QueryParameter;
-import javax.servlet.ServletException;
+import org.kohsuke.stapler.StaplerRequest;
 
-import org.json.simple.parser.*;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.ConnectException;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
+import hudson.Extension;
+import hudson.FilePath;
+import hudson.Launcher;
+import hudson.model.AbstractProject;
+import hudson.model.Run;
+import hudson.model.TaskListener;
+import hudson.tasks.BuildStepDescriptor;
+import hudson.tasks.BuildStepMonitor;
+import hudson.tasks.Publisher;
+import hudson.tasks.Recorder;
+import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
+import hudson.util.Secret;
+import hudson.util.ListBoxModel.Option;
+import jenkins.tasks.SimpleBuildStep;
+import net.sf.json.JSONObject;
 
 /**
  * <p>
@@ -45,10 +58,11 @@ import java.net.ProtocolException;
  * <p>
  * When a build is performed, the {@link #perform} method will be invoked. 
  *
- * @author Vaibhavsinh Vaghela
  */
 @IgnoreJRERequirement
 public class TestReportDeployPublisher extends Recorder implements SimpleBuildStep {
+	
+	private static final Logger LOGGER = Logger.getLogger(TestReportDeployPublisher.class.getName());
 	
 	 private String name;
      private String version;
@@ -66,7 +80,7 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
      private String apikeyserver;
      private String jiraurlserver;
      private String username;
-     private String password;
+     private Secret password;
      private String testrunnameserver;
      private String labelsserver;
      private String sprintserver;
@@ -160,11 +174,11 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 		this.username = username;
 	}
 
-	public String getPassword() {
+	public Secret getPassword() {
 		return password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(Secret password) {
 		this.password = password;
 	}
 
@@ -288,7 +302,7 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
     @DataBoundConstructor
     public TestReportDeployPublisher(String name,String apikey, String qtm4jurl, String file, String testrunname, 
     		String labels, String sprint, String version, String component, String selection, String platform, String comment,
-    		String apikeyserver, String jiraurlserver, String password, String testrunnameserver,
+    		String apikeyserver, String jiraurlserver, Secret password, String testrunnameserver,
     		String labelsserver, String sprintserver, String versionserver, 
     		String componentserver, String username, String fileserver, String selectionserver, String platformserver, String commentserver,
     		String testToRun) {
@@ -345,9 +359,9 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
         // This also shows how you can consult the global configuration of the builder
     
     	String finalFilePath=workspace.toString()+"/"+this.getFile();
-    	System.out.println(finalFilePath);
+    	LOGGER.info(finalFilePath);
     	String finalFilePathServer=workspace.toString()+"/"+this.getFileserver();
-    	System.out.println(finalFilePathServer);
+    	LOGGER.info(finalFilePathServer);
     	
     	//----------------------------------------------------------------------------
     	switch (testToRun){
@@ -372,7 +386,7 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 				throw new IOException("IOException has occured in QMetry - Test Management for JIRA plugin.");
 			}
 			catch (org.json.simple.parser.ParseException e) {
-				System.out.println("ParseException has occured in QMetry - Test Management for JIRA plugin.");
+				LOGGER.info("ParseException has occured in QMetry - Test Management for JIRA plugin.");
 				e.printStackTrace();
 			}
 			break;
@@ -381,7 +395,7 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 			//-------------FOR SERVER INSTANCE ...    	
 	    	UploadToServer uploadToServer=new UploadToServer();
 	    	try{
-	    	uploadToServer.uploadToTheServer(this.getApikeyserver(), this.getJiraurlserver(), this.getPassword(), 
+	    	uploadToServer.uploadToTheServer(this.getApikeyserver(), this.getJiraurlserver(), this.getPassword().getPlainText(), 
 	    			this.getTestrunnameserver(),this.getLabelsserver(), this.getSprintserver(), 
 	    			this.getVersionserver(), this.getComponentserver(), this.getUsername(), finalFilePathServer,
 	    			this.getSelectionserver(),this.getPlatformserver(),this.getCommentserver());
@@ -489,13 +503,6 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
             return FormValidation.ok();
         }
         
-        public FormValidation doCheckTestrunname(@QueryParameter String value)
-                throws IOException, ServletException {
-            if (value.length() == 0)
-                return FormValidation.error("Required");
-            return FormValidation.ok();
-        }
-        
         public FormValidation doCheckQtm4jurl(@QueryParameter String value)
                 throws IOException, ServletException {
             if (value.length() == 0)
@@ -546,6 +553,8 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
                 throws IOException, ServletException {
             if (value.length() == 0)
                 return FormValidation.error("Required");
+            if (value.length() >= 255)
+                return FormValidation.error("Cannot exceed 255 characters!");
             return FormValidation.ok();
         }
         
@@ -553,6 +562,28 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
                 throws IOException, ServletException {
             if (value.length() == 0)
                 return FormValidation.error("Required");
+            return FormValidation.ok();
+        }
+
+        public FormValidation doCheckTestrunname(@QueryParameter String value)
+                throws IOException, ServletException {
+            if (value.length() == 0)
+                return FormValidation.error("Required");
+            if (value.length() >= 255)
+                return FormValidation.error("Cannot exceed 255 characters!");
+            return FormValidation.ok();
+        }
+        
+        public FormValidation doCheckComment(@QueryParameter String value)
+                throws IOException, ServletException {
+            if (value.length() >= 255)
+                return FormValidation.error("Cannot exceed 255 characters!");
+            return FormValidation.ok();
+        }
+        public FormValidation doCheckCommentserver(@QueryParameter String value)
+                throws IOException, ServletException {
+            if (value.length() >=255)
+                return FormValidation.error("Cannot exceed 255 characters!");
             return FormValidation.ok();
         }
 
