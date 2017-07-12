@@ -54,7 +54,7 @@ public class UploadToCloud {
 		
 		
 		String encoding = "UTF-8";
-		URL url = new URL(qtm4jurl);
+		URL url = new URL(qtm4jurl.trim());
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestMethod("POST");
 		connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");

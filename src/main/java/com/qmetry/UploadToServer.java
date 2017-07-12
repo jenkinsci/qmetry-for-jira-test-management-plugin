@@ -36,6 +36,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 
 
@@ -56,7 +57,7 @@ public class UploadToServer {
                     			String encoded = DatatypeConverter.printBase64Binary(message);
 			    		String basicAuth = "Basic " + encoded;
 			    	
-				    	HttpPost uploadFile = new HttpPost(jiraurlserver);
+				    	HttpPost uploadFile = new HttpPost(jiraurlserver.trim());
 				    	uploadFile.addHeader("Authorization", basicAuth);
 				    	
 				    	MultipartEntityBuilder builder = MultipartEntityBuilder.create();
@@ -90,8 +91,16 @@ public class UploadToServer {
 				    	uploadFile.setEntity(multipart);
 				    	CloseableHttpResponse response = httpClient.execute(uploadFile);
 				    	//HttpEntity responseEntity = response.getEntity();
+				    	
+				    	HttpEntity entity = response.getEntity();
+
+			            // Read the contents of an entity and return it as a String.
+			            String content = EntityUtils.toString(entity);
+			            LOGGER.info("URL::"+ jiraurlserver + " Response ::"+ content);
+				    	
 				    	httpClient.close();
 				    	//Execute and get the response.
+				    	
 				
 	}
 }

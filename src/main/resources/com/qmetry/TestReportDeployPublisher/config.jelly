@@ -61,7 +61,7 @@
    <f:radioBlock name="testToRun" value="SERVER" checked="${instance.isTestType('SERVER')}" title="Server" inline="true">
    
     <f:nested> 
-  <f:entry title="JIRA URL" field="jiraurlserver">
+  <f:entry title="QMetry Automation API URL" field="jiraurlserver">
     <f:textbox />
   </f:entry>
   
