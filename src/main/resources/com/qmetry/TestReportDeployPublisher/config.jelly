@@ -11,7 +11,7 @@
    
    <f:nested>
    <f:entry title="QMetry Automation API URL" field="qtm4jurl">
-	 <f:textbox value="https://importresults.qmetry.com/QmetryWisdom/importresults-qtm4j"/>
+	 <f:textbox value="https://importresults.qmetry.com/prod/importresults-qtm4j"/>
    </f:entry>
    
    <f:entry title="API Key" field="apikey">
