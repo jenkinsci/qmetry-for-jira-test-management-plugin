@@ -74,8 +74,8 @@
   </build>
  
   <scm>
-    <connection>scm:git:ssh://github.com/jenkinsci/qmetry-for-jira-test-management-plugin.git</connection>
-    <developerConnection>scm:git:ssh@github.com:jenkinsci/qmetry-for-jira-test-management-plugin.git</developerConnection>
+    <connection>scm:git:git://github.com/jenkinsci/qmetry-for-jira-test-management-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:jenkinsci/qmetry-for-jira-test-management-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/qmetry-for-jira-test-management-plugin/</url>
     <tag>qmetry-for-jira-test-management-1.0</tag>
   </scm>
