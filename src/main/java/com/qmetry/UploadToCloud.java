@@ -48,7 +48,8 @@ public class UploadToCloud {
 	//Call to 1st URL which gets
 	public void uploadToTheCloud(String apikey, String qtm4jurl, String file,
 			String testrunname,String labels, String sprint, String versions, 
-			String components, String selection, String platform, String comment) throws MalformedURLException
+			String components, String selection, String platform, String comment,
+			String testrunkey, String testassethierarchy) throws MalformedURLException
 	, IOException, UnsupportedEncodingException, ProtocolException, ParseException{
 		
 		
@@ -64,6 +65,7 @@ public class UploadToCloud {
 		StringBuilder jsonBody = new StringBuilder("{");
 		jsonBody.append("\"format\":" + "\""+selection+"\"");
 		jsonBody.append(",\"testRunName\":" + "\""+testrunname+"\"");
+		jsonBody.append(",\"testAssetHierarchy\":" + "\""+testassethierarchy+"\"");	
 		jsonBody.append(",\"apiKey\":" + "\""+apikey+"\"");
 		if(platform != null && !platform.isEmpty())
 			jsonBody.append(",\"platform\":" + "\""+platform+"\"");
@@ -75,6 +77,8 @@ public class UploadToCloud {
 			jsonBody.append(",\"components\":" + "\""+components+"\"");
 		if(sprint != null && !sprint.isEmpty())
 			jsonBody.append(",\"sprint\":" + "\""+sprint+"\"");		
+		if(testrunkey != null && !testrunkey.isEmpty())
+			jsonBody.append(",\"testRunKey\":" + "\""+testrunkey+"\"");	
 		if(comment != null && !comment.isEmpty())
 			jsonBody.append(",\"comment\":" + "\""+comment+"\"");
 		jsonBody.append("}");

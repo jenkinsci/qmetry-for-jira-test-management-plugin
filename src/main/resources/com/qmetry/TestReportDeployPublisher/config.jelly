@@ -26,6 +26,14 @@
     <f:textbox />
   </f:entry>
    
+    <f:entry title="Test Asset Hierarchy" field="testassethierarchy">
+   	 	<f:select />
+ 	</f:entry>
+ 	
+ 	 <f:entry title="Test Run Key" field="testrunkey">
+   	 	<f:textbox />
+ 	 </f:entry>
+   
    <f:entry title="Platform" field="platform" >
     <f:textbox />
   </f:entry>
@@ -84,6 +92,14 @@
    <f:entry title="Test Run Name" field="testrunnameserver">
     <f:textbox />
   </f:entry>
+  
+    <f:entry title="Test Asset Hierarchy" field="testassethierarchyserver">
+   	 <f:select />
+ 	</f:entry>
+ 	
+ 	 <f:entry title="Test Run Key" field="testrunkeyserver">
+   	 <f:textbox />
+ 	</f:entry>
   
    <f:entry title="Platform" field="platformserver">
     <f:textbox />

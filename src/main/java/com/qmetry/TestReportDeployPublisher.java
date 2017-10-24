@@ -76,6 +76,8 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
      private String selection;
      private String platform;
      private String comment;
+     private String testrunkey;
+     private String testassethierarchy;
      
      private String apikeyserver;
      private String jiraurlserver;
@@ -90,6 +92,8 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
      private String commentserver;
      private String fileserver;
      private String selectionserver;
+     private String testrunkeyserver;
+     private String testassethierarchyserver;
      
      public String testToRun;
 
@@ -148,9 +152,39 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 		this.fileserver = fileserver;
 	}
      
-   
-     
-     public String getApikeyserver() {
+    public String getTestrunkey() {
+		return testrunkey;
+	}
+
+	public void setTestrunkey(String testrunkey) {
+		this.testrunkey = testrunkey;
+	}
+
+	public String getTestassethierarchy() {
+		return testassethierarchy;
+	}
+
+	public void setTestassethierarchy(String testassethierarchy) {
+		this.testassethierarchy = testassethierarchy;
+	}
+
+	public String getTestrunkeyserver() {
+		return testrunkeyserver;
+	}
+
+	public void setTestrunkeyserver(String testrunkeyserver) {
+		this.testrunkeyserver = testrunkeyserver;
+	}
+
+	public String getTestassethierarchyserver() {
+		return testassethierarchyserver;
+	}
+
+	public void setTestassethierarchyserver(String testassethierarchyserver) {
+		this.testassethierarchyserver = testassethierarchyserver;
+	}
+
+	public String getApikeyserver() {
 		return apikeyserver;
    	}
 
@@ -305,7 +339,7 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
     		String apikeyserver, String jiraurlserver, Secret password, String testrunnameserver,
     		String labelsserver, String sprintserver, String versionserver, 
     		String componentserver, String username, String fileserver, String selectionserver, String platformserver, String commentserver,
-    		String testToRun) {
+    		String testToRun, String testrunkey, String testassethierarchy, String testrunkeyserver, String testassethierarchyserver) {
         this.version = version;
         this.apikey=apikey;
         this.qtm4jurl=qtm4jurl;
@@ -317,6 +351,8 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
         this.selection=selection;
         this.platform=platform;
         this.comment=comment;
+        this.testassethierarchy=testassethierarchy;
+        this.testrunkey=testrunkey;
         
         this.apikeyserver=apikeyserver;
         this.jiraurlserver=jiraurlserver;
@@ -331,6 +367,8 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
         this.selectionserver=selectionserver;
         this.platformserver=platformserver;
         this.commentserver=commentserver;
+        this.testassethierarchyserver=testassethierarchyserver;
+        this.testrunkeyserver=testrunkeyserver;
         
         this.testToRun=testToRun;
         
@@ -372,7 +410,7 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 			try {
 				uploadToCloud.uploadToTheCloud(this.getApikey(), this.getQtm4jurl(), finalFilePath, this.getTestrunname(), 
 					this.getLabels(), this.getSprint(), this.getVersion(), this.getComponent(), this.getSelection(),
-					this.getPlatform(), this.getComment());
+					this.getPlatform(), this.getComment(),this.getTestrunkey(),this.getTestassethierarchy());
 			}catch(MalformedURLException e){
 				throw new MalformedURLException("MalformedURLException has occured in QMetry - Test Management for JIRA plugin.");
 			}
@@ -398,7 +436,8 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 	    	uploadToServer.uploadToTheServer(this.getApikeyserver(), this.getJiraurlserver(), this.getPassword().getPlainText(), 
 	    			this.getTestrunnameserver(),this.getLabelsserver(), this.getSprintserver(), 
 	    			this.getVersionserver(), this.getComponentserver(), this.getUsername(), finalFilePathServer,
-	    			this.getSelectionserver(),this.getPlatformserver(),this.getCommentserver());
+	    			this.getSelectionserver(),this.getPlatformserver(),this.getCommentserver(),
+	    			this.getTestrunkeyserver(),this.getTestassethierarchyserver());
 	    	}
 	    	catch( ProtocolException e){
 	    		throw new ProtocolException("ProtocolException has occured in QMetry - Test Management for JIRA plugin.");
@@ -451,8 +490,26 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
             		new Option("testng/XML", "testng/xml", selection.matches("testng/xml")),
                     new Option("JUnit/XML", "junit/xml", selection.matches("junit/xml")),
                     new Option("qas/JSON", "qas/json", selection.matches("qas/json")),
-                    new Option("Cucumber/JSON","cucumber/json", selection.matches("cucumber/json"))
+                    new Option("Cucumber/JSON","cucumber/json", selection.matches("cucumber/json")),
+                    new Option("hpuft/xml","hpuft/xml", selection.matches("hpuft/xml"))
+                   
                    // new Option("Red", "ff0000", false)
+                    );
+        }
+        
+        public ListBoxModel doFillTestassethierarchyItems(@QueryParameter String testassethierarchy)
+        {
+            return new ListBoxModel(
+            		new Option("TestScenario-TestCase", "TestScenario-TestCase", testassethierarchy.matches("TestScenario-TestCase")),
+                    new Option("TestCase-TestStep", "TestCase-TestStep", testassethierarchy.matches("TestCase-TestStep"))
+                    );
+        }
+        
+        public ListBoxModel doFillTestassethierarchyserverItems(@QueryParameter String testassethierarchyserver)
+        {
+            return new ListBoxModel(
+            		new Option("TestScenario-TestCase", "TestScenario-TestCase", testassethierarchyserver.matches("TestScenario-TestCase")),
+                    new Option("TestCase-TestStep", "TestCase-TestStep", testassethierarchyserver.matches("TestCase-TestStep"))
                     );
         }
         

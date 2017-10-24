@@ -49,7 +49,7 @@ public class UploadToServer {
 			String testrunnameserver, String labelsserver, String sprintserver, 
 			String versionserver, String componentserver, String username, 
 			String fileserver, String selectionserver, String platformserver,
-			String commentserver) throws InvalidCredentialsException, AuthenticationException, ProtocolException, IOException{
+			String commentserver, String testrunkeyserver, String testassethierarchyserver ) throws InvalidCredentialsException, AuthenticationException, ProtocolException, IOException{
 				
 					CloseableHttpClient httpClient= HttpClients.createDefault();
 					String toEncode=username+":"+password;
@@ -65,6 +65,11 @@ public class UploadToServer {
 				    	builder.addTextBody("testRunName", testrunnameserver, ContentType.TEXT_PLAIN);
 				    	builder.addTextBody("format", selectionserver, ContentType.TEXT_PLAIN);
 				    	
+				    	if(!testassethierarchyserver.equals("TestScenario-TestCase")){
+				    		builder.addTextBody("testAssetHierarchy", testassethierarchyserver, ContentType.TEXT_PLAIN);
+				    	}
+				    	
+				    	
 				    	if(platformserver != null && !platformserver.isEmpty())
 				    		builder.addTextBody("platform", platformserver, ContentType.TEXT_PLAIN);
 				    	if(labelsserver != null && !labelsserver.isEmpty())
@@ -73,6 +78,8 @@ public class UploadToServer {
 				    		builder.addTextBody("versions", versionserver, ContentType.TEXT_PLAIN);
 				    	if(componentserver != null && !componentserver.isEmpty())
 				    		builder.addTextBody("components", componentserver, ContentType.TEXT_PLAIN);
+				    	if(testrunkeyserver != null && !testrunkeyserver.isEmpty())
+				    		builder.addTextBody("testRunKey", testrunkeyserver, ContentType.TEXT_PLAIN);	
 				    	if(sprintserver != null && !sprintserver.isEmpty())
 				    		builder.addTextBody("sprint", sprintserver, ContentType.TEXT_PLAIN);
 				    	if(commentserver != null && !commentserver.isEmpty())
