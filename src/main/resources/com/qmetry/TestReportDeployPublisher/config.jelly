@@ -5,34 +5,37 @@
 
     See global.jelly for a general discussion about jelly script.
   -->
-
+  <f:entry title="Disable This Action" field="disableaction">
+    <f:checkbox checked="${it.start}"/>
+  </f:entry>
   <f:section title="">
    <f:radioBlock name="testToRun" value="CLOUD" checked="${instance.isTestType('CLOUD')}" title="Cloud" inline="true">
    
    <f:nested>
-   <f:entry title="QMetry Automation API URL" field="qtm4jurl">
-	 <f:textbox value="https://importresults.qmetry.com/prod/importresults-qtm4j"/>
-   </f:entry>
    
    <f:entry title="API Key" field="apikey">
 	 <f:textbox />
    </f:entry>
-   
-   <f:entry title="Test Result File Path" field="file">
+
+   <f:entry title="Format" field="selection" >
+  <f:select/>
+  </f:entry>
+  
+   <f:entry title="File" field="file">
     <f:textbox />
   </f:entry>
-   
+
    <f:entry title="Test Run Name" field="testrunname" >
     <f:textbox />
   </f:entry>
-   
-    <f:entry title="Test Asset Hierarchy" field="testassethierarchy">
-   	 	<f:select />
- 	</f:entry>
- 	
- 	 <f:entry title="Test Run Key" field="testrunkey">
-   	 	<f:textbox />
- 	 </f:entry>
+  
+  <f:entry title="Test Run Key" field="testrunkey">
+    <f:textbox/>
+  </f:entry>
+  
+  <f:entry title="Test Asset Hierarchy" field="testassethierarchy">
+    <f:select/>
+  </f:entry>
    
    <f:entry title="Platform" field="platform" >
     <f:textbox />
@@ -58,8 +61,8 @@
     <f:textbox />
   </f:entry>
   
-  <f:entry title="Format" field="selection" >
-  <f:select/>
+  <f:entry title="JIRA Fields" field="jirafields">
+	<f:textarea/>
   </f:entry>
   
   </f:nested>
@@ -69,7 +72,7 @@
    <f:radioBlock name="testToRun" value="SERVER" checked="${instance.isTestType('SERVER')}" title="Server" inline="true">
    
     <f:nested> 
-  <f:entry title="QMetry Automation API URL" field="jiraurlserver">
+  <f:entry title="JIRA URL" field="jiraurlserver">
     <f:textbox />
   </f:entry>
   
@@ -77,6 +80,7 @@
     <f:textbox />
   </f:entry>
   
+ 
   <f:entry title="Username" field="username">
     <f:textbox />
   </f:entry>
@@ -85,7 +89,11 @@
     <f:password />
   </f:entry>
   
-  <f:entry title="Test Result File Path" field="fileserver" >
+  <f:entry title="Format" field="selectionserver" >
+  <f:select/>
+  </f:entry>
+  
+  <f:entry title="File URL" field="fileserver" >
     <f:textbox />
   </f:entry>
   
@@ -93,13 +101,13 @@
     <f:textbox />
   </f:entry>
   
-    <f:entry title="Test Asset Hierarchy" field="testassethierarchyserver">
-   	 <f:select />
- 	</f:entry>
- 	
- 	 <f:entry title="Test Run Key" field="testrunkeyserver">
-   	 <f:textbox />
- 	</f:entry>
+  <f:entry title="TestRun Key" field="testrunkeyserver">
+    <f:textbox/>
+  </f:entry>
+  
+  <f:entry title="Test Asset Hierarchy" field="testassethierarchyserver">
+	<f:select/>
+  </f:entry>
   
    <f:entry title="Platform" field="platformserver">
     <f:textbox />
@@ -124,14 +132,13 @@
   <f:entry title="Comment" field="commentserver">
     <f:textbox />
   </f:entry>
- 
-  <f:entry title="Format" field="selectionserver" >
-  <f:select/>
+
+  <f:entry title="JIRA Fields" field="jirafieldsserver">
+    <f:textarea/>
   </f:entry>
   
   </f:nested>
    </f:radioBlock>
 </f:section>
-
 
 </j:jelly>

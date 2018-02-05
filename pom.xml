@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -9,7 +10,7 @@
   </parent>
   
   <artifactId>qmetry-for-jira-test-management</artifactId>
-  <version>1.6-SNAPSHOT</version>
+  <version>1.7-SNAPSHOT</version>
   <packaging>hpi</packaging>
   <name>QMetry for JIRA - Test Management Plugin </name>
   <description>QMetry Test Management for JIRA plugin for Jenkins has been designed to seamlessly integrate your CI/CD pipeline with QMetry.
@@ -18,7 +19,7 @@
   <licenses>
     <license>
       <name>GNU General Public License v3.0</name>
-      <url>https://github.com/jenkinsci/qmetry-for-jira-test-management-plugin/blob/master/LICENSE</url>
+      <url>https://github.com/qmetry/qmetry-for-jira-test-management-plugin/blob/master/LICENSE</url>
     </license>
   </licenses> 
   
@@ -31,10 +32,27 @@
     </developer>
   </developers>
   
+  <profiles>
+	<profile>
+		<id>dev</id>
+		<properties>
+			<upload.cloud.url>https://importresults.qmetry.com/QmetryWisdom/importresults-qtm4j</upload.cloud.url>
+		</properties>
+	</profile>
+	<profile>
+		<id>production</id>
+		<activation>
+            <activeByDefault>true</activeByDefault>
+        </activation>
+		<properties>
+			<upload.cloud.url>https://importresults.qmetry.com/prod/importresults-qtm4j</upload.cloud.url>
+		</properties>
+	</profile>
+  </profiles>
   
   <properties>
  	 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-     <jenkins.version>2.0</jenkins.version>
+     <jenkins.version>2.32.2</jenkins.version>
      <maven.javadoc.skip>true</maven.javadoc.skip>
   </properties>
   
@@ -71,13 +89,18 @@
 	     </plugin>
       </plugins>
     </pluginManagement>
+	<resources>
+		<resource>
+			<directory>src/main/resources</directory>
+			<filtering>true</filtering>
+		</resource>
+	</resources>
   </build>
  
   <scm>
     <connection>scm:git:git://github.com/jenkinsci/qmetry-for-jira-test-management-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/qmetry-for-jira-test-management-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/qmetry-for-jira-test-management-plugin/</url>
-    <tag>qmetry-for-jira-test-management-1.0</tag>
   </scm>
  
    <repositories>
@@ -149,6 +172,13 @@
 			<artifactId>json-simple</artifactId>
 			<version>1.1.1</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20171018</version>
+		</dependency>
+
   </dependencies>
 
 </project>
