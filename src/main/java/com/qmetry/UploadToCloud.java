@@ -1,22 +1,4 @@
-	
-/*******************************************************************************
-* Copyright 2017 Infostretch Corporation
-*
-* This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-*
-* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
-* OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
-* OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
-*
-* You should have received a copy of the GNU General Public License along with this program in the name of LICENSE.txt in the root folder of the distribution. If not, see https://opensource.org/licenses/gpl-3.0.html
-*
-*
-* For any inquiry or need additional information, please contact qmetrysupport@infostretch.com
-*******************************************************************************/
 package com.qmetry;
-
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -28,74 +10,147 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javax.net.ssl.HttpsURLConnection;
-
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLException;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
+
+import javax.net.ssl.HttpsURLConnection;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringWriter;
+import java.net.URL;
+
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Properties;
+
 import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
 
 @IgnoreJRERequirement
 public class UploadToCloud {
 	
-	private static final Logger LOGGER = Logger.getLogger(UploadToCloud.class.getName());
-	
 	//Call to 1st URL which gets
-	public void uploadToTheCloud(String apikey, String qtm4jurl, String file,
+	public Map<String,String> uploadToTheCloud(String apikey, String file,
 			String testrunname,String labels, String sprint, String versions, 
-			String components, String selection, String platform, String comment,
-			String testrunkey, String testassethierarchy) throws MalformedURLException
+			String components, String selection, String platform, String comment,String testrunkey,String testassethierarchy,String jirafields,int buildnumber) throws MalformedURLException
 	, IOException, UnsupportedEncodingException, ProtocolException, ParseException{
 		
+		Map<String,String> map=new HashMap<String,String>();
 		
+		//Getting cloud url from property file
+		InputStream is=null;
+		String uploadcloudurl="";
+		
+		is = (UploadToCloud.class).getClassLoader().getResourceAsStream("config.properties");
+		Properties p = new Properties();
+		
+		//System.out.println("InputStream:"+is);
+			
+		p.load(is);
+		uploadcloudurl=p.getProperty("uploadcloudurl");
 		
 		String encoding = "UTF-8";
-		URL url = new URL(qtm4jurl.trim());
+		URL url = new URL(uploadcloudurl);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestMethod("POST");
 		connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 		connection.setDoInput(true);
 		connection.setDoOutput(true);
-
-		StringBuilder jsonBody = new StringBuilder("{");
-		jsonBody.append("\"format\":" + "\""+selection+"\"");
-		jsonBody.append(",\"testRunName\":" + "\""+testrunname+"\"");
-		jsonBody.append(",\"testAssetHierarchy\":" + "\""+testassethierarchy+"\"");	
-		jsonBody.append(",\"apiKey\":" + "\""+apikey+"\"");
-		if(platform != null && !platform.isEmpty())
-			jsonBody.append(",\"platform\":" + "\""+platform+"\"");
-		if(labels != null && !labels.isEmpty())
-			jsonBody.append(",\"labels\":" + "\""+labels+"\"");
-		if(versions != null && !versions.isEmpty())
-			jsonBody.append(",\"versions\":" + "\""+versions+"\"");
-		if(components != null && !components.isEmpty())
-			jsonBody.append(",\"components\":" + "\""+components+"\"");
-		if(sprint != null && !sprint.isEmpty())
-			jsonBody.append(",\"sprint\":" + "\""+sprint+"\"");		
-		if(testrunkey != null && !testrunkey.isEmpty())
-			jsonBody.append(",\"testRunKey\":" + "\""+testrunkey+"\"");	
-		if(comment != null && !comment.isEmpty())
-			jsonBody.append(",\"comment\":" + "\""+comment+"\"");
-		jsonBody.append("}");
 		
-		LOGGER.info(jsonBody.toString());
+		if((testrunname!=null && !testrunname.isEmpty()))
+		{
+			testrunname+="#"+buildnumber;
+		}
+		
+		String filepath="";
+		boolean iszip=false;
+		File f=new File(file);
+		if(f.isDirectory())
+		{
+			iszip=true;
+			filepath=CreateZip.createZip(file,selection);
+		}
+		else{
+			filepath=file;
+		}
+
+		/*if(selection.equals("qas/json"))
+		{
+			isZip=true;
+		}*/
+
+		JSONObject jsonbody=new JSONObject();
+	
+		jsonbody.put("format",selection);
+		jsonbody.put("testRunName",testrunname);
+		jsonbody.put("apiKey",apikey);
+		jsonbody.put("isZip",String.valueOf(iszip));
+		if(platform != null && !platform.isEmpty())
+			jsonbody.put("platform",platform);
+			
+		if(labels != null && !labels.isEmpty())
+			jsonbody.put("labels",labels);
+		if(versions != null && !versions.isEmpty())
+			jsonbody.put("versions",versions);
+		if(components != null && !components.isEmpty())
+			jsonbody.put("components",components);
+		if(sprint != null && !sprint.isEmpty())
+			jsonbody.put("sprint",sprint);
+			
+		if(comment != null && !comment.isEmpty())
+			jsonbody.put("comment",comment);
+			
+		if(testrunkey!=null && !testrunkey.isEmpty())
+			jsonbody.put("testRunKey",testrunkey);
+		if(testassethierarchy!=null && !testassethierarchy.isEmpty())
+			jsonbody.put("testAssetHierarchy",testassethierarchy);
+		if(jirafields!=null && !jirafields.isEmpty())
+		{
+			JSONParser parser = new JSONParser();
+			JSONArray jsonarray=(JSONArray)parser.parse(jirafields);
+			jsonbody.put("JIRAFields",jsonarray);
+		}
+		
+		
+		//System.out.println(jsonbody.toString());
 
 		OutputStream os = connection.getOutputStream();
-		os.write(jsonBody.toString().getBytes("UTF-8"));
+		os.write(jsonbody.toString().getBytes("UTF-8"));
 		InputStream fis = connection.getInputStream();
 		StringWriter response = new StringWriter();
 		
 		IOUtils.copy(fis, response, encoding);
-		LOGGER.info(response.toString());
+		//System.out.println(response.toString());
 		
-		//Call another method to upload to S3 bucket.
-		LOGGER.info(uploadToS3(response.toString(),file));   	
-		
+		JSONParser parser = new JSONParser();
+		JSONObject obj =(JSONObject) parser.parse(response.toString());
+		if(obj!=null)
+		{
+			Boolean success=(Boolean)obj.get("isSuccess");
+			if(success.booleanValue())
+			{
+				//Call another method to upload to S3 bucket.
+				String res=uploadToS3(response.toString(),filepath);
+				map.put("success","true");
+				map.put("message",res);
+				//System.out.println(res);
+			}
+			else
+			{
+				String errorMessage=(String)obj.get("errorMessage");
+				map.put("success","false");
+				map.put("errorMessage",errorMessage);
+			}
+		}
+		return map;
 	}
 	
 	// This method gets the response, grabs the url from response and uploads the file to that url.
@@ -113,27 +168,42 @@ public class UploadToCloud {
 		 connection.setDoInput(true);
 		 String encoding = "UTF-8";
 		 String responseValue="";
-		
-		 try{
+		 int count=0;
+		 //try{
 		 //Read the file from the path, copy the content to the url property of JSON Object.
-		 FileInputStream file = new FileInputStream(fileurl);
-		 try{OutputStream os = connection.getOutputStream();
-		 IOUtils.copy(file, os);
-		 } finally{
-			 file.close();
-		 	}
-		 }
+		 while(count<3)
+		 {
+			 FileInputStream file = new FileInputStream(fileurl);
+			 try
+			 {
+				//System.out.println("Getting output stream");
+				OutputStream os = connection.getOutputStream();
+				IOUtils.copy(file, os);
+				break;
+			 }
+			 catch(SSLException e)
+			 {
+				 //System.out.println("SSLException");
+				 count++;
+			 }
+			 finally
+			 {
+				 file.close();
+			 }
+		}
+		/* }
 		 catch (IOException e) {
 			 e.printStackTrace();
-		}
+		}*/
 
 		 InputStream fis = connection.getInputStream();
 		 StringWriter writer = new StringWriter();	 
 		 IOUtils.copy(fis, writer, encoding);
 		 if (connection.getResponseCode() == 200) {
-		 	responseValue="Publishing the result has been successful. \n Response: " + connection.getResponseMessage();
+		 	responseValue="Publishing the result has been succesfull. \n Response: " + connection.getResponseMessage()+"\n";
 		 }else{
-		 	responseValue="Error has occured while uploading test result file.";
+			 responseValue="false";
+		 	//responseValue="Error has occured while uploading the file to temporary S3 bucket.";
 		 }			 
 		 return responseValue;
 	}
