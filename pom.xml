@@ -178,12 +178,6 @@
 			<artifactId>json</artifactId>
 			<version>20171018</version>
 		</dependency>
-
-		<dependency>
-			<groupId>com.qmetry</groupId>
-			<artifactId>qaf</artifactId>
-			<version>2.1.13-RC2</version>
-		</dependency>
   </dependencies>
 
 </project>
