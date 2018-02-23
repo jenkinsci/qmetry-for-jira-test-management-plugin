@@ -13,7 +13,7 @@
    
    <f:nested>
    
-   <f:entry title="API Key" field="apikey">
+   <f:entry title="Automation API Key" field="apikey">
 	 <f:textbox />
    </f:entry>
 
@@ -21,7 +21,7 @@
   <f:select/>
   </f:entry>
   
-   <f:entry title="File" field="file">
+   <f:entry title="Test Results File/Directory Path" field="file">
     <f:textbox />
   </f:entry>
 
@@ -76,24 +76,25 @@
     <f:textbox />
   </f:entry>
   
-  <f:entry title="API Key" field="apikeyserver">
-    <f:textbox />
-  </f:entry>
   
  
-  <f:entry title="Username" field="username">
+  <f:entry title="JIRA Username" field="username">
     <f:textbox />
   </f:entry>
   
-   <f:entry title="Password" field="password">
+   <f:entry title="JIRA Password" field="password">
     <f:password />
+  </f:entry>
+  
+  <f:entry title="Automation API Key" field="apikeyserver">
+    <f:textbox />
   </f:entry>
   
   <f:entry title="Format" field="selectionserver" >
   <f:select/>
   </f:entry>
   
-  <f:entry title="File URL" field="fileserver" >
+  <f:entry title="Test Results File/Directory Path" field="fileserver" >
     <f:textbox />
   </f:entry>
   

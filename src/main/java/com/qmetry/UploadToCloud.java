@@ -67,6 +67,7 @@ public class UploadToCloud {
 		
 		if((testrunname!=null && !testrunname.isEmpty()))
 		{
+			//System.out.println("Testrun Name:"+testrunname);
 			testrunname+="#"+buildnumber;
 		}
 		
@@ -94,24 +95,45 @@ public class UploadToCloud {
 		jsonbody.put("apiKey",apikey);
 		jsonbody.put("isZip",String.valueOf(iszip));
 		if(platform != null && !platform.isEmpty())
+		{
+			//System.out.println("Platform:"+platform);
 			jsonbody.put("platform",platform);
-			
+		}
 		if(labels != null && !labels.isEmpty())
+		{
+			//System.out.println("Labels:"+labels);
 			jsonbody.put("labels",labels);
+		}
 		if(versions != null && !versions.isEmpty())
+		{
+			//System.out.println("Version:"+versions);
 			jsonbody.put("versions",versions);
+		}
 		if(components != null && !components.isEmpty())
+		{
+			//System.out.println("Component:"+components);
 			jsonbody.put("components",components);
+		}
 		if(sprint != null && !sprint.isEmpty())
+		{
+			//System.out.println("Sprint:"+sprint);
 			jsonbody.put("sprint",sprint);
-			
+		}
 		if(comment != null && !comment.isEmpty())
+		{
+			//System.out.println("Comment:"+comment);
 			jsonbody.put("comment",comment);
-			
+		}
 		if(testrunkey!=null && !testrunkey.isEmpty())
+		{
+			//System.out.println("Testrun Key:"+testrunkey);
 			jsonbody.put("testRunKey",testrunkey);
+		}
 		if(testassethierarchy!=null && !testassethierarchy.isEmpty())
+		{
+			//System.out.println("Test Asset Hierarchy:"+testassethierarchy);
 			jsonbody.put("testAssetHierarchy",testassethierarchy);
+		}
 		if(jirafields!=null && !jirafields.isEmpty())
 		{
 			JSONParser parser = new JSONParser();
