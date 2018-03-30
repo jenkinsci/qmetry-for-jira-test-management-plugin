@@ -5,39 +5,37 @@
 
     See global.jelly for a general discussion about jelly script.
   -->
-  
-   <f:entry title="Disable This Action" field="disableaction" description="If this checkbox is checked than this action will be disabled">
-	<f:checkbox/>
-   </f:entry>
-
+  <f:entry title="Disable This Action" field="disableaction">
+    <f:checkbox checked="${it.start}"/>
+  </f:entry>
   <f:section title="">
    <f:radioBlock name="testToRun" value="CLOUD" checked="${instance.isTestType('CLOUD')}" title="Cloud" inline="true">
    
    <f:nested>
    
-   <f:entry title="QTM4J URL" field="qtm4jurl">
+   <f:entry title="Automation API Key" field="apikey">
 	 <f:textbox />
    </f:entry>
-   
-   <f:entry title="API Key" field="apikey">
-	 <f:textbox />
-   </f:entry>
-   
-   <f:entry title="File" field="file">
+
+   <f:entry title="Format" field="selection" >
+  <f:select/>
+  </f:entry>
+  
+   <f:entry title="Test Results File/Directory Path" field="file">
     <f:textbox />
   </f:entry>
-   
-   <f:entry title="Test Run" field="testrunname" >
+
+   <f:entry title="Test Run Name" field="testrunname" >
     <f:textbox />
   </f:entry>
-   
-   <f:entry title="Test Run Key" field="testrunkey">
-	<f:textbox/>
-   </f:entry>
-   
-   <f:entry title="Test Asset Hierarchy" field="testassethierarchy">
-	<f:select/>
-	</f:entry>
+  
+  <f:entry title="Test Run Key" field="testrunkey">
+    <f:textbox/>
+  </f:entry>
+  
+  <f:entry title="Test Asset Hierarchy" field="testassethierarchy">
+    <f:select/>
+  </f:entry>
    
    <f:entry title="Platform" field="platform" >
     <f:textbox />
@@ -63,11 +61,7 @@
     <f:textbox />
   </f:entry>
   
-  <f:entry title="Format" field="selection" >
-  <f:select/>
-  </f:entry>
-  
-  <f:entry title="JIRA Fields" field="jirafields" description="Enter JSON array of jira custom fields">
+  <f:entry title="JIRA Fields" field="jirafields">
 	<f:textarea/>
   </f:entry>
   
@@ -77,47 +71,52 @@
 
    <f:radioBlock name="testToRun" value="SERVER" checked="${instance.isTestType('SERVER')}" title="Server" inline="true">
    
-    <f:nested>
-   
+    <f:nested> 
   <f:entry title="JIRA URL" field="jiraurlserver">
     <f:textbox />
   </f:entry>
   
-  <f:entry title="API Key" field="apikeyserver">
+  
+ 
+  <f:entry title="JIRA Username" field="username">
     <f:textbox />
   </f:entry>
   
-  <f:entry title="Username" field="username">
-    <f:textbox />
-  </f:entry>
-  
-   <f:entry title="Password" field="password">
+   <f:entry title="JIRA Password" field="password">
     <f:password />
   </f:entry>
   
-  <f:entry title="File URL" field="fileserver" >
+  <f:entry title="Automation API Key" field="apikeyserver">
     <f:textbox />
   </f:entry>
   
-   <f:entry title="Test Run" field="testrunnameserver">
+  <f:entry title="Format" field="selectionserver" >
+  <f:select/>
+  </f:entry>
+  
+  <f:entry title="Test Results File/Directory Path" field="fileserver" >
     <f:textbox />
   </f:entry>
   
-   <f:entry title="Test Run Key" field="testrunkeyserver">
-	<f:textbox/>
-   </f:entry>
-   
-   <f:entry name="testassethierarchyserver" title="Test Asset Hierarchy" field="testassethierarchyserver">
-    <f:select/>
-   </f:entry>
-   
+   <f:entry title="Test Run Name" field="testrunnameserver">
+    <f:textbox />
+  </f:entry>
+  
+  <f:entry title="TestRun Key" field="testrunkeyserver">
+    <f:textbox/>
+  </f:entry>
+  
+  <f:entry title="Test Asset Hierarchy" field="testassethierarchyserver">
+	<f:select/>
+  </f:entry>
+  
    <f:entry title="Platform" field="platformserver">
     <f:textbox />
-   </f:entry>
+  </f:entry>
   
    <f:entry title="Labels" field="labelsserver">
     <f:textbox />
-   </f:entry>
+  </f:entry>
   
     <f:entry title="Versions" field="versionserver">
     <f:textbox />
@@ -134,18 +133,13 @@
   <f:entry title="Comment" field="commentserver">
     <f:textbox />
   </f:entry>
- 
-  <f:entry title="Format" field="selectionserver" >
-  <f:select/>
-  </f:entry>
-  
-  <f:entry title="JIRA Fields" field="jirafieldsserver" description="Enter JSON array of jira custom fields">
-	<f:textarea/>
+
+  <f:entry title="JIRA Fields" field="jirafieldsserver">
+    <f:textarea/>
   </f:entry>
   
   </f:nested>
    </f:radioBlock>
 </f:section>
-
 
 </j:jelly>
