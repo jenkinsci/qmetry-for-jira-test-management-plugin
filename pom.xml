@@ -178,11 +178,6 @@
 			<artifactId>json</artifactId>
 			<version>20171018</version>
 		</dependency>
-<<<<<<< HEAD
-=======
-
-		
->>>>>>> 4dbe83f89ab3062f248cc9593c4e6774b0dc588f
   </dependencies>
 
 </project>
