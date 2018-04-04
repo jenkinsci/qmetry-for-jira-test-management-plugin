@@ -1,4 +1,23 @@
+/*******************************************************************************
+* Copyright 2018 Infostretch Corporation
+*
+* This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+*
+* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+* OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+* OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
+*
+* You should have received a copy of the GNU General Public License along with this program in the name of LICENSE.txt in the root folder of the distribution. If not, see https://opensource.org/licenses/gpl-3.0.html
+*
+*
+* For any inquiry or need additional information, please contact qmetrysupport@infostretch.com
+*******************************************************************************/
 package com.qmetry;
+
+import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,6 +39,7 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.InterruptedException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
@@ -40,9 +60,15 @@ public class UploadToCloud {
 	//Call to 1st URL which gets
 	public Map<String,String> uploadToTheCloud(String apikey, String file,
 			String testrunname,String labels, String sprint, String versions, 
-			String components, String selection, String platform, String comment,String testrunkey,String testassethierarchy,String jirafields,int buildnumber) throws MalformedURLException
-	, IOException, UnsupportedEncodingException, ProtocolException, ParseException{
+			String components, String selection, String platform, String comment,String testrunkey,String testassethierarchy,String jirafields,int buildnumber,AbstractBuild build,BuildListener listener) throws MalformedURLException
+	, IOException, UnsupportedEncodingException, ProtocolException, ParseException, InterruptedException{
 		
+		File resultFile=FindFile.findFile(file,build,listener);
+		if(resultFile==null)
+		{
+			return null;
+		}
+	
 		Map<String,String> map=new HashMap<String,String>();
 		
 		//Getting cloud url from property file
@@ -68,19 +94,22 @@ public class UploadToCloud {
 		if((testrunname!=null && !testrunname.isEmpty()))
 		{
 			//System.out.println("Testrun Name:"+testrunname);
-			testrunname+="#"+buildnumber;
+			
+			testrunname=testrunname.trim()+" #"+buildnumber;
 		}
 		
 		String filepath="";
 		boolean iszip=false;
-		File f=new File(file);
-		if(f.isDirectory())
+		//File f=new File(file);
+		if(resultFile.isDirectory())
 		{
 			iszip=true;
-			filepath=CreateZip.createZip(file,selection);
+			listener.getLogger().println("QMetry for JIRA:"+"Given Path is Directory.");
+			listener.getLogger().println("QMetry for JIRA:"+"Creating Zip...");
+			filepath=CreateZip.createZip(resultFile.getAbsolutePath(),selection);
 		}
 		else{
-			filepath=file;
+			filepath=resultFile.getAbsolutePath();
 		}
 
 		/*if(selection.equals("qas/json"))
@@ -90,58 +119,61 @@ public class UploadToCloud {
 
 		JSONObject jsonbody=new JSONObject();
 	
-		jsonbody.put("format",selection);
+		jsonbody.put("format",selection.trim());
 		jsonbody.put("testRunName",testrunname);
-		jsonbody.put("apiKey",apikey);
+		jsonbody.put("apiKey",apikey.trim());
 		jsonbody.put("isZip",String.valueOf(iszip));
 		if(platform != null && !platform.isEmpty())
 		{
 			//System.out.println("Platform:"+platform);
-			jsonbody.put("platform",platform);
+			jsonbody.put("platform",platform.trim());
 		}
 		if(labels != null && !labels.isEmpty())
 		{
 			//System.out.println("Labels:"+labels);
-			jsonbody.put("labels",labels);
+			jsonbody.put("labels",labels.trim());
 		}
 		if(versions != null && !versions.isEmpty())
 		{
 			//System.out.println("Version:"+versions);
-			jsonbody.put("versions",versions);
+			jsonbody.put("versions",versions.trim());
 		}
 		if(components != null && !components.isEmpty())
 		{
 			//System.out.println("Component:"+components);
-			jsonbody.put("components",components);
+			jsonbody.put("components",components.trim());
+
 		}
 		if(sprint != null && !sprint.isEmpty())
 		{
 			//System.out.println("Sprint:"+sprint);
-			jsonbody.put("sprint",sprint);
+			jsonbody.put("sprint",sprint.trim());
 		}
 		if(comment != null && !comment.isEmpty())
 		{
 			//System.out.println("Comment:"+comment);
-			jsonbody.put("comment",comment);
+			jsonbody.put("comment",comment.trim());
 		}
 		if(testrunkey!=null && !testrunkey.isEmpty())
 		{
 			//System.out.println("Testrun Key:"+testrunkey);
-			jsonbody.put("testRunKey",testrunkey);
+			jsonbody.put("testRunKey",testrunkey.trim());
 		}
 		if(testassethierarchy!=null && !testassethierarchy.isEmpty())
 		{
 			//System.out.println("Test Asset Hierarchy:"+testassethierarchy);
-			jsonbody.put("testAssetHierarchy",testassethierarchy);
+			jsonbody.put("testAssetHierarchy",testassethierarchy.trim());
+
 		}
 		if(jirafields!=null && !jirafields.isEmpty())
 		{
 			JSONParser parser = new JSONParser();
-			JSONArray jsonarray=(JSONArray)parser.parse(jirafields);
+
+			JSONArray jsonarray=(JSONArray)parser.parse(jirafields.trim());
+
 			jsonbody.put("JIRAFields",jsonarray);
 		}
-		
-		
+	
 		//System.out.println(jsonbody.toString());
 
 		OutputStream os = connection.getOutputStream();

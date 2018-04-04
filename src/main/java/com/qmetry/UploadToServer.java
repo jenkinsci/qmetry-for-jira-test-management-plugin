@@ -1,4 +1,23 @@
+/*******************************************************************************
+* Copyright 2018 Infostretch Corporation
+*
+* This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+*
+* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+* OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+* OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
+*
+* You should have received a copy of the GNU General Public License along with this program in the name of LICENSE.txt in the root folder of the distribution. If not, see https://opensource.org/licenses/gpl-3.0.html
+*
+*
+* For any inquiry or need additional information, please contact qmetrysupport@infostretch.com
+*******************************************************************************/
 package com.qmetry;
+
+import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
 
 
 import java.io.File;
@@ -36,6 +55,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import java.lang.InterruptedException;
+
 
 @IgnoreJRERequirement
 public class UploadToServer {
@@ -45,8 +66,13 @@ public class UploadToServer {
 			String testrunnameserver, String labelsserver, String sprintserver, 
 			String versionserver, String componentserver, String username, 
 			String fileserver, String selectionserver, String platformserver,
-			String commentserver,String testrunkeyserver,String testassethierarchyserver,String jirafieldsserver,int buildnumber) throws InvalidCredentialsException, AuthenticationException, ProtocolException, IOException,ParseException,ParseException{
+			String commentserver,String testrunkeyserver,String testassethierarchyserver,String jirafieldsserver,int buildnumber,AbstractBuild build,BuildListener listener) throws InvalidCredentialsException, AuthenticationException, ProtocolException, IOException, ParseException, InterruptedException{
 					
+					File resultFile=FindFile.findFile(fileserver,build,listener);
+					if(resultFile==null)
+					{
+						return null;
+					}
 					//System.out.println("File Path:"+fileserver);
 					Map<String,String> map=new HashMap<String,String>();
 					
@@ -63,22 +89,22 @@ public class UploadToServer {
 					
 					if((testrunnameserver!=null && !testrunnameserver.isEmpty()))
 					{
-						//System.out.println("Testrun Name:"+testrunnameserver);
-						testrunnameserver+=" #"+buildnumber;
+						testrunnameserver=testrunnameserver.trim()+" #"+buildnumber;
 					}
 					
 					String filepathserver="";
 					boolean iszip=false;
-					File f1=new File(fileserver);
-					if(f1.isDirectory())
+
+					if(resultFile.isDirectory())
 					{
 						iszip=true;
-						filepathserver=CreateZip.createZip(fileserver,selectionserver);
-						//System.out.println("\n\nDebug check : "+filepathserver);
+						listener.getLogger().println("QMetry for JIRA:"+"Given Path is Directory.");
+						listener.getLogger().println("QMetry for JIRA:"+"Creating Zip...");
+						filepathserver=CreateZip.createZip(resultFile.getAbsolutePath(),selectionserver);
 					}
 					else
 					{
-						filepathserver=fileserver;
+						filepathserver=resultFile.getAbsolutePath();
 					}
 			    	
 				    	HttpPost uploadFile = new HttpPost(jiraurlserver.trim()+"/rest/qtm/latest/automation/importresults");
@@ -91,46 +117,38 @@ public class UploadToServer {
 				    	
 						if(testrunnameserver!=null && !testrunnameserver.isEmpty())
 						{
-							builder.addTextBody("testRunName", testrunnameserver.trim(), ContentType.TEXT_PLAIN);
+							builder.addTextBody("testRunName", testrunnameserver, ContentType.TEXT_PLAIN);
 						}
 						if(platformserver != null && !platformserver.isEmpty())
 						{
-							//System.out.println("Platform Name:"+platformserver);
-				    		builder.addTextBody("platform", platformserver.trim(), ContentType.TEXT_PLAIN);
+							builder.addTextBody("platform", platformserver.trim(), ContentType.TEXT_PLAIN);
 				    	}
 						if(labelsserver != null && !labelsserver.isEmpty())
 						{
-							//System.out.println("Labels:"+labelsserver);
-				    		builder.addTextBody("labels", labelsserver.trim(), ContentType.TEXT_PLAIN);
+							builder.addTextBody("labels", labelsserver.trim(), ContentType.TEXT_PLAIN);
 				    	}
 						if(versionserver != null && !versionserver.isEmpty())
 						{
-							//System.out.println("Version:"+versionserver);
-				    		builder.addTextBody("versions", versionserver.trim(), ContentType.TEXT_PLAIN);
+							builder.addTextBody("versions", versionserver.trim(), ContentType.TEXT_PLAIN);
 				    	}
 						if(componentserver != null && !componentserver.isEmpty())
 						{
-							//System.out.println("Component:"+componentserver);
-				    		builder.addTextBody("components", componentserver.trim(), ContentType.TEXT_PLAIN);
+							builder.addTextBody("components", componentserver.trim(), ContentType.TEXT_PLAIN);
 				    	}
 						if(sprintserver != null && !sprintserver.isEmpty())
 						{
-							//System.out.println("Sprint:"+sprintserver);
-				    		builder.addTextBody("sprint", sprintserver.trim(), ContentType.TEXT_PLAIN);
+							builder.addTextBody("sprint", sprintserver.trim(), ContentType.TEXT_PLAIN);
 						}
 						if(commentserver != null && !commentserver.isEmpty())
 						{
-							//System.out.println("Comment:"+commentserver);
-				    		builder.addTextBody("comment", commentserver.trim(), ContentType.TEXT_PLAIN);
+							builder.addTextBody("comment", commentserver.trim(), ContentType.TEXT_PLAIN);
 						}
 						if(testrunkeyserver!=null && !testrunkeyserver.isEmpty())
 						{
-							//System.out.println("Testrun Key:"+testrunkeyserver);
 							builder.addTextBody("testRunKey",testrunkeyserver.trim());
 						}
 						if(testassethierarchyserver!=null && !testassethierarchyserver.isEmpty())
 						{
-							//System.out.println("Test Asset Hierarchy:"+testassethierarchyserver);
 							builder.addTextBody("testAssetHierarchy",testassethierarchyserver.trim());
 						}
 						if(jirafieldsserver!=null && !jirafieldsserver.isEmpty())
@@ -143,11 +161,7 @@ public class UploadToServer {
 				    	// This attaches the file to the POST:
 				    	
 				    	File f = new File(filepathserver);		
-						//System.out.println("\n\nDebug check file exists : "+f.exists());
-						//System.out.println("\n\nDebug check file path : "+f.getAbsolutePath());
-				    	builder.addPart("file", new FileBody(f));
-						
-						
+						builder.addPart("file", new FileBody(f));
 						
 				    	HttpEntity multipart = builder.build();
 				    	uploadFile.setEntity(multipart);
@@ -183,35 +197,22 @@ public class UploadToServer {
 									JSONObject result=(JSONObject)responsejson.get("result");
 									if(result!=null)
 									{
-										//if(!iszip)
-										//{
-											
+
 											map.put("iszip","false");
 											String trk=(String)result.get("testRunKey");
 											String tru=(String)result.get("testRunUrl");
 											String message=(String)result.get("message");
-											//System.out.println("Publishing the result has been succesfull.");
-											//System.out.println("------Test Run Details------");
-											//System.out.println("TestRun Key:"+trk);
-											//System.out.println("TestRun URL:"+tru);
+
 											map.put("testRunKey",trk);
 											map.put("testRunUrl",tru);
 											map.put("message",message);
 											map.put("response",builder1.toString());
-										/*}
-										else
-										{
-											map.put("iszip","true");
-											map.put("response",builder1.toString());
-										}*/
 									}
 								}
 								else
 								{
 									map.put("success","false");
 									String errorMessage=(String)responsejson.get("errorMessage");
-									//System.out.println("Eror has occured in publishing result QMetry - Test Management for JIRA");
-									//System.out.println("Error Message:"+errorMessage);
 									map.put("errorMessage",errorMessage);
 								}
 							}

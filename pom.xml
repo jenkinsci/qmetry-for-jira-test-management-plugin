@@ -51,7 +51,7 @@
   
   <properties>
  	 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-     <jenkins.version>2.32.2</jenkins.version>
+     <jenkins.version>2.0</jenkins.version>
      <maven.javadoc.skip>true</maven.javadoc.skip>
   </properties>
   
@@ -178,6 +178,11 @@
 			<artifactId>json</artifactId>
 			<version>20171018</version>
 		</dependency>
+<<<<<<< HEAD
+=======
+
+		
+>>>>>>> 4dbe83f89ab3062f248cc9593c4e6774b0dc588f
   </dependencies>
 
 </project>
