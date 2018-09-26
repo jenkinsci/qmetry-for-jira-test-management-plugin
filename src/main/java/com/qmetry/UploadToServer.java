@@ -16,9 +16,8 @@
 *******************************************************************************/
 package com.qmetry;
 
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
-
+//import hudson.model.AbstractBuild;
+//import hudson.model.BuildListener;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,6 +56,10 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import java.lang.InterruptedException;
 
+import hudson.model.TaskListener;
+import hudson.model.Run;
+import hudson.FilePath;
+import java.io.FileNotFoundException;
 
 @IgnoreJRERequirement
 public class UploadToServer {
@@ -65,22 +68,18 @@ public class UploadToServer {
 	public Map<String,String> uploadToTheServer(String apikeyserver, String jiraurlserver, String password,
 			String testrunnameserver, String labelsserver, String sprintserver, 
 			String versionserver, String componentserver, String username, 
-			String fileserver, String selectionserver, String platformserver,
-			String commentserver,String testrunkeyserver,String testassethierarchyserver,String jirafieldsserver,int buildnumber,AbstractBuild build,BuildListener listener) throws InvalidCredentialsException, AuthenticationException, ProtocolException, IOException, ParseException, InterruptedException{
+			String fileserver, boolean attachFileServer, String selectionserver, String platformserver,
+			String commentserver,String testrunkeyserver,String testassethierarchyserver, String testCaseUpdateLevelServer, String jirafieldsserver,int buildnumber,Run<?, ?> run,TaskListener listener, FilePath workspace) throws InvalidCredentialsException, AuthenticationException, ProtocolException, IOException, ParseException, InterruptedException, FileNotFoundException{
 					
-					File resultFile=FindFile.findFile(fileserver,build,listener);
+					File resultFile=FindFile.findFile(fileserver,run,listener,selectionserver,workspace);
 					if(resultFile==null)
 					{
 						return null;
 					}
-					//System.out.println("File Path:"+fileserver);
 					Map<String,String> map=new HashMap<String,String>();
 					
 					CloseableHttpClient httpClient= HttpClients.createDefault();
 					String toEncode=username.trim()+":"+password.trim();
-					/*byte[] encodedBytes = Base64.getEncoder().encode(toEncode.getBytes(StandardCharsets.UTF_8));
-			    	String encodedString= new String(encodedBytes,StandardCharsets.UTF_8);*/
-					//System.out.println(encodedString);
 					
 					byte[] mes = toEncode.getBytes("UTF-8");
 					String encodedString = DatatypeConverter.printBase64Binary(mes);
@@ -98,13 +97,25 @@ public class UploadToServer {
 					if(resultFile.isDirectory())
 					{
 						iszip=true;
-						listener.getLogger().println("QMetry for JIRA:"+"Given Path is Directory.");
-						listener.getLogger().println("QMetry for JIRA:"+"Creating Zip...");
-						filepathserver=CreateZip.createZip(resultFile.getAbsolutePath(),selectionserver);
+						listener.getLogger().println("QMetry for JIRA : Given Path is Directory.");
+						listener.getLogger().println("QMetry for JIRA : Creating Zip...");
+						filepathserver=CreateZip.createZip(resultFile.getAbsolutePath(),selectionserver, attachFileServer);
+						listener.getLogger().println("QMetry for JIRA : Zip file path : " + filepathserver);
 					}
 					else
 					{
 						filepathserver=resultFile.getAbsolutePath();
+						//for zip
+						String fileExtension = "";
+						if(filepathserver.contains(".") && filepathserver.lastIndexOf(".")!= 0)
+						{
+							fileExtension=filepathserver.substring(filepathserver.lastIndexOf(".")+1);
+						}
+						if(fileExtension.equals("zip"))
+						{
+							iszip = true;
+						}
+						//End of changes
 					}
 			    	
 				    	HttpPost uploadFile = new HttpPost(jiraurlserver.trim()+"/rest/qtm/latest/automation/importresults");
@@ -115,6 +126,10 @@ public class UploadToServer {
 				    	builder.addTextBody("apiKey", apikeyserver.trim(), ContentType.TEXT_PLAIN);
 				    	builder.addTextBody("format", selectionserver.trim(), ContentType.TEXT_PLAIN);
 				    	
+						if(attachFileServer)
+						{
+							builder.addTextBody("attachFile",String.valueOf(attachFileServer));
+						}
 						if(testrunnameserver!=null && !testrunnameserver.isEmpty())
 						{
 							builder.addTextBody("testRunName", testrunnameserver, ContentType.TEXT_PLAIN);
@@ -150,6 +165,13 @@ public class UploadToServer {
 						if(testassethierarchyserver!=null && !testassethierarchyserver.isEmpty())
 						{
 							builder.addTextBody("testAssetHierarchy",testassethierarchyserver.trim());
+							if(testassethierarchyserver.equals("TestCase-TestStep"))
+							{
+								if(testCaseUpdateLevelServer!=null && !testCaseUpdateLevelServer.isEmpty())
+								{
+									builder.addTextBody("testCaseUpdateLevel",testCaseUpdateLevelServer);
+								}
+							}
 						}
 						if(jirafieldsserver!=null && !jirafieldsserver.isEmpty())
 						{
@@ -217,10 +239,10 @@ public class UploadToServer {
 								}
 							}
 						}
-						else{
+						else
+						{
 							map.put("success","error");
 							map.put("responseCode",String.valueOf(statusLine.getStatusCode()));
-							//System.out.println("Error has occured while uploading the file with response code:"+String.valueOf(statusLine.getStatusCode()));
 						}
 						return map;		
 	}

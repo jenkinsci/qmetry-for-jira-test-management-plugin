@@ -16,6 +16,8 @@
 *******************************************************************************/
 package com.qmetry;
 import hudson.Launcher;
+import hudson.EnvVars;
+import hudson.util.Secret;
 import hudson.AbortException;
 import hudson.Extension;
 import hudson.util.FormValidation;
@@ -23,8 +25,6 @@ import hudson.util.ListBoxModel;
 import hudson.util.ListBoxModel.Option;
 import hudson.model.AbstractProject;
 import hudson.tasks.Builder;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
 import hudson.tasks.Recorder;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
@@ -45,7 +45,6 @@ import javax.servlet.ServletException;
 
 
 import org.json.simple.parser.*;
-//import org.json.simple.JSONArray;
 import org.json.*;
 
 import java.io.FileNotFoundException;
@@ -57,16 +56,11 @@ import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 
-//import java.util.Base64;
-//import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.codec.binary.Base64;
 
-//import org.apache.log4j.Logger;
-//import java.util.logging.Logger;
-//import java.util.logging.Level;
-
-
-
+import hudson.model.TaskListener;
+import hudson.model.Run;
+import hudson.FilePath;
 
 /**
  * <p>
@@ -82,11 +76,12 @@ import org.apache.commons.codec.binary.Base64;
  * @author Vaibhavsinh Vaghela
  */
 @IgnoreJRERequirement
-public class TestReportDeployPublisher extends Recorder {
+public class TestReportDeployPublisher extends Recorder implements SimpleBuildStep {
 
-	//Logger systemLogger = Logger.getLogger("com.qmetry");
 	
 	 private boolean disableaction;
+	 private boolean attachFile;
+	 private boolean attachFileServer;
 	
 	 private String name;
      private String version;
@@ -95,10 +90,11 @@ public class TestReportDeployPublisher extends Recorder {
      private String testrunname;
 	 private String testrunkey;
 	 private String testassethierarchy;
+	 private String testCaseUpdateLevel;
      private String labels;
-     private String sprintln;
+     private String sprint;
      private String component;
-     private String selection;
+     private String format;
      private String platform;
      private String comment;
 	 private String jirafields;
@@ -110,15 +106,15 @@ public class TestReportDeployPublisher extends Recorder {
      private String testrunnameserver;
 	 private String testrunkeyserver;
 	 private String testassethierarchyserver;
+	 private String testCaseUpdateLevelServer;
      private String labelsserver;
-
-     private String sprintlnserver;
+     private String sprintserver;
      private String versionserver;
      private String componentserver;
      private String platformserver;
      private String commentserver;
      private String fileserver;
-     private String selectionserver;
+     private String formatserver;
 	 private String jirafieldsserver;
      
      public String testToRun;
@@ -155,19 +151,20 @@ public class TestReportDeployPublisher extends Recorder {
 		this.comment = comment;
 	}
 
-	public String getSelection(){
-    	 return selection;
-     }
-     
-    public void setSelection(String selection) {
-		this.selection = selection;
-	}
-     
-    public String getSelectionserver(){
-    	 return selectionserver;
+	public String getFormat(){
+    	 return format;
     }
-	public void setSelectionserver(String selectionserver) {
-		this.selectionserver = selectionserver;
+     
+    public void setFormat(String format) {
+		this.format = format;
+	}
+
+	public String getFormatserver(){
+    	 return formatserver;
+    }
+	
+	public void setFormatserver(String formatserver) {
+		this.formatserver = formatserver;
 	}
 
 	public String getFileserver() {
@@ -178,14 +175,14 @@ public class TestReportDeployPublisher extends Recorder {
 		this.fileserver = fileserver;
 	}
      
-   
-     
      public String getApikeyserver() {
-		return apikeyserver;
+		//return apikeyserver;
+		return Secret.toString(Secret.fromString(apikeyserver));
    	}
 
 	public void setApikeyserver(String apikeyserver) {
-		this.apikeyserver = apikeyserver;
+		//this.apikeyserver = apikeyserver;
+		this.apikeyserver = Secret.fromString(apikeyserver).getEncryptedValue();
 	}
 
 	public String getJiraurlserver() {
@@ -205,12 +202,11 @@ public class TestReportDeployPublisher extends Recorder {
 	}
 
 	public String getPassword() throws AbortException{
-		//Decrypt password
-		return decryptPassword(password);
+		return Secret.toString(Secret.fromString(password));
 	}
 
 	public void setPassword(String password) {
-		this.password = password;
+		this.password = Secret.fromString(password).getEncryptedValue();
 	}
 
 	public String getTestrunnameserver() {
@@ -229,12 +225,12 @@ public class TestReportDeployPublisher extends Recorder {
 		this.labelsserver = labelsserver;
 	}
 
-	public String getSprintlnserver() {
-		return sprintlnserver;
+	public String getSprintserver() {
+		return sprintserver;
 	}
 
-	public void setSprintlnserver(String sprintlnserver) {
-		this.sprintlnserver = sprintlnserver;
+	public void setSprintserver(String sprintserver) {
+		this.sprintserver = sprintserver;
 	}
 
 	public String getVersionserver() {
@@ -270,11 +266,13 @@ public class TestReportDeployPublisher extends Recorder {
 	}
 
 	public String getApikey() {
-		return apikey;
+		//return apikey;
+		return Secret.toString(Secret.fromString(apikey));
 	}
 
 	public void setApikey(String apikey) {
-		this.apikey = apikey;
+		//this.apikey = apikey;
+		this.apikey = Secret.fromString(apikey).getEncryptedValue();
 	}
 
 	public String getFile() {
@@ -301,12 +299,12 @@ public class TestReportDeployPublisher extends Recorder {
 		this.labels = labels;
 	}
 
-	public String getSprintln() {
-		return sprintln;
+	public String getSprint() {
+		return sprint;
 	}
 
-	public void setSprintln(String sprintln) {
-		this.sprintln = sprintln;
+	public void setSprint(String sprint) {
+		this.sprint = sprint;
 
 	}
 
@@ -353,6 +351,26 @@ public class TestReportDeployPublisher extends Recorder {
 		this.testassethierarchyserver=testassethierarchyserver;
 	}
 	
+	public String getTestCaseUpdateLevel()
+	{
+		return testCaseUpdateLevel;
+	}
+	
+	public void setTestCaseUpdateLevel(String testCaseUpdateLevel)
+	{
+		this.testCaseUpdateLevel = testCaseUpdateLevel;
+	}
+	
+	public String getTestCaseUpdateLevelServer()
+	{
+		return testCaseUpdateLevelServer;
+	}
+	
+	public void setTestCaseUpdateLevelServer(String testCaseUpdateLevelServer)
+	{
+		this.testCaseUpdateLevelServer = testCaseUpdateLevelServer;
+	}
+	
 	public String getJirafields(){
 		return jirafields;
 	}
@@ -375,55 +393,83 @@ public class TestReportDeployPublisher extends Recorder {
 		return disableaction;
 	}
 	
+	public boolean isAttachFile()
+	{
+		return attachFile;
+	}
+	
+	public boolean isAttachFileServer()
+	{
+		return attachFileServer;
+	}
+	
 	public TestReportDeployPublisher(){
 		
 	}
     
 	// Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
-    public TestReportDeployPublisher(String name,String apikey, String file, String testrunname, 
-    		String labels, String sprintln, String version, String component, String selection, String platform, String comment,
+    public TestReportDeployPublisher(String name,String apikey, String file,boolean attachFile, String testrunname, 
+    		String labels, String sprint, String version, String component, String format, String platform, String comment,
     		String apikeyserver, String jiraurlserver, String password, String testrunnameserver,
-    		String labelsserver, String sprintlnserver, String versionserver, 
-
-    		String componentserver, String username, String fileserver, String selectionserver, String platformserver, String commentserver,
-    		String testToRun,String testrunkey,String testassethierarchy,String jirafields,String testrunkeyserver,String testassethierarchyserver,String jirafieldsserver,boolean disableaction) throws AbortException{
+    		String labelsserver, String sprintserver, String versionserver, 
+    		String componentserver, String username, String fileserver,boolean attachFileServer, String formatserver, String platformserver, String commentserver,
+    		String testToRun,String testrunkey, String testassethierarchy, String testCaseUpdateLevel, String jirafields,String testrunkeyserver,String testassethierarchyserver, String testCaseUpdateLevelServer, String jirafieldsserver,boolean disableaction) throws AbortException{
         this.disableaction=disableaction;
-		
+		this.attachFile=attachFile;
+		this.attachFileServer=attachFileServer;
 		this.version = version;
-        this.apikey=apikey;
-        this.file=file;
+        //this.apikey=apikey;
+        
+		if(apikey!=null && !apikey.isEmpty())
+		{
+			Secret ak = Secret.fromString(apikey);
+			this.apikey = ak.getEncryptedValue();
+		}
+		
+		this.file=file;
         this.testrunname=testrunname;
         this.labels=labels;
-        this.sprintln=sprintln;
-
+        this.sprint=sprint;
         this.component=component;
-        this.selection=selection;
+        this.format=format;
         this.platform=platform;
         this.comment=comment;
 		this.testrunkey=testrunkey;
 		this.testassethierarchy=testassethierarchy;
+		this.testCaseUpdateLevel=testCaseUpdateLevel;
 		this.jirafields=jirafields;
         
-        this.apikeyserver=apikeyserver;
+        //this.apikeyserver=apikeyserver;
+		
+		if(apikeyserver!=null && !apikeyserver.isEmpty())
+		{
+			Secret aps = Secret.fromString(apikeyserver);
+			this.apikeyserver = aps.getEncryptedValue();
+		}
+		
         this.jiraurlserver=jiraurlserver;
 		
-		//Encrypt password and store in configuration file
-		this.password=encryptPassword(password);
-        
+		if(password != null && !password.isEmpty())
+		{
+			Secret p = Secret.fromString(password);
+			this.password=p.getEncryptedValue();
+		}
+		
 		this.testrunnameserver=testrunnameserver;
         this.labelsserver=labelsserver;
-        this.sprintlnserver=sprintlnserver;
+        this.sprintserver=sprintserver;
 
         this.versionserver=versionserver;
         this.componentserver=componentserver;
         this.username=username;
         this.fileserver=fileserver;
-        this.selectionserver=selectionserver;
+        this.formatserver=formatserver;
         this.platformserver=platformserver;
         this.commentserver=commentserver;
 		this.testrunkeyserver=testrunkeyserver;
 		this.testassethierarchyserver=testassethierarchyserver;
+		this.testCaseUpdateLevelServer=testCaseUpdateLevelServer;
 		this.jirafieldsserver=jirafieldsserver;
         
         this.testToRun=testToRun;
@@ -446,36 +492,30 @@ public class TestReportDeployPublisher extends Recorder {
     }
 
     @Override
-
-    public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, ParseException{
-
+	public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener) throws InterruptedException, IOException 
+    //public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, ParseException{
+	{
         // This is where you 'build' the project.
         // Since this is a dummy, we just say 'hello world' and call that a build.
         // This also shows how you can consult the global configuration of the builder
 		
-		/*File fcloud=new File(workspace.toString(),this.getFile().trim().replace("\\","/"));
-    	//String finalFilePath=workspace.toString()+"/"+this.getFile();
-    	String finalFilePath=fcloud.getAbsolutePath();
-		
-		//System.out.printlnln(finalFilePath);
->>>>>>> 4dbe83f89ab3062f248cc9593c4e6774b0dc588f
-		
-		File fserver=new File(workspace.toString(),this.getFileserver().trim().replace("\\","/"));
-    	//String finalFilePathServer=workspace.toString()+"/"+this.getFileserver();
-    	String finalFilePathServer=fserver.getAbsolutePath();
-<<<<<<< HEAD
-		//System.out.println(finalFilePathServer);
-=======
-		//System.out.printlnln(finalFilePathServer);*/
-
-		
-		int buildnumber=build.number;
+		//int buildnumber=build.number;
+		int buildnumber=run.number;
 		
 		PrintStream logger=listener.getLogger();
-		
+		//logger.println("[DEBUG] : workspace : " + workspace);
     	//----------------------------------------------------------------------------
     	if(disableaction==false)
 		{
+			EnvVars env = null;
+            try {
+                //env = build.getEnvironment(listener);
+                env = run.getEnvironment(listener);
+            }
+			catch (Exception e) {
+                listener.getLogger().println("Error retrieving environment variables: " + e.getMessage());
+                
+            }
 			switch (testToRun){
 			case "CLOUD":
 				//------------- FOR CLOUD INSTANCE ...
@@ -483,80 +523,130 @@ public class TestReportDeployPublisher extends Recorder {
 				logger.println("--------------------------------------------------------");
 				logger.println("QMetry for JIRA : Uploading result file(s) to JIRA Cloud");
 				logger.println("--------------------------------------------------------");
-				logger.println("QMetry for JIRA:"+"File Path:"+this.getFile());
-				logger.println("QMetry for JIRA:"+"Format:"+this.getSelection());
-				if((this.getTestrunname())!=null && !(this.getTestrunname()).isEmpty())
-					logger.println("QMetry for JIRA:"+"Testrun Name:"+this.getTestrunname());
-				if((this.getTestrunkey())!=null && !(this.getTestrunkey()).isEmpty())
-					logger.println("QMetry for JIRA:"+"Testrun key:"+this.getTestrunkey());
-				if((this.getTestassethierarchy())!=null && !(this.getTestassethierarchy()).isEmpty())
-					logger.println("QMetry for JIRA:"+"Test Asset Hierarchy:"+this.getTestassethierarchy());
-				if((this.getLabels())!=null && !(this.getLabels()).isEmpty())
-					logger.println("QMetry for JIRA:"+"Labels:"+this.getLabels());
-				if((this.getSprintln())!=null && !(this.getSprintln()).isEmpty())
-					logger.println("QMetry for JIRA:"+"Sprintln:"+this.getSprintln());
-				if((this.getVersion())!=null && !(this.getVersion()).isEmpty())
-					logger.println("QMetry for JIRA:"+"Version:"+this.getVersion());
-				if((this.getComponent())!=null && !(this.getComponent()).isEmpty())
-					logger.println("QMetry for JIRA:"+"Component:"+this.getComponent());
-				if((this.getPlatform())!=null && !(this.getPlatform()).isEmpty())
-					logger.println("QMetry for JIRA:"+"Platform:"+this.getPlatform());
-				if((this.getComment())!=null && !(this.getComment()).isEmpty())
-					logger.println("QMetry for JIRA:"+"Comment:"+this.getComment());
+				
+				String file_chkd = env.expand(this.getFile());
+				String format_chkd = env.expand(this.getFormat());
+				String testrunname_chkd = env.expand(this.getTestrunname());
+				String testrunkey_chkd = env.expand(this.getTestrunkey());
+				String testassethierarchy_chkd = env.expand(this.getTestassethierarchy());
+				String labels_chkd = env.expand(this.getLabels());
+				String sprint_chkd = env.expand(this.getSprint());
+				String version_chkd = env.expand(this.getVersion());
+				String component_chkd = env.expand(this.getComponent());
+				String comment_chkd = env.expand(this.getComment());
+				String platform_chkd = env.expand(this.getPlatform());
+				String jirafields_chkd = env.expand(this.getJirafields());
+				String apikey_chkd = env.expand(this.getApikey());
+				//logger.println("QMetry for JIRA :"+" API Key : "+apikey_chkd);
+				
+				if(apikey_chkd==null || apikey_chkd.isEmpty())
+				{
+					logger.println("QMetry for JIRA : [ERROR] : Enter API Key.");
+					throw new AbortException();
+				}
+				if(file_chkd==null || file_chkd.isEmpty())
+				{
+					logger.println("QMetry for JIRA : [ERROR] : Enter path to the test result files.");
+					throw new AbortException();
+				}
+				if(format_chkd==null || format_chkd.isEmpty())
+				{
+					logger.println("QMetry for JIRA : [ERROR] : Enter format for test result files.");
+					throw new AbortException();
+				}
+				
+				logger.println("QMetry for JIRA :"+" File Path : "+file_chkd);
+				logger.println("QMetry for JIRA :"+" Format : "+format_chkd);
+				
+				//logger.println("[DEBUG] : attachFile : "+attachFile);
+				//logger.println("[DEBUG] : attachFileServer : "+attachFileServer);
+				if(testrunname_chkd!=null && !testrunname_chkd.isEmpty())
+					logger.println("QMetry for JIRA :"+" Testrun Name : "+testrunname_chkd);
+				if(testrunkey_chkd!=null && !testrunkey_chkd.isEmpty())
+					logger.println("QMetry for JIRA :"+" Testrun key : "+testrunkey_chkd);
+				if(testassethierarchy_chkd!=null && !testassethierarchy_chkd.isEmpty())
+					logger.println("QMetry for JIRA :"+" Test Asset Hierarchy : "+testassethierarchy_chkd);
+				if(testCaseUpdateLevel!=null && !testCaseUpdateLevel.isEmpty())
+					logger.println("QMetry for JIRA :"+" Test Case Update Level"+testCaseUpdateLevel);
+				if(labels_chkd!=null && !labels_chkd.isEmpty())
+					logger.println("QMetry for JIRA :"+" Labels : "+labels_chkd);
+				if(sprint_chkd!=null && !sprint_chkd.isEmpty())
+					logger.println("QMetry for JIRA :"+" Sprint : "+sprint_chkd);
+				if(version_chkd!=null && !version_chkd.isEmpty())
+					logger.println("QMetry for JIRA :"+" Version : "+version_chkd);
+				if(component_chkd!=null && !component_chkd.isEmpty())
+					logger.println("QMetry for JIRA :"+" Component : "+this.getComponent());
+				if(platform_chkd!=null && !platform_chkd.isEmpty())
+					logger.println("QMetry for JIRA :"+" Platform : "+platform_chkd);
+				if(comment_chkd!=null && !comment_chkd.isEmpty())
+					logger.println("QMetry for JIRA :"+" Comment : "+this.getComment());
+				if(jirafields_chkd!=null && !jirafields_chkd.isEmpty())
+					logger.println("QMetry for JIRA :"+" JIRA Fields : "+jirafields_chkd);
 				
 				try {
-					Map response=uploadToCloud.uploadToTheCloud(this.getApikey(), this.getFile().trim().replace("\\","/"), this.getTestrunname(), 
-						this.getLabels(), this.getSprintln(), this.getVersion(), this.getComponent(), this.getSelection(),
-						this.getPlatform(), this.getComment(),this.getTestrunkey(),this.getTestassethierarchy(),this.getJirafields(),buildnumber,build,listener);
+					Map response=uploadToCloud.uploadToTheCloud(apikey_chkd, file_chkd.trim().replace("\\","/"), attachFile, testrunname_chkd, 
+						labels_chkd, sprint_chkd, version_chkd, component_chkd, format_chkd,
+						platform_chkd, comment_chkd,testrunkey_chkd,testassethierarchy_chkd,testCaseUpdateLevel,jirafields_chkd,buildnumber,run,listener,workspace);
 						if(response!=null)
 						{
 							if(response.get("success").equals("true"))
 							{
 								if(response.get("message").equals("false"))
 								{
-									logger.println("QMetry for JIRA:"+"Error has occured while uploading the file to temporary S3 bucket.");
-									throw new AbortException("CustomException");
+									logger.println("QMetry for JIRA :"+" Error has occurred while uploading the file to temporary S3 bucket.");
+									throw new AbortException();
 								}
 								else
 								{
-									logger.println("QMetry for JIRA:"+""+response.get("message"));
+									logger.println("QMetry for JIRA :"+" "+response.get("message"));
 								}
 							}
 							else
 							{
-								logger.println("QMetry for JIRA:"+""+response.get("errorMessage"));
-								throw new AbortException("CustomException");
+								logger.println("QMetry for JIRA :"+" "+response.get("errorMessage"));
+								throw new AbortException();
 							}
 						}
 						else
 						{
 
-							throw new AbortException("CustomException");
+							throw new AbortException();
 						}
 				}
 				catch(MalformedURLException e){
-
-					logger.println("QMetry for JIRA:"+"Exception Message:"+e.getMessage());
-					logger.println("QMetry for JIRA:"+"[ERROR]MalformedURLException has occured in QMetry - Test Management for JIRA plugin.Contact QMetry Support for more information.");
+					if(e.getMessage()!=null)
+					{
+						logger.println("QMetry for JIRA :"+" Exception Message: "+e.getMessage());
+					}
+					logger.println("QMetry for JIRA :"+" [ERROR] : MalformedURLException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
 					e.printStackTrace();
 					throw new AbortException();
 				}
 				catch(UnsupportedEncodingException e){
-					logger.println("QMetry for JIRA:"+"Exception Message:"+e.getMessage());
-					logger.println("QMetry for JIRA:"+"[ERROR]UnsupportedEncodingException has occured in QMetry - Test Management for JIRA plugin.Contact QMetry Support for more information.");
+					if(e.getMessage()!=null)
+					{
+						logger.println("QMetry for JIRA :"+" Exception Message: "+e.getMessage());
+					}
+					logger.println("QMetry for JIRA :"+" [ERROR] : UnsupportedEncodingException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
 					e.printStackTrace();
 					throw new AbortException();
 				}
 				catch(ProtocolException e){
-					logger.println("QMetry for JIRA:"+"Exception Message:"+e.getMessage());
-					logger.println("QMetry for JIRA:"+"[ERROR]ProtocolException has occured in QMetry - Test Management for JIRA plugin.Contact QMetry Support for more information.");
+					if(e.getMessage()!=null)
+					{
+						logger.println("QMetry for JIRA :"+" Exception Message: "+e.getMessage());
+					}
+					logger.println("QMetry for JIRA :"+" [ERROR] : ProtocolException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
 					e.printStackTrace();
 					throw new AbortException();
 				}
 				catch(FileNotFoundException e)
 				{
-					logger.println("QMetry for JIRA:"+"Exception Message:"+e.getMessage());
-					logger.println("QMetry for JIRA:"+"[ERROR]FileNotFoundException has occured in QMetry - Test Management for JIRA plugin.Contact QMetry Support for more information.");
+					if(e.getMessage()!=null)
+					{
+						logger.println("QMetry for JIRA :"+" Exception Message: "+e.getMessage());
+					}
+					logger.println("QMetry for JIRA :"+" [ERROR] : FileNotFoundException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
 					e.printStackTrace();
 					throw new AbortException();
 				}
@@ -564,8 +654,8 @@ public class TestReportDeployPublisher extends Recorder {
 					if(e.getMessage()!=null){
 						if(!(e.getMessage()).equals("CustomException"))
 						{
-							logger.println("QMetry for JIRA:"+"Exception Message:"+e.getMessage());
-							logger.println("QMetry for JIRA:"+"[ERROR]IOException has occured in QMetry - Test Management for JIRA plugin.Contact QMetry Support for more information.");
+							logger.println("QMetry for JIRA :"+" Exception Message: "+e.getMessage());
+							logger.println("QMetry for JIRA :"+" [ERROR] : IOException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
 							e.printStackTrace();
 						}
 					}
@@ -573,16 +663,22 @@ public class TestReportDeployPublisher extends Recorder {
 					
 				}
 				catch (org.json.simple.parser.ParseException e) {
-					logger.println("QMetry for JIRA:"+"Exception Message:"+e.getMessage());
-					logger.println("QMetry for JIRA:"+"[ERROR]ParseException has occured in QMetry - Test Management for JIRA plugin.Contact QMetry Support for more information.");
+					if(e.getMessage()!=null)
+					{
+						logger.println("QMetry for JIRA :"+" Exception Message: "+e.getMessage());
+					}
+					logger.println("QMetry for JIRA :"+" [ERROR] : ParseException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
 					e.printStackTrace();
 					throw new AbortException();
 				}
 				catch(Exception e)
 				{
 					e.printStackTrace();
-					logger.println("QMetry for JIRA:"+"Exception Message:"+e.getMessage());
-					logger.println("QMetry for JIRA:"+"[ERROR]GeneralException has occured in QMetry - Test Management for JIRA plugin.Contact QMetry Support for more information.");
+					if(e.getMessage()!=null)
+					{
+						logger.println("QMetry for JIRA :"+" Exception Message: "+e.getMessage());
+					}
+					logger.println("QMetry for JIRA :"+" [ERROR] : GeneralException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
 					throw new AbortException();
 				}
 				break;
@@ -595,90 +691,156 @@ public class TestReportDeployPublisher extends Recorder {
 				logger.println("---------------------------------------------------------");
 				logger.println("QMetry for JIRA : Uploading result file(s) to JIRA Server");
 				logger.println("---------------------------------------------------------");
-				logger.println("QMetry for JIRA:"+"File Path:"+this.getFileserver());
-				logger.println("QMetry for JIRA:"+"Format:"+this.getSelectionserver());
-				if((this.getTestrunnameserver())!=null && !(this.getTestrunnameserver()).isEmpty())
-					logger.println("QMetry for JIRA:"+"Testrun Name:"+this.getTestrunnameserver());
-				if((this.getTestrunkeyserver())!=null && !(this.getTestrunkeyserver()).isEmpty())
-					logger.println("QMetry for JIRA:"+"Testrun Key:"+this.getTestrunkeyserver());
-				if((this.getTestassethierarchyserver())!=null && !(this.getTestassethierarchyserver()).isEmpty())
-					logger.println("QMetry for JIRA:"+"Test Asset Hierarchy:"+this.getTestassethierarchyserver());
-				if((this.getLabelsserver())!=null && !(this.getLabelsserver()).isEmpty())
-					logger.println("QMetry for JIRA:"+"Labels:"+this.getLabelsserver());
-				if((this.getSprintlnserver())!=null && !(this.getSprintlnserver()).isEmpty())
-					logger.println("QMetry for JIRA:"+"Sprintln:"+this.getSprintlnserver());
-				if((this.getVersionserver())!=null && !(this.getVersionserver()).isEmpty())
-					logger.println("QMetry for JIRA:"+"Version:"+this.getVersionserver());
-				if((this.getComponentserver())!=null && !(this.getComponentserver()).isEmpty())
-					logger.println("QMetry for JIRA:"+"Component:"+this.getComponentserver());
-				if((this.getPlatformserver())!=null && !(this.getPlatformserver()).isEmpty())
-					logger.println("QMetry for JIRA:"+"Platform:"+this.getPlatformserver());
-				if((this.getCommentserver())!=null && !(this.getCommentserver()).isEmpty())
-					logger.println("QMetry for JIRA:"+"Comment:"+this.getCommentserver());
+				//logger.println("[DEBUG] : attachFile : "+attachFile);
+				//logger.println("[DEBUG] : attachFileServer : "+attachFileServer);
+
+				file_chkd = env.expand(this.getFileserver());
+				format_chkd = env.expand(this.getFormatserver());
+				testrunname_chkd = env.expand(this.getTestrunnameserver());
+				testrunkey_chkd = env.expand(this.getTestrunkeyserver());
+				testassethierarchy_chkd = env.expand(this.getTestassethierarchyserver());
+				labels_chkd = env.expand(this.getLabelsserver());
+				sprint_chkd = env.expand(this.getSprintserver());
+				version_chkd = env.expand(this.getVersionserver());
+				component_chkd = env.expand(this.getComponentserver());
+				comment_chkd = env.expand(this.getCommentserver());
+				platform_chkd = env.expand(this.getPlatformserver());
+				jirafields_chkd = env.expand(this.getJirafieldsserver());
+				apikey_chkd = env.expand(this.getApikeyserver());
+				//logger.println("QMetry for JIRA :"+" API Key : "+apikey_chkd);
+				String jiraurlserver_chkd = env.expand(this.getJiraurlserver());
+				String username_chkd = env.expand(this.getUsername());
+				String password_chkd = env.expand(this.getPassword());
+				
+				if(jiraurlserver_chkd==null || jiraurlserver_chkd.isEmpty())
+				{
+					logger.println("QMetry for JIRA : [ERROR] : Enter JIRA URL for server instance.");
+					throw new AbortException();
+				}
+				if(username_chkd==null || username_chkd.isEmpty())
+				{
+					logger.println("QMetry for JIRA : [ERROR] : Enter Username for JIRA server instance.");
+					throw new AbortException();
+				}
+				if(password_chkd==null || password_chkd.isEmpty())
+				{
+					logger.println("QMetry for JIRA : [ERROR] : Enter Password for JIRA server instance.");
+					throw new AbortException();
+				}
+				if(apikey_chkd==null || apikey_chkd.isEmpty())
+				{
+					logger.println("QMetry for JIRA : [ERROR] : Enter API Key for your project.");
+					throw new AbortException();
+				}
+				if(file_chkd==null || file_chkd.isEmpty())
+				{
+					logger.println("QMetry for JIRA : [ERROR] : Enter path to the test result files.");
+					throw new AbortException();
+				}
+				if(format_chkd==null || format_chkd.isEmpty())
+				{
+					logger.println("QMetry for JIRA : [ERROR] : Enter format for test result files.");
+					throw new AbortException();
+				}
+				
+				logger.println("QMetry for JIRA :"+" JIRA URL : "+jiraurlserver_chkd);
+				
+				logger.println("QMetry for JIRA :"+" File Path : "+file_chkd);
+				logger.println("QMetry for JIRA :"+" Format : "+format_chkd);
+				
+				if(testrunname_chkd !=null && !testrunname_chkd.isEmpty())
+					logger.println("QMetry for JIRA :"+" Testrun Name : "+testrunname_chkd);
+				if(testrunkey_chkd!=null && !testrunkey_chkd.isEmpty())
+					logger.println("QMetry for JIRA :"+" Testrun Key : "+testrunkey_chkd);
+				if(testassethierarchy_chkd!=null && !testassethierarchy_chkd.isEmpty())
+					logger.println("QMetry for JIRA :"+" Test Asset Hierarchy : "+testassethierarchy_chkd);
+				if(testCaseUpdateLevelServer!=null && !testCaseUpdateLevelServer.isEmpty())
+					logger.println("QMetry for JIRA :"+" Test Case Update Level : "+testCaseUpdateLevelServer);
+				if(labels_chkd!=null && !labels_chkd.isEmpty())
+					logger.println("QMetry for JIRA :"+" Labels : "+labels_chkd);
+				if(sprint_chkd!=null && !sprint_chkd.isEmpty())
+					logger.println("QMetry for JIRA :"+" Sprint : "+sprint_chkd);
+				if(version_chkd!=null && !version_chkd.isEmpty())
+					logger.println("QMetry for JIRA :"+" Version : "+version_chkd);
+				if(component_chkd!=null && !component_chkd.isEmpty())
+					logger.println("QMetry for JIRA :"+" Component : "+component_chkd);
+				if(platform_chkd!=null && !platform_chkd.isEmpty())
+					logger.println("QMetry for JIRA :"+" Platform : "+platform_chkd);
+				if(comment_chkd!=null && !comment_chkd.isEmpty())
+					logger.println("QMetry for JIRA :"+" Comment : "+comment_chkd);
+				if(jirafields_chkd!=null && !jirafields_chkd.isEmpty())
+					logger.println("QMetry for JIRA :"+" JIRA Fields :"+jirafields_chkd);
 				
 				try{
-					Map<String,String> response=uploadToServer.uploadToTheServer(this.getApikeyserver(), this.getJiraurlserver(), this.getPassword(), 
-						this.getTestrunnameserver(),this.getLabelsserver(), this.getSprintlnserver(), 
-						this.getVersionserver(), this.getComponentserver(), this.getUsername(), this.getFileserver().trim().replace("\\","/"),
-						this.getSelectionserver(),this.getPlatformserver(),this.getCommentserver(),this.getTestrunkeyserver(),this.getTestassethierarchyserver(),this.getJirafieldsserver(),buildnumber,build,listener);
+					Map<String,String> response=uploadToServer.uploadToTheServer(apikey_chkd, jiraurlserver_chkd, password_chkd, 
+						testrunname_chkd,labels_chkd, sprint_chkd, 
+						version_chkd, component_chkd, username_chkd, file_chkd.trim().replace("\\","/"), attachFileServer,
+						format_chkd,platform_chkd,comment_chkd,testrunkey_chkd,testassethierarchy_chkd,testCaseUpdateLevelServer, jirafields_chkd,buildnumber,run,listener,workspace);
 						if(response!=null)
 						{
 							if(response.get("success").equals("error"))
 							{
-								logger.println("QMetry for JIRA:"+"Error has occured while uploading the file with response code:"+response.get("responseCode")+"");
-								throw new AbortException("CustomException");
+								logger.println("QMetry for JIRA :"+" Error has occurred while uploading the file with response code: "+response.get("responseCode")+". Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
+								throw new AbortException();
 							}
 							else if(response.get("success").equals("false"))
 							{
 
-								logger.println("QMetry for JIRA:"+"Error has occured in publishing result QMetry - Test Management for JIRA");
-								logger.println("QMetry for JIRA:"+"Error Message:"+response.get("errorMessage")+""+"Contact QMetry Support for more information.");
-								throw new AbortException("CustomException");
+								logger.println("QMetry for JIRA :"+" Error has occurred in publishing result QMetry - Test Management for JIRA");
+								logger.println("QMetry for JIRA :"+" Error Message:"+response.get("errorMessage")+" "+"Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
+								throw new AbortException();
 							}
 							else if(response.get("success").equals("true"))
 							{
-									logger.println("QMetry for JIRA:"+"Publishing the result has been succesfull.");
+									logger.println("QMetry for JIRA :"+" Publishing the result has been successful.");
 									
-									
+									if(response.get("testRunUrl")!=null){
+										logger.println("QMetry for JIRA :"+" TestRun URL: "+response.get("testRunUrl"));
+									}
 									if(response.get("testRunKey")!=null)
 									{
-										logger.println("QMetry for JIRA:"+"TestRun Key:"+response.get("testRunKey"));
-									}
-									if(response.get("testRunUrl")!=null){
-										logger.println("QMetry for JIRA:"+"TestRun Key:"+response.get("testRunUrl"));
+										logger.println("QMetry for JIRA :"+" TestRun Key: "+response.get("testRunKey"));
 									}	
 									if(response.get("message")!=null)
 									{
-										logger.println("QMetry for JIRA:"+"Message:"+response.get("message"));
+										logger.println("QMetry for JIRA :"+" Message: "+response.get("message"));
 									}
 									if(response.get("testRunKey")==null && response.get("testRunUrl")==null && response.get("message")==null){
-										logger.println("QMetry for JIRA:Response------>"+response.get("response"));
+										logger.println("QMetry for JIRA : Response------>"+response.get("response"));
 									}
 									
 							}
 						}
 						else
 						{
-							throw new AbortException("CustomException");
+							throw new AbortException();
 						}
 				}
 				catch( ProtocolException e){
-					logger.println("QMetry for JIRA:"+"Exception Message:"+e.getMessage());
-					logger.println("QMetry for JIRA:"+"[ERROR]ProtocolException has occured in QMetry - Test Management for JIRA plugin.Contact QMetry Support for more information.");
+					if(e.getMessage()!=null)
+					{
+						logger.println("QMetry for JIRA :"+" Exception Message: "+e.getMessage());
+					}
+					logger.println("QMetry for JIRA :"+" [ERROR] : ProtocolException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
 					e.printStackTrace();
 					throw new AbortException();
 				}
 				catch (org.apache.http.auth.InvalidCredentialsException e) {
-					logger.println("QMetry for JIRA:"+"Exception Message:"+e.getMessage());
-					logger.println("QMetry for JIRA:"+"[ERROR]InvalidCredentialsException has occured in QMetry - Test Management for JIRA plugin.Contact QMetry Support for more information.");
+					if(e.getMessage()!=null)
+					{
+						logger.println("QMetry for JIRA :"+" Exception Message: "+e.getMessage());
+					}
+					logger.println("QMetry for JIRA :"+" [ERROR] : InvalidCredentialsException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
 					e.printStackTrace();
 					throw new AbortException();
 				}
 				catch(FileNotFoundException e)
 				{
-
-					logger.println("QMetry for JIRA:"+"Exception Message:"+e.getMessage());
-					logger.println("QMetry for JIRA:"+"[ERROR]FileNotFoundException has occured in QMetry - Test Management for JIRA plugin.Contact QMetry Support for more information.");
+					if(e.getMessage()!=null)
+					{
+						logger.println("QMetry for JIRA :"+" Exception Message: "+e.getMessage());
+					}
+					logger.println("QMetry for JIRA :"+" [ERROR] : FileNotFoundException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
 
 					e.printStackTrace();
 					throw new AbortException();
@@ -689,8 +851,8 @@ public class TestReportDeployPublisher extends Recorder {
 					
 						if(!(e.getMessage()).equals("CustomException"))
 						{
-							logger.println("QMetry for JIRA:"+"Exception Message:"+e.getMessage());
-							logger.println("QMetry for JIRA:"+"[ERROR]IOException has occured in QMetry - Test Management for JIRA plugin.Contact QMetry Support for more information.");
+							logger.println("QMetry for JIRA :"+" Exception Message: "+e.getMessage());
+							logger.println("QMetry for JIRA :"+" [ERROR] : IOException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
 							e.printStackTrace();
 						}
 					}
@@ -698,16 +860,22 @@ public class TestReportDeployPublisher extends Recorder {
 				} 
 				catch (org.json.simple.parser.ParseException e) {
 
-					logger.println("QMetry for JIRA:"+"Exception Message:"+e.getMessage());
-					logger.println("QMetry for JIRA:"+"[ERROR]ParseException has occured in QMetry - Test Management for JIRA plugin.Contact QMetry Support for more information.");
+					if(e.getMessage()!=null)
+					{
+						logger.println("QMetry for JIRA :"+" Exception Message: "+e.getMessage());
+					}
+					logger.println("QMetry for JIRA :"+" [ERROR] : ParseException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
 					e.printStackTrace();
 					throw new AbortException();
 					
 				}
 				catch(Exception e)
 				{
-					logger.println("QMetry for JIRA:"+"Exception Message:"+e.getMessage());
-					logger.println("QMetry for JIRA:"+"[ERROR]GeneralException has occured in QMetry - Test Management for JIRA plugin.Contact QMetry Support for more information.");
+					if(e.getMessage()!=null)
+					{
+						logger.println("QMetry for JIRA :"+" Exception Message: "+e.getMessage());
+					}
+					logger.println("QMetry for JIRA :"+" [ERROR] : GeneralException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
 
 					e.printStackTrace();
 					throw new AbortException();
@@ -720,9 +888,9 @@ public class TestReportDeployPublisher extends Recorder {
     	}
 		else
 		{
-			logger.println("Qmetry for JIRA:Action 'Publish test result to QMetry for JIRA' is disabled");
+			logger.println("Qmetry for JIRA : Action 'Publish test result to QMetry for JIRA' is disabled");
 		}
-		return true;
+		//return true;
     }
  
     // Overridden for better type safety.
@@ -752,26 +920,26 @@ public class TestReportDeployPublisher extends Recorder {
          * <p>
          * If you don't want fields to be persisted, use {@code transient}.
          */
-        public ListBoxModel doFillSelectionItems(@QueryParameter String selection)
+        public ListBoxModel doFillFormatItems(@QueryParameter String format)
         {
             return new ListBoxModel(
-            		new Option("testng/XML", "testng/xml", selection.matches("testng/xml")),
-                    new Option("JUnit/XML", "junit/xml", selection.matches("junit/xml")),
-                    new Option("qas/JSON", "qas/json", selection.matches("qas/json")),
-                    new Option("Cucumber/JSON","cucumber/json", selection.matches("cucumber/json")),
-					new Option("hpuft/XML","hpuft/xml",selection.matches("hpuft/xml"))
-                    );
+            		new Option("testng/XML", "testng/xml", format.matches("testng/xml")),
+                    new Option("JUnit/XML", "junit/xml", format.matches("junit/xml")),
+                    new Option("qas/JSON", "qas/json", format.matches("qas/json")),
+                    new Option("Cucumber/JSON","cucumber/json", format.matches("cucumber/json")),
+					new Option("hpuft/XML","hpuft/xml",format.matches("hpuft/xml")),
+                    new Option("SpecFlow/JSON","specflow/json",format.matches("specflow/json")));
         }
         
-        public ListBoxModel doFillSelectionserverItems(@QueryParameter String selectionserver)
+        public ListBoxModel doFillFormatserverItems(@QueryParameter String formatserver)
         {
             return new ListBoxModel(
-            		new Option("testng/XML", "testng/xml", selectionserver.matches("testng/xml")),
-                    new Option("JUnit/XML", "junit/xml", selectionserver.matches("junit/xml")),
-                    new Option("qas/JSON", "qas/json", selectionserver.matches("qas/json")),
-                    new Option("Cucumber/JSON","cucumber/json", selectionserver.matches("cucumber/json")),
-					new Option("hpuft/XML","hpuft/xml",selectionserver.matches("hpuft/xml"))
-                    );
+            		new Option("testng/XML", "testng/xml", formatserver.matches("testng/xml")),
+                    new Option("JUnit/XML", "junit/xml", formatserver.matches("junit/xml")),
+                    new Option("qas/JSON", "qas/json", formatserver.matches("qas/json")),
+                    new Option("Cucumber/JSON","cucumber/json", formatserver.matches("cucumber/json")),
+					new Option("hpuft/XML","hpuft/xml",formatserver.matches("hpuft/xml")),
+                    new Option("SpecFlow/JSON","specflow/json",formatserver.matches("specflow/json")));
         }
 		
 		public ListBoxModel doFillTestassethierarchyItems(@QueryParameter String testassethierarchy)
@@ -786,6 +954,22 @@ public class TestReportDeployPublisher extends Recorder {
 			return new ListBoxModel(
 					new Option("TestScenario-TestCase","TestScenario-TestCase",testassethierarchyserver.matches("TestScenario-TestCase")),
 					new Option("TestCase-TestStep","TestCase-TestStep",testassethierarchyserver.matches("TestCase-TestStep")));					
+		}
+		
+		public ListBoxModel doFillTestCaseUpdateLevelItems(@QueryParameter String testCaseUpdateLevel)
+		{
+			return new ListBoxModel(
+				new Option("(2) No change in test steps while reusing Test Case.","2",testCaseUpdateLevel.matches("2")),
+				new Option("(1) Override test steps while reusing Test Case.","1",testCaseUpdateLevel.matches("1")),
+				new Option("(0) Append test steps while reusing Test Case.","0",testCaseUpdateLevel.matches("0")));
+		}
+		
+		public ListBoxModel doFillTestCaseUpdateLevelServerItems(@QueryParameter String testCaseUpdateLevelServer)
+		{
+			return new ListBoxModel(
+				new Option("(2) No change in test steps while reusing Test Case.","2",testCaseUpdateLevelServer.matches("2")),
+				new Option("(1) Override test steps while reusing Test Case.","1",testCaseUpdateLevelServer.matches("1")),
+				new Option("(0) Append test steps while reusing Test Case.","0",testCaseUpdateLevelServer.matches("0")));
 		}
         
         /**
@@ -837,8 +1021,6 @@ public class TestReportDeployPublisher extends Recorder {
                 throws IOException, ServletException {
             if (value.length() == 0)
                 return FormValidation.error("Required");
-            if (!((value.startsWith("https")) || (value.startsWith("http"))))
-				return FormValidation.error("Not a valid URL");
             return FormValidation.ok();
         }
         
@@ -922,44 +1104,6 @@ public class TestReportDeployPublisher extends Recorder {
 	public BuildStepMonitor getRequiredMonitorService() {
 		// TODO Auto-generated method stub
 		return BuildStepMonitor.NONE;
-	}
-	
-	public String encryptPassword(String password) throws AbortException
-	{
-		String encryptedPassword="";
-		try{
-			//byte[] bytesEncoded = Base64.getEncoder().encode(password.getBytes("UTF-8"));
-			//encryptedPassword=new String(bytesEncoded,"UTF-8");
-			//encryptedPassword=DatatypeConverter.printlnBase64Binary(password.getBytes("UTF-8"));
-		
-			byte[] bytesEncoded=Base64.encodeBase64(password.getBytes("UTF-8"));
-			encryptedPassword=new String(bytesEncoded,"UTF-8");
-		}
-		catch(UnsupportedEncodingException e)
-		{
-			e.printStackTrace();
-			throw new AbortException();
-		}
-		return encryptedPassword;
-	}
-	
-	public String decryptPassword(String password) throws AbortException
-	{
-		String decryptedPassword="";
-		try{
-			//byte[] valueDecoded = Base64.getDecoder().decode(password.getBytes("UTF-8"));
-			//decryptedPassword=new String(valueDecoded,"UTF-8");
-			//decryptedPassword=DatatypeConverter.printlnBase64Binary(password.getBytes("UTF-8"));
-		
-			byte[] valueDecoded=Base64.decodeBase64(password.getBytes("UTF-8"));
-			decryptedPassword=new String(valueDecoded,"UTF-8");
-		}
-		catch(UnsupportedEncodingException e)
-		{
-			e.printStackTrace();
-			throw new AbortException();
-		}
-		return decryptedPassword;
 	}
 }
 

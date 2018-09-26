@@ -17,13 +17,17 @@
 	 <f:textbox />
    </f:entry>
 
-   <f:entry title="Format" field="selection" >
+   <f:entry title="Format" field="format" >
   <f:select/>
   </f:entry>
   
    <f:entry title="Test Results File/Directory Path" field="file">
     <f:textbox />
   </f:entry>
+  
+   <f:entry title="Upload Screenshots" field="attachFile">
+	<f:checkbox />
+   </f:entry>
 
    <f:entry title="Test Run Name" field="testrunname" >
     <f:textbox />
@@ -36,6 +40,10 @@
   <f:entry title="Test Asset Hierarchy" field="testassethierarchy">
     <f:select/>
   </f:entry>
+   
+   <f:entry title="Test Case Update Level" field="testCaseUpdateLevel">
+	<f:select/>
+   </f:entry>
    
    <f:entry title="Platform" field="platform" >
     <f:textbox />
@@ -90,12 +98,16 @@
     <f:textbox />
   </f:entry>
   
-  <f:entry title="Format" field="selectionserver" >
+  <f:entry title="Format" field="formatserver" >
   <f:select/>
   </f:entry>
   
   <f:entry title="Test Results File/Directory Path" field="fileserver" >
     <f:textbox />
+  </f:entry>
+  
+  <f:entry title="Upload Screenshots" field="attachFileServer">
+	<f:checkbox />
   </f:entry>
   
    <f:entry title="Test Run Name" field="testrunnameserver">
@@ -107,6 +119,10 @@
   </f:entry>
   
   <f:entry title="Test Asset Hierarchy" field="testassethierarchyserver">
+	<f:select/>
+  </f:entry>
+  
+  <f:entry title="Test Case Update Level" field="testCaseUpdateLevelServer">
 	<f:select/>
   </f:entry>
   

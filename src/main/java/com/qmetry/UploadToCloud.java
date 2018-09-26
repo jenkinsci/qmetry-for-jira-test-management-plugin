@@ -16,8 +16,8 @@
 *******************************************************************************/
 package com.qmetry;
 
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
+//import hudson.model.AbstractBuild;
+//import hudson.model.BuildListener;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -54,16 +54,21 @@ import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import hudson.model.TaskListener;
+import hudson.model.Run;
+import hudson.FilePath;
+import java.io.FileNotFoundException;
+
 @IgnoreJRERequirement
 public class UploadToCloud {
 	
 	//Call to 1st URL which gets
-	public Map<String,String> uploadToTheCloud(String apikey, String file,
+	public Map<String,String> uploadToTheCloud(String apikey, String file, boolean attachFile, 
 			String testrunname,String labels, String sprint, String versions, 
-			String components, String selection, String platform, String comment,String testrunkey,String testassethierarchy,String jirafields,int buildnumber,AbstractBuild build,BuildListener listener) throws MalformedURLException
-	, IOException, UnsupportedEncodingException, ProtocolException, ParseException, InterruptedException{
+			String components, String selection, String platform, String comment,String testrunkey,String testassethierarchy, String testCaseUpdateLevel, String jirafields,int buildnumber,Run<?, ?> run,TaskListener listener,FilePath workspace) throws MalformedURLException
+	, IOException, UnsupportedEncodingException, ProtocolException, ParseException, FileNotFoundException, InterruptedException{
 		
-		File resultFile=FindFile.findFile(file,build,listener);
+		File resultFile=FindFile.findFile(file,run,listener,selection,workspace);
 		if(resultFile==null)
 		{
 			return null;
@@ -78,10 +83,10 @@ public class UploadToCloud {
 		is = (UploadToCloud.class).getClassLoader().getResourceAsStream("config.properties");
 		Properties p = new Properties();
 		
-		//System.out.println("InputStream:"+is);
 			
 		p.load(is);
 		uploadcloudurl=p.getProperty("uploadcloudurl");
+		//uploadcloudurl="https://qtm4jimportnonproduction.qmetry.com/stag/importresults-qtm4j";
 		
 		String encoding = "UTF-8";
 		URL url = new URL(uploadcloudurl);
@@ -93,8 +98,6 @@ public class UploadToCloud {
 		
 		if((testrunname!=null && !testrunname.isEmpty()))
 		{
-			//System.out.println("Testrun Name:"+testrunname);
-			
 			testrunname=testrunname.trim()+" #"+buildnumber;
 		}
 		
@@ -104,66 +107,76 @@ public class UploadToCloud {
 		if(resultFile.isDirectory())
 		{
 			iszip=true;
-			listener.getLogger().println("QMetry for JIRA:"+"Given Path is Directory.");
-			listener.getLogger().println("QMetry for JIRA:"+"Creating Zip...");
-			filepath=CreateZip.createZip(resultFile.getAbsolutePath(),selection);
+			listener.getLogger().println("QMetry for JIRA : "+"Given Path is Directory.");
+			listener.getLogger().println("QMetry for JIRA : "+"Creating Zip...");
+			filepath=CreateZip.createZip(resultFile.getAbsolutePath(),selection, attachFile);
+			listener.getLogger().println("QMetry for JIRA : Zip file path : " + filepath);
 		}
-		else{
-			filepath=resultFile.getAbsolutePath();
-		}
-
-		/*if(selection.equals("qas/json"))
+		else
 		{
-			isZip=true;
-		}*/
+			filepath=resultFile.getAbsolutePath();
+			//for zip
+			String fileExtension = "";
+			if(filepath.contains(".") && filepath.lastIndexOf(".")!= 0)
+			{
+				fileExtension=filepath.substring(filepath.lastIndexOf(".")+1);
+			}
+			if(fileExtension.equals("zip"))
+			{
+				iszip = true;
+			}
+			//End of changes
+		}
 
+		
 		JSONObject jsonbody=new JSONObject();
 	
 		jsonbody.put("format",selection.trim());
 		jsonbody.put("testRunName",testrunname);
 		jsonbody.put("apiKey",apikey.trim());
 		jsonbody.put("isZip",String.valueOf(iszip));
+		if(attachFile)
+		{
+			jsonbody.put("attachFile",String.valueOf(attachFile));
+		}
 		if(platform != null && !platform.isEmpty())
 		{
-			//System.out.println("Platform:"+platform);
 			jsonbody.put("platform",platform.trim());
 		}
 		if(labels != null && !labels.isEmpty())
 		{
-			//System.out.println("Labels:"+labels);
 			jsonbody.put("labels",labels.trim());
 		}
 		if(versions != null && !versions.isEmpty())
 		{
-			//System.out.println("Version:"+versions);
 			jsonbody.put("versions",versions.trim());
 		}
 		if(components != null && !components.isEmpty())
 		{
-			//System.out.println("Component:"+components);
 			jsonbody.put("components",components.trim());
-
 		}
 		if(sprint != null && !sprint.isEmpty())
 		{
-			//System.out.println("Sprint:"+sprint);
 			jsonbody.put("sprint",sprint.trim());
 		}
 		if(comment != null && !comment.isEmpty())
 		{
-			//System.out.println("Comment:"+comment);
 			jsonbody.put("comment",comment.trim());
 		}
 		if(testrunkey!=null && !testrunkey.isEmpty())
 		{
-			//System.out.println("Testrun Key:"+testrunkey);
 			jsonbody.put("testRunKey",testrunkey.trim());
 		}
 		if(testassethierarchy!=null && !testassethierarchy.isEmpty())
 		{
-			//System.out.println("Test Asset Hierarchy:"+testassethierarchy);
 			jsonbody.put("testAssetHierarchy",testassethierarchy.trim());
-
+			if(testassethierarchy.equals("TestCase-TestStep"))
+			{
+				if(testCaseUpdateLevel!=null && !testCaseUpdateLevel.isEmpty())
+				{
+					jsonbody.put("testCaseUpdateLevel",testCaseUpdateLevel);
+				}
+			}
 		}
 		if(jirafields!=null && !jirafields.isEmpty())
 		{
@@ -174,15 +187,12 @@ public class UploadToCloud {
 			jsonbody.put("JIRAFields",jsonarray);
 		}
 	
-		//System.out.println(jsonbody.toString());
-
 		OutputStream os = connection.getOutputStream();
 		os.write(jsonbody.toString().getBytes("UTF-8"));
 		InputStream fis = connection.getInputStream();
 		StringWriter response = new StringWriter();
 		
 		IOUtils.copy(fis, response, encoding);
-		//System.out.println(response.toString());
 		
 		JSONParser parser = new JSONParser();
 		JSONObject obj =(JSONObject) parser.parse(response.toString());
@@ -195,7 +205,6 @@ public class UploadToCloud {
 				String res=uploadToS3(response.toString(),filepath);
 				map.put("success","true");
 				map.put("message",res);
-				//System.out.println(res);
 			}
 			else
 			{
@@ -223,42 +232,36 @@ public class UploadToCloud {
 		 String encoding = "UTF-8";
 		 String responseValue="";
 		 int count=0;
-		 //try{
+		 
 		 //Read the file from the path, copy the content to the url property of JSON Object.
 		 while(count<3)
 		 {
 			 FileInputStream file = new FileInputStream(fileurl);
 			 try
 			 {
-				//System.out.println("Getting output stream");
 				OutputStream os = connection.getOutputStream();
 				IOUtils.copy(file, os);
 				break;
 			 }
 			 catch(SSLException e)
 			 {
-				 //System.out.println("SSLException");
-				 count++;
+				count++;
 			 }
 			 finally
 			 {
-				 file.close();
+				file.close();
 			 }
 		}
-		/* }
-		 catch (IOException e) {
-			 e.printStackTrace();
-		}*/
-
+	
 		 InputStream fis = connection.getInputStream();
 		 StringWriter writer = new StringWriter();	 
 		 IOUtils.copy(fis, writer, encoding);
 		 if (connection.getResponseCode() == 200) {
-		 	responseValue="Publishing the result has been succesfull. \n Response: " + connection.getResponseMessage()+"\n";
-		 }else{
-			 responseValue="false";
-		 	//responseValue="Error has occured while uploading the file to temporary S3 bucket.";
-		 }			 
+		 	responseValue="Publishing the result has been successful. \n Response: " + connection.getResponseMessage()+"\n";
+		 }
+		 else{
+			responseValue="false";
+		}			 
 		 return responseValue;
 	}
 }
