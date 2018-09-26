@@ -77,10 +77,17 @@ public class CreateZip
 		}
 		zout.close();
 		ZipFile zf = new ZipFile(zipfile);
-		int size = zf.size();
-		if(size == 0)
+		try
 		{
-			throw new FileNotFoundException("cannot find files of proper format in directory : "+sourceDir);
+			int size = zf.size();
+			if(size == 0)
+			{
+				throw new FileNotFoundException("cannot find files of proper format in directory : "+sourceDir);
+			}
+		}
+		finally
+		{
+			zf.close();
 		}
 	}
 
