@@ -34,6 +34,7 @@ import hudson.slaves.SlaveComputer;
 import hudson.model.TaskListener;
 import hudson.model.Run;
 import hudson.model.TopLevelItem;
+import hudson.model.Node;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;	
 import java.io.FileNotFoundException;
 
@@ -48,140 +49,152 @@ public class FindFile
 			filePath=filePath.substring(1);
 		}
 		
-		if(workspace.toComputer().getNode().toComputer()!=null)
+		if(workspace!= null /*&& workspace.toComputer()!=null && workspace.toComputer().getNode()!=null*/)
 		{
-			if(workspace.toComputer().getNode().toComputer() instanceof SlaveComputer) 
+			Computer comp = workspace.toComputer();
+			if(comp!=null)
 			{
-				listener.getLogger().println("QMetry for JIRA : build taking place on slave machine");
-				//FilePath slaveMachineWorkspace = project.getWorkspace();
-				FilePath slaveMachineWorkspace = workspace;
-				/*if(filePath.startsWith("/"))
+				Node node = comp.getNode();
+				if(node!=null)
 				{
-					filePath=filePath.substring(1);
-				}*/
-				FilePath f = null;
-				if(format.equals("qas/json"))
-				{
-					//Getting latest testresult files for QAS
-					listener.getLogger().println("QMetry for JIRA : Getting latest test-result folder for QAS...");
-					f = lastFileModified(slaveMachineWorkspace , filePath );
-					filePath = filePath + "/" + f.getName();
-					listener.getLogger().println("QMetry for JIRA : Latest test-result folder : " + f.toString());
-					//listener.getLogger().println("[DEBUG] : final path : "+f.toString());
-					//listener.getLogger().println("[DEBUG] : filepath : " +filePath);
-				}
-				else
-				{
-					f = new FilePath(slaveMachineWorkspace , filePath);
-					if(!f.exists())
+					Computer comp1 = node.toComputer(); 
+					if(comp1!=null)
 					{
-						throw new FileNotFoundException("cannot find file : " + f);
+						if(comp1 instanceof SlaveComputer) 
+						{
+							listener.getLogger().println("QMetry for JIRA : build taking place on slave machine");
+							//FilePath slaveMachineWorkspace = project.getWorkspace();
+							FilePath slaveMachineWorkspace = workspace;
+							/*if(filePath.startsWith("/"))
+							{
+								filePath=filePath.substring(1);
+							}*/
+							FilePath f = null;
+							if(format.equals("qas/json"))
+							{
+								//Getting latest testresult files for QAS
+								listener.getLogger().println("QMetry for JIRA : Getting latest test-result folder for QAS...");
+								f = lastFileModified(slaveMachineWorkspace , filePath );
+								filePath = filePath + "/" + f.getName();
+								listener.getLogger().println("QMetry for JIRA : Latest test-result folder : " + f.toString());
+								//listener.getLogger().println("[DEBUG] : final path : "+f.toString());
+								//listener.getLogger().println("[DEBUG] : filepath : " +filePath);
+							}
+							else
+							{
+								f = new FilePath(slaveMachineWorkspace , filePath);
+								if(!f.exists())
+								{
+									throw new FileNotFoundException("cannot find file : " + f);
+								}
+							}
+							
+							//boolean filter = false;
+							//String fileMask = "";
+							if(f.isDirectory())
+							{
+								String absPath=f.toString();
+								
+								if(!filePath.endsWith("/"))
+								{
+									filePath=filePath.concat("/");
+								}
+								
+								//Changes for filtering files
+								/*
+								if(format.equals("junit/xml") || format.equals("hpuft/xml") || format.equals("testng/xml"))
+								{
+									filter=true;
+									fileMask=filePath.concat("*.xml");
+									listener.getLogger().println("[DEBUG] : xml filepath : "+fileMask);
+								}
+								else if(format.equals("cucumber/json") || format.equals("qas/json"))
+								{
+									filter=true;
+									fileMask=filePath.concat("*.json");
+									listener.getLogger().println("[DEBUG] : json filepath : "+fileMask);
+								}*/
+							}
+							if(!slaveMachineWorkspace.exists()) 
+							{
+								listener.getLogger().println("QMetry for JIRA : [ERROR]Failed to access slave machine workspace directory");
+								return null;
+							}
+							
+							FilePath masterMachineWorkspace  = null;
+							//for free style job
+							if(run.getParent() instanceof AbstractProject)
+							{
+								AbstractProject project = (AbstractProject)run.getParent();
+								if(project.getCustomWorkspace() != null && project.getCustomWorkspace().length()>0 ) 
+								{
+									masterMachineWorkspace = new FilePath(new File(project.getCustomWorkspace()));
+								} 
+								else 
+								{
+									masterMachineWorkspace = Jenkins.getInstance().getWorkspaceFor((TopLevelItem)project);
+								}
+							}
+							//for pipeline job
+							else if(run.getParent() instanceof WorkflowJob)
+							{
+								//listener.getLogger().println("[DEBUG] : instance of WorkFlowJob");
+								WorkflowJob project = (WorkflowJob)run.getParent();
+								masterMachineWorkspace = Jenkins.getInstance().getWorkspaceFor((TopLevelItem)project);
+							}
+							//listener.getLogger().println("[DEBUG] : masterMachineWorkspace : " + masterMachineWorkspace);
+							if(masterMachineWorkspace==null)
+							{
+								listener.getLogger().println("QMetry for JIRA : [ERROR]Failed to access master machine workspace directory");
+								return null;
+							}
+							listener.getLogger().println("QMetry for JIRA : Copying files from slave to master machine...");
+							int fileCount = slaveMachineWorkspace.copyRecursiveTo(filePath, masterMachineWorkspace);
+							//Changes for file filtering
+							/*
+								int fileCount;
+								if(filter)
+								{
+									fileCount = slaveMachineWorkspace.copyRecursiveTo(fileMask, masterMachineWorkspace);
+								}
+								else
+								{
+									fileCount = slaveMachineWorkspace.copyRecursiveTo(filePath, masterMachineWorkspace);
+								}
+							*/
+							listener.getLogger().println("QMetry for JIRA : Total "+fileCount+" result file(s) copied from slave to master machine");
+							File finalResultFile = new File(masterMachineWorkspace.toURI());
+							finalResultFile = new File(finalResultFile, filePath);
+							return finalResultFile;
+						}
+						else if(comp1 instanceof MasterComputer) 
+						{
+							//File masterWorkspace = new File(project.getWorkspace().toURI());
+							//listener.getLogger().println("[DEBUG] : Build taking place on master machine");
+							File masterWorkspace = new File(workspace.toString());
+							FilePath resultFilePath = null;
+							if(format.equals("qas/json"))
+							{
+								//Getting latest testresult files for QAS
+								listener.getLogger().println("QMetry for JIRA : Getting latest test-result folder for QAS...");
+								resultFilePath = lastFileModified(new FilePath(masterWorkspace),filePath);
+								listener.getLogger().println("QMetry for JIRA : Latest test-result folder : " + resultFilePath.toString());
+								//listener.getLogger().println("[DEBUG]: final path : "+resultFilePath.toString());
+							}
+							else
+							{
+								resultFilePath = new FilePath(new File(masterWorkspace, filePath));
+								if(!resultFilePath.exists())
+								{
+									throw new FileNotFoundException("cannot find file : " + resultFilePath);
+								}
+								//listener.getLogger().println("[DEBUG]: final path : "+resultFilePath.toString());
+							}
+							File resultFile = new File(resultFilePath.toString());
+							return resultFile;
+						}
 					}
 				}
-				
-				//boolean filter = false;
-				//String fileMask = "";
-				if(f.isDirectory())
-				{
-					String absPath=f.toString();
-					
-					if(!filePath.endsWith("/"))
-					{
-						filePath=filePath.concat("/");
-					}
-					
-					//Changes for filtering files
-					/*
-					if(format.equals("junit/xml") || format.equals("hpuft/xml") || format.equals("testng/xml"))
-					{
-						filter=true;
-						fileMask=filePath.concat("*.xml");
-						listener.getLogger().println("[DEBUG] : xml filepath : "+fileMask);
-					}
-					else if(format.equals("cucumber/json") || format.equals("qas/json"))
-					{
-						filter=true;
-						fileMask=filePath.concat("*.json");
-						listener.getLogger().println("[DEBUG] : json filepath : "+fileMask);
-					}*/
-				}
-				if(!slaveMachineWorkspace.exists()) 
-				{
-					listener.getLogger().println("QMetry for JIRA : [ERROR]Failed to access slave machine workspace directory");
-					return null;
-				}
-				
-				FilePath masterMachineWorkspace  = null;
-				//for free style job
-				if(run.getParent() instanceof AbstractProject)
-				{
-					AbstractProject project = (AbstractProject)run.getParent();
-					if(project.getCustomWorkspace() != null && project.getCustomWorkspace().length()>0 ) 
-					{
-						masterMachineWorkspace = new FilePath(new File(project.getCustomWorkspace()));
-					} 
-					else 
-					{
-						masterMachineWorkspace = Jenkins.getInstance().getWorkspaceFor((TopLevelItem)project);
-					}
-				}
-				//for pipeline job
-				else if(run.getParent() instanceof WorkflowJob)
-				{
-					//listener.getLogger().println("[DEBUG] : instance of WorkFlowJob");
-					WorkflowJob project = (WorkflowJob)run.getParent();
-					masterMachineWorkspace = Jenkins.getInstance().getWorkspaceFor((TopLevelItem)project);
-				}
-				//listener.getLogger().println("[DEBUG] : masterMachineWorkspace : " + masterMachineWorkspace);
-				if(masterMachineWorkspace==null)
-				{
-					listener.getLogger().println("QMetry for JIRA : [ERROR]Failed to access master machine workspace directory");
-					return null;
-				}
-				listener.getLogger().println("QMetry for JIRA : Copying files from slave to master machine...");
-				int fileCount = slaveMachineWorkspace.copyRecursiveTo(filePath, masterMachineWorkspace);
-				//Changes for file filtering
-				/*
-					int fileCount;
-					if(filter)
-					{
-						fileCount = slaveMachineWorkspace.copyRecursiveTo(fileMask, masterMachineWorkspace);
-					}
-					else
-					{
-						fileCount = slaveMachineWorkspace.copyRecursiveTo(filePath, masterMachineWorkspace);
-					}
-				*/
-				listener.getLogger().println("QMetry for JIRA : Total "+fileCount+" result file(s) copied from slave to master machine");
-				File finalResultFile = new File(masterMachineWorkspace.toURI());
-				finalResultFile = new File(finalResultFile, filePath);
-				return finalResultFile;
-			}
-			else if(workspace.toComputer().getNode().toComputer() instanceof MasterComputer) 
-			{
-				//File masterWorkspace = new File(project.getWorkspace().toURI());
-				//listener.getLogger().println("[DEBUG] : Build taking place on master machine");
-				File masterWorkspace = new File(workspace.toString());
-				FilePath resultFilePath = null;
-				if(format.equals("qas/json"))
-				{
-					//Getting latest testresult files for QAS
-					listener.getLogger().println("QMetry for JIRA : Getting latest test-result folder for QAS...");
-					resultFilePath = lastFileModified(new FilePath(masterWorkspace),filePath);
-					listener.getLogger().println("QMetry for JIRA : Latest test-result folder : " + resultFilePath.toString());
-					//listener.getLogger().println("[DEBUG]: final path : "+resultFilePath.toString());
-				}
-				else
-				{
-					resultFilePath = new FilePath(new File(masterWorkspace, filePath));
-					if(!resultFilePath.exists())
-					{
-						throw new FileNotFoundException("cannot find file : " + resultFilePath);
-					}
-					//listener.getLogger().println("[DEBUG]: final path : "+resultFilePath.toString());
-				}
-				File resultFile = new File(resultFilePath.toString());
-				return resultFile;
 			}
 		}
 		return null;
