@@ -76,6 +76,7 @@ public class CreateZip
 			zipSubDirectory("img/",imageDir,zout,imageExtention);
 		}
 		zout.close();
+		
 		ZipFile zf = new ZipFile(zipfile);
 		try
 		{

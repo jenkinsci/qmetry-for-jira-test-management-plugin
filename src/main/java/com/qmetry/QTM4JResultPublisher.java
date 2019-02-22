@@ -13,7 +13,7 @@
 *
 *
 * For any inquiry or need additional information, please contact qmetrysupport@infostretch.com
-************************************************************************************/
+*******************************************************************************/
 package com.qmetry;
 
 import hudson.Launcher;

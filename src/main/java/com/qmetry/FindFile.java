@@ -42,8 +42,12 @@ import java.util.List;
 
 public class FindFile
 {
+	public static boolean onSlave = false;
+	public static File resultFile;
 	public static File findFile(String filePath, Run<?, ?> run, TaskListener listener,String format,FilePath workspace) throws IOException,InterruptedException,FileNotFoundException
 	{
+		onSlave = false;
+		resultFile = null;
 		if(filePath.startsWith("/"))
 		{
 			filePath=filePath.substring(1);
@@ -62,6 +66,7 @@ public class FindFile
 					{
 						if(comp1 instanceof SlaveComputer) 
 						{
+							onSlave = true;
 							listener.getLogger().println("QMetry for JIRA : build taking place on slave machine");
 							//FilePath slaveMachineWorkspace = project.getWorkspace();
 							FilePath slaveMachineWorkspace = workspace;
@@ -164,11 +169,12 @@ public class FindFile
 							*/
 							listener.getLogger().println("QMetry for JIRA : Total "+fileCount+" result file(s) copied from slave to master machine");
 							File finalResultFile = new File(masterMachineWorkspace.toURI());
-							finalResultFile = new File(finalResultFile, filePath);
-							return finalResultFile;
+							resultFile = new File(finalResultFile, filePath);
+							return resultFile;
 						}
 						else if(comp1 instanceof MasterComputer) 
 						{
+							onSlave = false;
 							//File masterWorkspace = new File(project.getWorkspace().toURI());
 							//listener.getLogger().println("[DEBUG] : Build taking place on master machine");
 							File masterWorkspace = new File(workspace.toString());
@@ -190,7 +196,7 @@ public class FindFile
 								}
 								//listener.getLogger().println("[DEBUG]: final path : "+resultFilePath.toString());
 							}
-							File resultFile = new File(resultFilePath.toString());
+							resultFile = new File(resultFilePath.toString());
 							return resultFile;
 						}
 					}
@@ -225,5 +231,28 @@ public class FindFile
 			}
 		}
 		return choice;
+	}
+
+	public static boolean deleteFilesFromMaster(File sourceDir)
+	{
+		return recursiveDelete(sourceDir);
+	}
+
+	public static boolean recursiveDelete(File file) 
+	{ 
+		boolean deleted;
+		if (!file.exists())
+			return false;
+		
+		if (file.isDirectory()) 
+		{
+			for (File f : file.listFiles()) 
+			{
+				//call recursively
+				deleted = recursiveDelete(f);
+			}
+		}
+
+		return file.delete();
 	}
 }

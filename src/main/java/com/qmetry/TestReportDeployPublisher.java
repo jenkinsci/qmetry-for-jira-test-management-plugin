@@ -681,6 +681,32 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 					logger.println("QMetry for JIRA :"+" [ERROR] : GeneralException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
 					throw new AbortException();
 				}
+				finally
+				{
+					if(FindFile.onSlave)
+					{
+						if(FindFile.resultFile!=null)
+						{
+							listener.getLogger().println("QMetry for JIRA : Deleting test result files " + FindFile.resultFile + " from Master machine...");
+							if(FindFile.resultFile.exists())
+							{
+								boolean isDeleted = FindFile.deleteFilesFromMaster(FindFile.resultFile);
+								if(isDeleted)
+								{
+									listener.getLogger().println("QMetry for JIRA : Successfully deleted test result files from Master machine");
+								}
+								else
+								{
+									listener.getLogger().println("QMetry for JIRA : Cannot delete test result files from master machine");
+								}
+							}
+							else
+							{
+								listener.getLogger().println("QMetry for JIRA : Cannot find test result files to be deleted on master machine");
+							}
+						}
+					}
+				}
 				break;
 				
 			case "SERVER":
@@ -879,6 +905,32 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 
 					e.printStackTrace();
 					throw new AbortException();
+				}
+				finally
+				{
+					if(FindFile.onSlave)
+					{
+						if(FindFile.resultFile!=null)
+						{
+							listener.getLogger().println("QMetry for JIRA : Deleting test result files " + FindFile.resultFile + " from Master machine...");
+							if(FindFile.resultFile.exists())
+							{
+								boolean isDeleted = FindFile.deleteFilesFromMaster(FindFile.resultFile);
+								if(isDeleted)
+								{
+									listener.getLogger().println("QMetry for JIRA : Successfully deleted test result files from Master machine");
+								}
+								else
+								{
+									listener.getLogger().println("QMetry for JIRA : Cannot delete test result files from master machine");
+								}
+							}
+							else
+							{
+								listener.getLogger().println("QMetry for JIRA : Cannot find test result files to be deleted on master machine");
+							}
+						}
+					}
 				}
 				break;
 				
