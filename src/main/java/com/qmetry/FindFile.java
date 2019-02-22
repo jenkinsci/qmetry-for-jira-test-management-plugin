@@ -42,8 +42,8 @@ import java.util.List;
 
 public class FindFile
 {
-	public static boolean onSlave = false;
-	public static File resultFile;
+	protected static boolean onSlave = false;
+	protected static File resultFile;
 	public static File findFile(String filePath, Run<?, ?> run, TaskListener listener,String format,FilePath workspace) throws IOException,InterruptedException,FileNotFoundException
 	{
 		onSlave = false;
@@ -240,19 +240,25 @@ public class FindFile
 
 	public static boolean recursiveDelete(File file) 
 	{ 
-		boolean deleted;
-		if (!file.exists())
+		if (file == null || !file.exists()) {
 			return false;
+		}
+		else if (file != null){
 		
 		if (file.isDirectory()) 
 		{
-			for (File f : file.listFiles()) 
+			if(file.listFiles() != null)
 			{
-				//call recursively
-				deleted = recursiveDelete(f);
+				for (File f : file.listFiles()) 
+				{
+					//call recursively
+					boolean deleted = recursiveDelete(f);
+				}
 			}
 		}
-
 		return file.delete();
+		}
+		return true;
 	}
+		
 }
