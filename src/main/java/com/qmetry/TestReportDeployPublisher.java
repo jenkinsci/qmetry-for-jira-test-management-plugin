@@ -31,6 +31,7 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
+import org.apache.commons.io.FileUtils;
 
 import java.util.Map;
 
@@ -567,7 +568,7 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 				if(testassethierarchy_chkd!=null && !testassethierarchy_chkd.isEmpty())
 					logger.println("QMetry for JIRA :"+" Test Asset Hierarchy : "+testassethierarchy_chkd);
 				if(testCaseUpdateLevel!=null && !testCaseUpdateLevel.isEmpty())
-					logger.println("QMetry for JIRA :"+" Test Case Update Level"+testCaseUpdateLevel);
+					logger.println("QMetry for JIRA :"+" Test Case Update Level : "+testCaseUpdateLevel);
 				if(labels_chkd!=null && !labels_chkd.isEmpty())
 					logger.println("QMetry for JIRA :"+" Labels : "+labels_chkd);
 				if(sprint_chkd!=null && !sprint_chkd.isEmpty())
@@ -683,26 +684,21 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 				}
 				finally
 				{
-					if(FindFile.onSlave)
+					if(FindFile.getOnSlave())
 					{
-						if(FindFile.resultFile!=null)
+						if(FindFile.getQtm4jFile()!=null)
 						{
-							listener.getLogger().println("QMetry for JIRA : Deleting test result files " + FindFile.resultFile + " from Master machine...");
-							if(FindFile.resultFile.exists())
+							try
 							{
-								boolean isDeleted = FindFile.deleteFilesFromMaster(FindFile.resultFile);
-								if(isDeleted)
-								{
-									listener.getLogger().println("QMetry for JIRA : Successfully deleted test result files from Master machine");
-								}
-								else
-								{
-									listener.getLogger().println("QMetry for JIRA : Cannot delete test result files from master machine");
-								}
+								FileUtils.cleanDirectory(FindFile.getQtm4jFile());
 							}
-							else
+							catch(IOException e)
 							{
-								listener.getLogger().println("QMetry for JIRA : Cannot find test result files to be deleted on master machine");
+								listener.getLogger().println("QMetry for JIRA : Copying task failed");
+							}
+							catch(IllegalArgumentException e)
+							{
+								listener.getLogger().println("QMetry for JIRA : Copying task failed");
 							}
 						}
 					}
@@ -717,8 +713,6 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 				logger.println("---------------------------------------------------------");
 				logger.println("QMetry for JIRA : Uploading result file(s) to JIRA Server");
 				logger.println("---------------------------------------------------------");
-				//logger.println("[DEBUG] : attachFile : "+attachFile);
-				//logger.println("[DEBUG] : attachFileServer : "+attachFileServer);
 
 				file_chkd = env.expand(this.getFileserver());
 				format_chkd = env.expand(this.getFormatserver());
@@ -818,7 +812,7 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 							}
 							else if(response.get("success").equals("true"))
 							{
-									logger.println("QMetry for JIRA :"+" Publishing the result has been successful.");
+									logger.println("QMetry for JIRA :"+" Publishing results has been successful.");
 									
 									if(response.get("testRunUrl")!=null){
 										logger.println("QMetry for JIRA :"+" TestRun URL: "+response.get("testRunUrl"));
@@ -908,26 +902,21 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 				}
 				finally
 				{
-					if(FindFile.onSlave)
+					if(FindFile.getOnSlave())
 					{
-						if(FindFile.resultFile!=null)
+						if(FindFile.getQtm4jFile()!=null)
 						{
-							listener.getLogger().println("QMetry for JIRA : Deleting test result files " + FindFile.resultFile + " from Master machine...");
-							if(FindFile.resultFile.exists())
+							try
 							{
-								boolean isDeleted = FindFile.deleteFilesFromMaster(FindFile.resultFile);
-								if(isDeleted)
-								{
-									listener.getLogger().println("QMetry for JIRA : Successfully deleted test result files from Master machine");
-								}
-								else
-								{
-									listener.getLogger().println("QMetry for JIRA : Cannot delete test result files from master machine");
-								}
+								FileUtils.cleanDirectory(FindFile.getQtm4jFile());
 							}
-							else
+							catch(IOException e)
 							{
-								listener.getLogger().println("QMetry for JIRA : Cannot find test result files to be deleted on master machine");
+								listener.getLogger().println("QMetry for JIRA : Copying task failed");
+							}
+							catch(IllegalArgumentException e)
+							{
+								listener.getLogger().println("QMetry for JIRA : Copying task failed");
 							}
 						}
 					}

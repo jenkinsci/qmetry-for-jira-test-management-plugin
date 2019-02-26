@@ -16,10 +16,13 @@
 *******************************************************************************/
 package com.qmetry;
 
+import java.io.File;
+
 //import hudson.model.AbstractBuild;
 //import hudson.model.BuildListener;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,35 +32,23 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLException;
-import org.apache.commons.io.IOUtils;
-import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
-
-import javax.net.ssl.HttpsURLConnection;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.lang.InterruptedException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringWriter;
-import java.net.URL;
-
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
-import org.json.simple.JSONObject;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLException;
+
+import org.apache.commons.io.IOUtils;
+import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import hudson.model.TaskListener;
-import hudson.model.Run;
 import hudson.FilePath;
-import java.io.FileNotFoundException;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 
 @IgnoreJRERequirement
 public class UploadToCloud {
@@ -129,52 +120,52 @@ public class UploadToCloud {
 		}
 
 		
-		JSONObject jsonbody=new JSONObject();
+		Map<String,Object> requestDataMap =  new HashMap<>();
 	
-		jsonbody.put("format",selection.trim());
-		jsonbody.put("testRunName",testrunname);
-		jsonbody.put("apiKey",apikey.trim());
-		jsonbody.put("isZip",String.valueOf(iszip));
+		requestDataMap.put("format",selection.trim());
+		requestDataMap.put("testRunName",testrunname);
+		requestDataMap.put("apiKey",apikey.trim());
+		requestDataMap.put("isZip",String.valueOf(iszip));
 		if(attachFile)
 		{
-			jsonbody.put("attachFile",String.valueOf(attachFile));
+			requestDataMap.put("attachFile",String.valueOf(attachFile));
 		}
 		if(platform != null && !platform.isEmpty())
 		{
-			jsonbody.put("platform",platform.trim());
+			requestDataMap.put("platform",platform.trim());
 		}
 		if(labels != null && !labels.isEmpty())
 		{
-			jsonbody.put("labels",labels.trim());
+			requestDataMap.put("labels",labels.trim());
 		}
 		if(versions != null && !versions.isEmpty())
 		{
-			jsonbody.put("versions",versions.trim());
+			requestDataMap.put("versions",versions.trim());
 		}
 		if(components != null && !components.isEmpty())
 		{
-			jsonbody.put("components",components.trim());
+			requestDataMap.put("components",components.trim());
 		}
 		if(sprint != null && !sprint.isEmpty())
 		{
-			jsonbody.put("sprint",sprint.trim());
+			requestDataMap.put("sprint",sprint.trim());
 		}
 		if(comment != null && !comment.isEmpty())
 		{
-			jsonbody.put("comment",comment.trim());
+			requestDataMap.put("comment",comment.trim());
 		}
 		if(testrunkey!=null && !testrunkey.isEmpty())
 		{
-			jsonbody.put("testRunKey",testrunkey.trim());
+			requestDataMap.put("testRunKey",testrunkey.trim());
 		}
 		if(testassethierarchy!=null && !testassethierarchy.isEmpty())
 		{
-			jsonbody.put("testAssetHierarchy",testassethierarchy.trim());
+			requestDataMap.put("testAssetHierarchy",testassethierarchy.trim());
 			if(testassethierarchy.equals("TestCase-TestStep"))
 			{
 				if(testCaseUpdateLevel!=null && !testCaseUpdateLevel.isEmpty())
 				{
-					jsonbody.put("testCaseUpdateLevel",testCaseUpdateLevel);
+					requestDataMap.put("testCaseUpdateLevel",testCaseUpdateLevel);
 				}
 			}
 		}
@@ -184,9 +175,11 @@ public class UploadToCloud {
 
 			JSONArray jsonarray=(JSONArray)parser.parse(jirafields.trim());
 
-			jsonbody.put("JIRAFields",jsonarray);
+			requestDataMap.put("JIRAFields",jsonarray);
 		}
 	
+		JSONObject jsonbody= new JSONObject(requestDataMap);
+		
 		OutputStream os = connection.getOutputStream();
 		os.write(jsonbody.toString().getBytes("UTF-8"));
 		InputStream fis = connection.getInputStream();
@@ -258,7 +251,7 @@ public class UploadToCloud {
 		 StringWriter writer = new StringWriter();	 
 		 IOUtils.copy(fis, writer, encoding);
 		 if (connection.getResponseCode() == 200) {
-		 	responseValue="Publishing the result has been successful. \n Response: " + connection.getResponseMessage()+"\n";
+		 	responseValue="Publishing results has been successful. \n Response: " + connection.getResponseMessage()+"\n";
 		 }
 		 else{
 			responseValue="false";

@@ -17,6 +17,7 @@
 package com.qmetry;
 
 import java.io.File;
+//import java.nio.file.*;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.InterruptedException;
@@ -41,13 +42,23 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 public class FindFile {
-	protected static boolean onSlave = false;
-	protected static File resultFile;
+	private static boolean onSlave = false;
+	private static File resultFile;
+	private static File qtm4jFile;
+
+	public static boolean getOnSlave() {
+		return onSlave;
+	}
+
+	public static File getQtm4jFile() {
+		return qtm4jFile;
+	}
 
 	public static File findFile(String filePath, Run<?, ?> run, TaskListener listener, String format,
 			FilePath workspace) throws IOException, InterruptedException, FileNotFoundException {
 		onSlave = false;
 		resultFile = null;
+		qtm4jFile = null;
 		if (filePath.startsWith("/")) {
 			filePath = filePath.substring(1);
 		}
@@ -128,26 +139,23 @@ public class FindFile {
 								WorkflowJob project = (WorkflowJob) run.getParent();
 								masterMachineWorkspace = Jenkins.getInstance().getWorkspaceFor((TopLevelItem) project);
 							}
+							
 							// listener.getLogger().println("[DEBUG] : masterMachineWorkspace : " +
 							// masterMachineWorkspace);
 							if (masterMachineWorkspace == null) {
-								listener.getLogger().println(
-										"QMetry for JIRA : [ERROR]Failed to access master machine workspace directory");
+								listener.getLogger().println("QMetry for JIRA : [ERROR]Failed to access master machine workspace directory");
 								return null;
 							}
-							listener.getLogger()
-									.println("QMetry for JIRA : Copying files from slave to master machine...");
-							int fileCount = slaveMachineWorkspace.copyRecursiveTo(filePath, masterMachineWorkspace);
+							else
+							{
+								masterMachineWorkspace = new FilePath(masterMachineWorkspace,"QTM4J");
+							}
+							//listener.getLogger().println("QMetry for JIRA : Copying files from slave to master machine...");
+							slaveMachineWorkspace.copyRecursiveTo(filePath, masterMachineWorkspace);
 							// Changes for file filtering
-							/*
-							 * int fileCount; if(filter) { fileCount =
-							 * slaveMachineWorkspace.copyRecursiveTo(fileMask, masterMachineWorkspace); }
-							 * else { fileCount = slaveMachineWorkspace.copyRecursiveTo(filePath,
-							 * masterMachineWorkspace); }
-							 */
-							listener.getLogger().println("QMetry for JIRA : Total " + fileCount
-									+ " result file(s) copied from slave to master machine");
+							//listener.getLogger().println("QMetry for JIRA : Total " + fileCount+ " result file(s) copied from slave to master machine");
 							File finalResultFile = new File(masterMachineWorkspace.toURI());
+							qtm4jFile = finalResultFile;
 							resultFile = new File(finalResultFile, filePath);
 							return resultFile;
 						} else if (comp1 instanceof MasterComputer) {
@@ -205,25 +213,4 @@ public class FindFile {
 		}
 		return choice;
 	}
-
-	public static boolean deleteFilesFromMaster(File sourceDir) {
-		return recursiveDelete(sourceDir);
-	}
-
-	public static boolean recursiveDelete(File file) {
-		if (!(file != null && file.exists())) {
-			if (file.isDirectory()) {
-				if (file.listFiles() != null) {
-					for (File f : file.listFiles()) {
-						// call recursively
-						boolean deleted = recursiveDelete(f);
-					}
-				}
-			}
-			return file.delete();
-		}
-
-		return false;
-	}
-
 }

@@ -244,6 +244,7 @@ public class UploadToServer {
 							map.put("success","error");
 							map.put("responseCode",String.valueOf(statusLine.getStatusCode()));
 						}
+
 						return map;		
 	}
 }
