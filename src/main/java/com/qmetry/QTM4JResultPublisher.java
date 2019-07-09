@@ -88,7 +88,8 @@ public class QTM4JResultPublisher extends Recorder implements SimpleBuildStep {
 	 private String jirafields;
      
      private String apikeyserver;
-     private String jiraurlserver;
+	 private String jiraurlserver;
+	 private String proxyUrl;
      private String username;
      private String password;
      private String testrunnameserver;
@@ -180,6 +181,10 @@ public class QTM4JResultPublisher extends Recorder implements SimpleBuildStep {
 
 	public void setJiraurlserver(String jiraurlserver) {
 		this.jiraurlserver = jiraurlserver;
+	}
+
+	public String getProxyUrl() {
+		return proxyUrl;
 	}
 
 	public String getUsername() {
@@ -400,7 +405,7 @@ public class QTM4JResultPublisher extends Recorder implements SimpleBuildStep {
     @DataBoundConstructor
     public QTM4JResultPublisher(String name,String apikey, String file, boolean attachFile, String testrunname, 
     		String labels, String sprint, String version, String component, String format, String platform, String comment,
-    		String apikeyserver, String jiraurlserver, String password, String testrunnameserver,
+    		String apikeyserver, String jiraurlserver, String proxyUrl, String password, String testrunnameserver,
     		String labelsserver, String sprintserver, String versionserver, 
     		String componentserver, String username, String fileserver, boolean attachFileServer, String formatserver, String platformserver, String commentserver,
     		String testToRun,String testrunkey,String testassethierarchy, String testCaseUpdateLevel, String jirafields,String testrunkeyserver,String testassethierarchyserver, String testCaseUpdateLevelServer, String jirafieldsserver,boolean disableaction) throws AbortException{
@@ -437,7 +442,8 @@ public class QTM4JResultPublisher extends Recorder implements SimpleBuildStep {
 			this.apikeyserver = aps.getEncryptedValue();
 		}
 		
-        this.jiraurlserver=jiraurlserver;
+		this.jiraurlserver=jiraurlserver;
+		this.proxyUrl = proxyUrl;
 		
 		if(password != null && !password.isEmpty())
 		{
@@ -483,7 +489,7 @@ public class QTM4JResultPublisher extends Recorder implements SimpleBuildStep {
     @Override
 	public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener) throws InterruptedException, IOException 
 	{
-		TestReportDeployPublisher trdp =new TestReportDeployPublisher(name,apikey, file,attachFile,  testrunname, labels, sprint, version, component, format, platform, comment, apikeyserver, jiraurlserver, password, testrunnameserver,
+		TestReportDeployPublisher trdp =new TestReportDeployPublisher(name,apikey, file,attachFile,  testrunname, labels, sprint, version, component, format, platform, comment, apikeyserver, jiraurlserver, proxyUrl, password, testrunnameserver,
     		labelsserver, sprintserver, versionserver, 
     		componentserver, username, fileserver,attachFileServer, formatserver, platformserver, commentserver,
     		testToRun, testrunkey, testassethierarchy, testCaseUpdateLevel, jirafields, testrunkeyserver, testassethierarchyserver, testCaseUpdateLevelServer, jirafieldsserver, disableaction);
@@ -522,7 +528,7 @@ public class QTM4JResultPublisher extends Recorder implements SimpleBuildStep {
          * This human readable name is used in the configuration screen.
          */
         public String getDisplayName() {
-            return "Publish test result to QMetry for JIRA";
+            return "Publish test result to QMetry for JIRA Old";
         }
 	}
 	

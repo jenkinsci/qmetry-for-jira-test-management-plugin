@@ -47,6 +47,15 @@
       <upload.cloud.url>https://importresults.qmetry.com/prod/importresults-qtm4j</upload.cloud.url>
     </properties>
   </profile>
+  <profile>
+    <id>prod</id>
+    <activation>
+            <activeByDefault>true</activeByDefault>
+        </activation>
+    <properties>
+      <upload.cloud.url.v4>https://qtmcloud.qmetry.com/rest/api/automation/importresult</upload.cloud.url.v4>
+    </properties>
+  </profile>
   </profiles>
   
   <properties>
@@ -86,6 +95,14 @@
           <artifactId>animal-sniffer-maven-plugin</artifactId>
           <version>1.15</version>
        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>findbugs-maven-plugin</artifactId>
+          <version>3.0.4</version>
+          <configuration>
+            <failOnError>${maven.findbugs.failure.strict}</failOnError>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
   <resources>
