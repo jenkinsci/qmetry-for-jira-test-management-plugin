@@ -93,7 +93,7 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 	private String jiraurlserver;
 	private String proxyUrl;
 	private String username;
-	private String password;
+	private Secret password;
 	private String testrunnameserver;
 	private String testrunkeyserver;
 	private String testassethierarchyserver;
@@ -196,13 +196,21 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 		this.username = username;
 	}
 
-	public String getPassword() throws AbortException {
-		return Secret.toString(Secret.fromString(password));
-	}
+	// public String getPassword() throws AbortException {
+	// 	return Secret.toString(Secret.fromString(password));
+	// }
 
-	public void setPassword(String password) {
-		this.password = Secret.fromString(password).getEncryptedValue();
-	}
+	// public void setPassword(String password) {
+	// 	this.password = Secret.fromString(password).getEncryptedValue();
+	// }
+
+	public void setPassword(Secret password) { 
+        this.password = password;
+    }
+
+    public Secret getPassword() {
+        return password;
+    }
 
 	public String getTestrunnameserver() {
 		return testrunnameserver;
@@ -396,7 +404,7 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 	@DataBoundConstructor
 	public TestReportDeployPublisher(String name, String apikey, String file, boolean attachFile, String testrunname,
 			String labels, String sprint, String version, String component, String format, String platform,
-			String comment, String apikeyserver, String jiraurlserver, String proxyUrl, String password,
+			String comment, String apikeyserver, String jiraurlserver, String proxyUrl, Secret password,
 			String testrunnameserver, String labelsserver, String sprintserver, String versionserver,
 			String componentserver, String username, String fileserver, boolean attachFileServer, String formatserver,
 			String platformserver, String commentserver, String testToRun, String testrunkey, String testassethierarchy,
@@ -436,11 +444,11 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 		this.jiraurlserver = jiraurlserver;
 		this.proxyUrl = proxyUrl;
 
-		if (password != null && !password.isEmpty()) {
-			Secret p = Secret.fromString(password);
-			this.password = p.getEncryptedValue();
-		}
-
+		// if (password != null && !password.isEmpty()) {
+		// 	Secret p = Secret.fromString(password);
+		// 	this.password = p.getEncryptedValue();
+		// }
+		this.password = password;
 		this.testrunnameserver = testrunnameserver;
 		this.labelsserver = labelsserver;
 		this.sprintserver = sprintserver;
@@ -689,8 +697,8 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 				String jiraurlserver_chkd = env.expand(this.getJiraurlserver());
 				String proxyUrl_chkd = env.expand(this.getProxyUrl());
 				String username_chkd = env.expand(this.getUsername());
-				String password_chkd = env.expand(this.getPassword());
-
+				//Secret password_chkd = env.expand(Secret.toString(Secret.fromString(this.getPassword())));
+				Secret password_chkd = Secret.fromString(env.expand(Secret.toString(this.getPassword())));
 				if (jiraurlserver_chkd == null || jiraurlserver_chkd.isEmpty()) {
 					logger.println("QMetry for JIRA : [ERROR] : Enter JIRA URL for server instance.");
 					throw new AbortException();
@@ -699,7 +707,7 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 					logger.println("QMetry for JIRA : [ERROR] : Enter Username for JIRA server instance.");
 					throw new AbortException();
 				}
-				if (password_chkd == null || password_chkd.isEmpty()) {
+				if (password_chkd == null) {
 					logger.println("QMetry for JIRA : [ERROR] : Enter Password for JIRA server instance.");
 					throw new AbortException();
 				}

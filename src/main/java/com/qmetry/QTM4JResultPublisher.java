@@ -91,7 +91,7 @@ public class QTM4JResultPublisher extends Recorder implements SimpleBuildStep {
 	 private String jiraurlserver;
 	 private String proxyUrl;
      private String username;
-     private String password;
+     private Secret password;
      private String testrunnameserver;
 	 private String testrunkeyserver;
 	 private String testassethierarchyserver;
@@ -195,13 +195,21 @@ public class QTM4JResultPublisher extends Recorder implements SimpleBuildStep {
 		this.username = username;
 	}
 
-	public String getPassword() throws AbortException{
-		return Secret.toString(Secret.fromString(password));
-	}
+	// public String getPassword() throws AbortException{
+	// 	return Secret.toString(Secret.fromString(password));
+	// }
 
-	public void setPassword(String password) {
-		this.password = Secret.fromString(password).getEncryptedValue();
-	}
+	// public void setPassword(String password) {
+	// 	this.password = Secret.fromString(password).getEncryptedValue();
+	// }
+
+	public void setPassword(Secret password) { 
+        this.password = password;
+    }
+
+    public Secret getPassword() {
+        return password;
+    }
 
 	public String getTestrunnameserver() {
 		return testrunnameserver;
@@ -405,7 +413,7 @@ public class QTM4JResultPublisher extends Recorder implements SimpleBuildStep {
     @DataBoundConstructor
     public QTM4JResultPublisher(String name,String apikey, String file, boolean attachFile, String testrunname, 
     		String labels, String sprint, String version, String component, String format, String platform, String comment,
-    		String apikeyserver, String jiraurlserver, String proxyUrl, String password, String testrunnameserver,
+    		String apikeyserver, String jiraurlserver, String proxyUrl, Secret password, String testrunnameserver,
     		String labelsserver, String sprintserver, String versionserver, 
     		String componentserver, String username, String fileserver, boolean attachFileServer, String formatserver, String platformserver, String commentserver,
     		String testToRun,String testrunkey,String testassethierarchy, String testCaseUpdateLevel, String jirafields,String testrunkeyserver,String testassethierarchyserver, String testCaseUpdateLevelServer, String jirafieldsserver,boolean disableaction) throws AbortException{
@@ -445,12 +453,12 @@ public class QTM4JResultPublisher extends Recorder implements SimpleBuildStep {
 		this.jiraurlserver=jiraurlserver;
 		this.proxyUrl = proxyUrl;
 		
-		if(password != null && !password.isEmpty())
-		{
-			Secret p = Secret.fromString(password);
-			this.password=p.getEncryptedValue();
-		}
-		
+		// if(password != null && !password.isEmpty())
+		// {
+		// 	Secret p = Secret.fromString(password);
+		// 	this.password=p.getEncryptedValue();
+		// }
+		this.password = password;
 		this.testrunnameserver=testrunnameserver;
         this.labelsserver=labelsserver;
         this.sprintserver=sprintserver;

@@ -56,12 +56,13 @@ import org.json.simple.parser.ParseException;
 import hudson.FilePath;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import hudson.util.Secret;
 
 @IgnoreJRERequirement
 public class UploadToServer {
 
 	public Map<String, String> uploadToTheServer(String apikeyserver, String jiraurlserver, String proxyUrl,
-			String password, String testrunnameserver, String labelsserver, String sprintserver, String versionserver,
+			Secret password, String testrunnameserver, String labelsserver, String sprintserver, String versionserver,
 			String componentserver, String username, String fileserver, boolean attachFileServer,
 			String selectionserver, String platformserver, String commentserver, String testrunkeyserver,
 			String testassethierarchyserver, String testCaseUpdateLevelServer, String jirafieldsserver, int buildnumber,
@@ -74,9 +75,9 @@ public class UploadToServer {
 			return null;
 		}
 		Map<String, String> map = new HashMap<String, String>();
-
+		//listener.getLogger().println(">>>>>"+password.getPlainText());
 		CloseableHttpClient httpClient = HttpClients.createDefault();
-		String toEncode = username.trim() + ":" + password.trim();
+		String toEncode = username.trim() + ":" + password.getPlainText().trim();
 
 		byte[] mes = toEncode.getBytes("UTF-8");
 		String encodedString = DatatypeConverter.printBase64Binary(mes);
