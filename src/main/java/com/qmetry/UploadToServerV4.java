@@ -16,38 +16,42 @@
 *******************************************************************************/
 package com.qmetry;
 
+import java.io.BufferedReader;
+
+//import hudson.model.AbstractBuild;
+//import hudson.model.BuildListener;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.ProtocolException;
-import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.io.IOUtils;
-import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
-import org.json.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+
 import javax.xml.bind.DatatypeConverter;
 
+import org.apache.commons.httpclient.auth.AuthenticationException;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
+import org.apache.http.HttpHost;
+import org.apache.http.StatusLine;
+import org.apache.http.auth.InvalidCredentialsException;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import hudson.FilePath;
 import hudson.model.Run;
@@ -55,291 +59,187 @@ import hudson.model.TaskListener;
 import hudson.util.Secret;
 
 @IgnoreJRERequirement
-public class UploadToServerV4 {
+public class UploadToServer {
 
-	public Map<String, String> uploadToTheServer(String jiraUrlServer, String username_chkd, Secret password_chkd,
-			String apikey, String file, boolean attachFile, String format, String testCycleToReuse, String environment,
-			String build, String testCycleLabels, String testCycleComponents, String testCyclePriority,
-			String testCycleStatus, String testCycleSprintId, String testCycleFixVersionId, String testCycleSummary,
-			String testCaseLabels, String testCaseComponents, String testCasePriority, String testCaseStatus,
-			String testCaseSprintId, String testCaseFixVersionId, int buildnumber, Run<?, ?> run, TaskListener listener,
-			FilePath workspace, String pluginName)
-			throws MalformedURLException, IOException, UnsupportedEncodingException, ProtocolException, ParseException,
-			FileNotFoundException, InterruptedException {
+	public Map<String, String> uploadToTheServer(String apikeyserver, String jiraurlserver, String proxyUrl,
+			Secret password, String testrunnameserver, String labelsserver, String sprintserver, String versionserver,
+			String componentserver, String username, String fileserver, boolean attachFileServer,
+			String selectionserver, String platformserver, String commentserver, String testrunkeyserver,
+			String testassethierarchyserver, String testCaseUpdateLevelServer, String jirafieldsserver, int buildnumber,
+			Run<?, ?> run, TaskListener listener, FilePath workspace, String pluginName)
+			throws InvalidCredentialsException, AuthenticationException, ProtocolException, IOException, ParseException,
+			InterruptedException, FileNotFoundException {
 
-		PrintStream logger = listener.getLogger();
-
-		File resultFile = FindFile.findFile(file, run, listener, format, workspace);
+		File resultFile = FindFile.findFile(fileserver, run, listener, selectionserver, workspace);
 		if (resultFile == null) {
 			return null;
 		}
-
 		Map<String, String> map = new HashMap<String, String>();
-
-		if (jiraUrlServer != null && jiraUrlServer.length() > 0
-				&& jiraUrlServer.charAt(jiraUrlServer.length() - 1) == '/') {
-			jiraUrlServer = jiraUrlServer.substring(0, jiraUrlServer.length() - 1);
-		}
-
-		String uploadserverurlv4 = jiraUrlServer + "/rest/qtm4j/automation/latest/importresult";
-		String toEncode = username_chkd.trim() + ":" + password_chkd.getPlainText().trim();
+		
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		String toEncode = username.trim() + ":" + password.getPlainText().trim();
 
 		byte[] mes = toEncode.getBytes("UTF-8");
 		String encodedString = DatatypeConverter.printBase64Binary(mes);
 		String basicAuth = "Basic " + encodedString;
 
-		String encoding = "UTF-8";
-		URL url = new URL(uploadserverurlv4);
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.setRequestMethod("POST");
-		connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-		connection.setRequestProperty("apiKey", apikey.trim());
-		connection.setRequestProperty("Authorization", basicAuth);
-		connection.setDoInput(true);
-		connection.setDoOutput(true);
+		if ((testrunnameserver != null && !testrunnameserver.isEmpty())) {
+			testrunnameserver = testrunnameserver.trim() + " #" + buildnumber;
+		}
 
-		/// Add proxy URL
-		String filepath = "";
+		String filepathserver = "";
 		boolean iszip = false;
+
 		if (resultFile.isDirectory()) {
 			iszip = true;
-			logger.println(pluginName + "Given Path is Directory.");
-			logger.println(pluginName + "Creating Zip...");
-			filepath = CreateZip.createZip(resultFile.getAbsolutePath(), format, attachFile);
-			logger.println(pluginName + "Zip file path : " + filepath);
+			listener.getLogger().println(pluginName + "Given Path is Directory.");
+			listener.getLogger().println(pluginName + "Creating Zip...");
+			filepathserver = CreateZip.createZip(resultFile.getAbsolutePath(), selectionserver, attachFileServer);
+			listener.getLogger().println(pluginName + "Zip file path : " + filepathserver);
 		} else {
-			filepath = resultFile.getAbsolutePath();
+			filepathserver = resultFile.getAbsolutePath();
 			// for zip
 			String fileExtension = "";
-			if (filepath.contains(".") && filepath.lastIndexOf(".") != 0) {
-				fileExtension = filepath.substring(filepath.lastIndexOf(".") + 1);
+			if (filepathserver.contains(".") && filepathserver.lastIndexOf(".") != 0) {
+				fileExtension = filepathserver.substring(filepathserver.lastIndexOf(".") + 1);
 			}
 			if (fileExtension.equals("zip")) {
 				iszip = true;
 			}
+			// End of changes
 		}
 
-		Map<String, Object> requestDataMap = new HashMap<>();
-
-		String format_short = "";
-		if (String.valueOf(format).equals("testng/xml")) {
-			format_short = "testng";
-		} else if (String.valueOf(format).equals("junit/xml")) {
-			format_short = "junit";
-		} else if (String.valueOf(format).equals("qas/json")) {
-			format_short = "qaf";
-		} else if (String.valueOf(format).equals("cucumber/json")) {
-			format_short = "cucumber";
-		} else if (String.valueOf(format).equals("hpuft/xml")) {
-			format_short = "hpuft";
-		} else if (String.valueOf(format).equals("specflow/json")) {
-			format_short = "specflow";
-		}
-		requestDataMap.put("format", String.valueOf(format_short));
-		requestDataMap.put("isZip", String.valueOf(iszip));
-		if (attachFile) {
-			requestDataMap.put("attachFile", String.valueOf(attachFile));
-		}
-		if (testCycleToReuse != null && !testCycleToReuse.isEmpty()) {
-			requestDataMap.put("testCycleToReuse", testCycleToReuse.trim());
+		if (jiraurlserver.charAt(jiraurlserver.length() - 1) == '/') {
+			jiraurlserver = jiraurlserver.substring(0, jiraurlserver.length() - 1);
 		}
 
-		if (environment != null && !environment.isEmpty()) {
-			requestDataMap.put("environment", environment.trim());
+		HttpPost uploadFile = new HttpPost(jiraurlserver.trim() + "/rest/qtm/latest/automation/importresults");
+		uploadFile.addHeader("Authorization", basicAuth);
+
+		if (proxyUrl != null && !proxyUrl.isEmpty()) {
+			listener.getLogger().println("Proxy Url '" + proxyUrl + "'");
+			// Setting proxy
+			RequestConfig config = RequestConfig.custom().setProxy(HttpHost.create(proxyUrl)).build();
+			uploadFile.setConfig(config);
 		}
 
-		if (build != null && !build.isEmpty()) {
-			requestDataMap.put("build", build.trim());
-		}
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		builder.addTextBody("apiKey", apikeyserver.trim(), ContentType.TEXT_PLAIN);
+		builder.addTextBody("format", selectionserver.trim(), ContentType.TEXT_PLAIN);
 
-		Map<String, Object> testcycleDataMap = new HashMap<>();
-		boolean isTestcycle = false;
-		if (testCycleLabels != null && !testCycleLabels.isEmpty()) {
-			isTestcycle = true;
-			JSONArray mJSONArray = commaSepratedStringtoJson(testCycleLabels);
-			testcycleDataMap.put("labels", mJSONArray);
+		if (attachFileServer) {
+			builder.addTextBody("attachFile", String.valueOf(attachFileServer));
 		}
-		if (testCycleComponents != null && !testCycleComponents.isEmpty()) {
-			isTestcycle = true;
-			JSONArray mJSONArray = commaSepratedStringtoJson(testCycleComponents);
-			testcycleDataMap.put("components", mJSONArray);
+		if (testrunnameserver != null && !testrunnameserver.isEmpty()) {
+			builder.addTextBody("testRunName", testrunnameserver, ContentType.TEXT_PLAIN);
 		}
-		if (testCyclePriority != null && !testCyclePriority.isEmpty()) {
-			isTestcycle = true;
-			testcycleDataMap.put("priority", testCyclePriority.trim());
+		if (platformserver != null && !platformserver.isEmpty()) {
+			builder.addTextBody("platform", platformserver.trim(), ContentType.TEXT_PLAIN);
 		}
-		if (testCycleStatus != null && !testCycleStatus.isEmpty()) {
-			isTestcycle = true;
-			testcycleDataMap.put("status", testCycleStatus.trim());
+		if (labelsserver != null && !labelsserver.isEmpty()) {
+			builder.addTextBody("labels", labelsserver.trim(), ContentType.TEXT_PLAIN);
 		}
-		if (testCycleSprintId != null && !testCycleSprintId.isEmpty()) {
-			isTestcycle = true;
-			testcycleDataMap.put("sprintId", testCycleSprintId.trim());
+		if (versionserver != null && !versionserver.isEmpty()) {
+			builder.addTextBody("versions", versionserver.trim(), ContentType.TEXT_PLAIN);
 		}
-		if (testCycleFixVersionId != null && !testCycleFixVersionId.isEmpty()) {
-			isTestcycle = true;
-			testcycleDataMap.put("fixVersionId", testCycleFixVersionId.trim());
+		if (componentserver != null && !componentserver.isEmpty()) {
+			builder.addTextBody("components", componentserver.trim(), ContentType.TEXT_PLAIN);
 		}
-		if (testCycleSummary != null && !testCycleSummary.isEmpty()) {
-			isTestcycle = true;
-			testcycleDataMap.put("summary", testCycleSummary.trim() + "_" + buildnumber);
+		if (sprintserver != null && !sprintserver.isEmpty()) {
+			builder.addTextBody("sprint", sprintserver.trim(), ContentType.TEXT_PLAIN);
 		}
-
-		Map<String, Object> testcaseDataMap = new HashMap<>();
-		boolean isTestcase = false;
-		if (testCaseLabels != null && !testCaseLabels.isEmpty()) {
-			isTestcase = true;
-			JSONArray mJSONArray = commaSepratedStringtoJson(testCaseLabels);
-			testcaseDataMap.put("labels", mJSONArray);
+		if (commentserver != null && !commentserver.isEmpty()) {
+			builder.addTextBody("comment", commentserver.trim(), ContentType.TEXT_PLAIN);
 		}
-		if (testCaseComponents != null && !testCaseComponents.isEmpty()) {
-			isTestcase = true;
-			JSONArray mJSONArray = commaSepratedStringtoJson(testCaseComponents);
-			testcaseDataMap.put("components", mJSONArray);
+		if (testrunkeyserver != null && !testrunkeyserver.isEmpty()) {
+			builder.addTextBody("testRunKey", testrunkeyserver.trim());
 		}
-		if (testCasePriority != null && !testCasePriority.isEmpty()) {
-			isTestcase = true;
-			testcaseDataMap.put("priority", testCasePriority.trim());
-		}
-		if (testCaseStatus != null && !testCaseStatus.isEmpty()) {
-			isTestcase = true;
-			testcaseDataMap.put("status", testCaseStatus.trim());
-		}
-		if (testCaseSprintId != null && !testCaseSprintId.isEmpty()) {
-			isTestcase = true;
-			testcaseDataMap.put("sprintId", testCaseSprintId.trim());
-		}
-		if (testCaseFixVersionId != null && !testCaseFixVersionId.isEmpty()) {
-			isTestcase = true;
-			testcaseDataMap.put("fixVersionId", testCaseFixVersionId.trim());
-		}
-
-		Map<String, Object> testCaseCycleDataMap = new HashMap<>();
-		if (isTestcycle) {
-			testCaseCycleDataMap.put("testCycle", testcycleDataMap);
-			logger.println(pluginName + "TestCycle  : " + testcycleDataMap);
-		}
-		if (isTestcase) {
-			testCaseCycleDataMap.put("testCase", testcaseDataMap);
-			logger.println(pluginName + "TestCase : " + testcaseDataMap);
-		}
-
-		requestDataMap.put("fields", testCaseCycleDataMap);
-
-		JSONObject jsonbody = new JSONObject(requestDataMap);
-		logger.println(pluginName + "JsonBody : " + jsonbody);
-
-		OutputStream os = connection.getOutputStream();
-		os.write(jsonbody.toString().getBytes("UTF-8"));
-		// Get the response code
-		int statusCode = connection.getResponseCode();
-		logger.println(pluginName + "Generate URL API response code : " + statusCode);
-		InputStream fis = null;
-		if (statusCode >= 200 && statusCode < 400) {
-			fis = connection.getInputStream();
-		} else {
-			fis = connection.getErrorStream();
-		}
-
-		StringWriter response = new StringWriter();
-		IOUtils.copy(fis, response, encoding);
-
-		JSONParser parser = new JSONParser();
-		logger.println(pluginName + "Generate URL API response : " + response.toString());
-
-		JSONObject obj = (JSONObject) parser.parse(response.toString());
-		if (obj != null) {
-			String resUrl = (String) obj.get("url");
-			if (resUrl != null && !resUrl.isEmpty()) {
-				// Call another method to upload to S3 bucket.
-				String res = uploadToS3(response.toString(), filepath, apikey, basicAuth, logger, pluginName, jiraUrlServer);
-				map.put("success", "true");
-				map.put("message", res);
-			} else {
-				map.put("success", "false");
-				map.put("errorMessage", response.toString());
-			}
-		}
-		return map;
-	}
-
-	public String uploadToS3(String response, String fileurl, String apiKey, String basicAuth, PrintStream logger,
-			String pluginName, String jiraUrlServer) throws IOException, org.json.simple.parser.ParseException {
-
-		JSONParser parser = new JSONParser();
-		Object obj = parser.parse(response);
-		JSONObject jsonObject = (JSONObject) obj;
-		String urlForUpload = (String) jsonObject.get("url");
-		String trackingId = (String) jsonObject.get("trackingId");
-		String uploadResponseString = "";
-
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		try {
-			HttpPost httppost = new HttpPost(urlForUpload);
-			httppost.addHeader("apikey", apiKey);
-			httppost.addHeader("Authorization", basicAuth);
-			FileBody fileBody = new FileBody(new File(fileurl));
-
-			HttpEntity reqEntity = MultipartEntityBuilder.create().addPart("file", fileBody).build();
-			httppost.setEntity(reqEntity);
-
-			CloseableHttpResponse uploadResponse = httpclient.execute(httppost);
-			try {
-				int statusCode = uploadResponse.getStatusLine().getStatusCode();
-				logger.println(pluginName + "File upload status code : " + uploadResponse.getStatusLine().getStatusCode());
-				if (statusCode == 204) {
-					logger.println(pluginName + "File uploaded successfully.");
-					uploadResponseString = checkStatus(jiraUrlServer, trackingId, apiKey, basicAuth, logger, pluginName);
-				} else {
-					uploadResponseString = "false";
+		if (testassethierarchyserver != null && !testassethierarchyserver.isEmpty()) {
+			builder.addTextBody("testAssetHierarchy", testassethierarchyserver.trim());
+			if (testassethierarchyserver.equals("TestCase-TestStep")) {
+				if (testCaseUpdateLevelServer != null && !testCaseUpdateLevelServer.isEmpty()) {
+					builder.addTextBody("testCaseUpdateLevel", testCaseUpdateLevelServer);
 				}
-			} catch (Exception e) {
-				logger.println(pluginName + "ERROR - Upload file : " + e.getMessage());
-			} finally {
-				uploadResponse.close();
 			}
-		} catch (Exception e) {
-			logger.println(pluginName + "ERROR - Upload file : " + e.getMessage());
-		} finally {
-			httpclient.close();
 		}
-		return uploadResponseString;
-	}
+		if (jirafieldsserver != null && !jirafieldsserver.isEmpty()) {
+			JSONParser parser = new JSONParser();
+			JSONArray array = (JSONArray) parser.parse(jirafieldsserver.trim());
+			builder.addTextBody("JIRAFields", array.toString());
+		}
+		builder.addTextBody("isZip", String.valueOf(iszip));
+		// This attaches the file to the POST:
 
-	public String checkStatus(String jiraUrlServer, String trackingId, String apiKey, String basicAuth, PrintStream logger, String pluginName) {
-		
-		String trackUrl = jiraUrlServer + "/rest/qtm4j/automation/latest/importresult/track?trackingId=" + trackingId;
-		String trackResponseString = "";
-		CloseableHttpClient httpclient = HttpClients.createDefault();
+		File f = new File(filepathserver);
+		builder.addPart("file", new FileBody(f));
+
+		HttpEntity multipart = builder.build();
+		uploadFile.setEntity(multipart);
+		CloseableHttpResponse response = httpClient.execute(uploadFile);
+
+		StatusLine statusLine = response.getStatusLine();
+		listener.getLogger().println(pluginName + "Response code: " + statusLine.getStatusCode());
+
 		try {
-			HttpGet httpGet = new HttpGet(trackUrl);
-			httpGet.addHeader("apikey", apiKey);
-			httpGet.addHeader("Authorization", basicAuth);
-			httpGet.addHeader("Content-Type", "application/json");
+			HttpEntity entity = response.getEntity();
+			if (entity != null) {
+				InputStream content = entity.getContent();
+				StringBuilder builder1 = new StringBuilder();
+				Reader read = new InputStreamReader(content, StandardCharsets.UTF_8);
+				BufferedReader reader = new BufferedReader(read);
+				String line;
+				try {
+					while ((line = reader.readLine()) != null) {
+						builder1.append(line);
+					}
+				} finally {
+					reader.close();
+					content.close();
+				}
+				JSONParser parser = new JSONParser();
+				JSONObject responsejson = (JSONObject) parser.parse(builder1.toString());
 
-			HttpResponse trackResponse = httpclient.execute(httpGet);
-			HttpEntity entity = trackResponse.getEntity();
-			trackResponseString = EntityUtils.toString(entity, "UTF-8");
-			try {
-				int statusCode = trackResponse.getStatusLine().getStatusCode();
-				logger.println(pluginName + "Progress response code : " + statusCode);	
-			} catch (Exception e) {
-				trackResponseString = e.getMessage();
-			} finally {
-				trackResponse.getEntity().getContent().close();
+				if (statusLine.getStatusCode() == 200) {
+					Boolean success = (Boolean) responsejson.get("success");
+					if (success.booleanValue()) {
+						map.put("success", "true");
+						JSONObject result = (JSONObject) responsejson.get("result");
+						if (result != null) {
+
+							map.put("iszip", "false");
+							String trk = (String) result.get("testRunKey");
+							String tru = (String) result.get("testRunUrl");
+							String message = (String) result.get("message");
+
+							map.put("testRunKey", trk);
+							map.put("testRunUrl", tru);
+							map.put("message", message);
+							map.put("response", builder1.toString());
+						}
+					} else {
+						map.put("success", "false");
+						map.put("errorMessage", responsejson.toString());
+					}	
+				} else {
+					map.put("errorMessage", responsejson.toString());
+					map.put("success", "error");
+					map.put("responseCode", String.valueOf(statusLine.getStatusCode()));
+				}	
 			}
+		} catch (RuntimeException e) {
+			map.put("success", "error");
+			map.put("responseCode", String.valueOf(statusLine.getStatusCode()));
+			map.put("errorMessage", e.getMessage());
+			listener.getLogger().println(pluginName + "Error in response : " + e);
+			e.printStackTrace();
 		} catch (Exception e) {
-			trackResponseString = e.getMessage();
+			map.put("success", "error");
+			map.put("responseCode", String.valueOf(statusLine.getStatusCode()));
+			map.put("errorMessage", e.getMessage());
+			listener.getLogger().println(pluginName + "Error in response : " + e);
+			e.printStackTrace();
 		}
-		return trackResponseString;
-	}
 
-	public JSONArray commaSepratedStringtoJson(String commaSeparatedString) {
-		String[] arrayStr = commaSeparatedString.split(",");
-		JSONArray mJSONArray = new JSONArray();
-		for (String s : arrayStr) {
-			mJSONArray.put(s.trim());
-		}
-		return mJSONArray;
+		return map;
 	}
 }
