@@ -17,11 +17,6 @@
 package com.qmetry;
 
 import java.io.File;
-
-//import hudson.model.AbstractBuild;
-//import hudson.model.BuildListener;
-
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,33 +30,40 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLException;
-
 import org.apache.commons.io.IOUtils;
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import javax.xml.bind.DatatypeConverter;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 import hudson.FilePath;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-
+import hudson.util.Secret;
 
 @IgnoreJRERequirement
-public class UploadToCloudV4 {
+public class UploadToServerV4 {
 
-	// Call to 1st URL which gets
-	public Map<String, String> uploadToTheCloud(String apikey, String file, boolean attachFile, String format,
-			String testCycleToReuse, String environment, String build, String testCycleLabels,
-			String testCycleComponents, String testCyclePriority, String testCycleStatus, String testCycleSprintId,
-			String testCycleFixVersionId, String testCycleSummary, String testCaseLabels, String testCaseComponents,
-			String testCasePriority, String testCaseStatus, String testCaseSprintId, String testCaseFixVersionId,
-			int buildnumber, Run<?, ?> run, TaskListener listener, FilePath workspace)
+	public Map<String, String> uploadToTheServer(String jiraUrlServer, String username_chkd, Secret password_chkd,
+			String apikey, String file, boolean attachFile, String format, String testCycleToReuse, String environment,
+			String build, String testCycleLabels, String testCycleComponents, String testCyclePriority,
+			String testCycleStatus, String testCycleSprintId, String testCycleFixVersionId, String testCycleSummary,
+			String testCaseLabels, String testCaseComponents, String testCasePriority, String testCaseStatus,
+			String testCaseSprintId, String testCaseFixVersionId, int buildnumber, Run<?, ?> run, TaskListener listener,
+			FilePath workspace, String pluginName)
 			throws MalformedURLException, IOException, UnsupportedEncodingException, ProtocolException, ParseException,
 			FileNotFoundException, InterruptedException {
 
@@ -74,34 +76,37 @@ public class UploadToCloudV4 {
 
 		Map<String, String> map = new HashMap<String, String>();
 
-		// Getting cloud url from property file
-		InputStream is = null;
-		String uploadcloudurlv4 = "";
+		if (jiraUrlServer != null && jiraUrlServer.length() > 0
+				&& jiraUrlServer.charAt(jiraUrlServer.length() - 1) == '/') {
+			jiraUrlServer = jiraUrlServer.substring(0, jiraUrlServer.length() - 1);
+		}
 
-		is = (UploadToCloudV4.class).getClassLoader().getResourceAsStream("config.properties");
-		Properties p = new Properties();
+		String uploadserverurlv4 = jiraUrlServer + "/rest/qtm4j/automation/latest/importresult";
+		String toEncode = username_chkd.trim() + ":" + password_chkd.getPlainText().trim();
 
-		p.load(is);
-		uploadcloudurlv4 = p.getProperty("uploadcloudurlv4");
+		byte[] mes = toEncode.getBytes("UTF-8");
+		String encodedString = DatatypeConverter.printBase64Binary(mes);
+		String basicAuth = "Basic " + encodedString;
 
 		String encoding = "UTF-8";
-		URL url = new URL(uploadcloudurlv4);
+		URL url = new URL(uploadserverurlv4);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestMethod("POST");
 		connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 		connection.setRequestProperty("apiKey", apikey.trim());
+		connection.setRequestProperty("Authorization", basicAuth);
 		connection.setDoInput(true);
 		connection.setDoOutput(true);
 
+		/// Add proxy URL
 		String filepath = "";
 		boolean iszip = false;
-		// File f=new File(file);
 		if (resultFile.isDirectory()) {
 			iszip = true;
-			listener.getLogger().println("QMetry for JIRA : " + "Given Path is Directory.");
-			listener.getLogger().println("QMetry for JIRA : " + "Creating Zip...");
+			logger.println(pluginName + "Given Path is Directory.");
+			logger.println(pluginName + "Creating Zip...");
 			filepath = CreateZip.createZip(resultFile.getAbsolutePath(), format, attachFile);
-			listener.getLogger().println("QMetry for JIRA : Zip file path : " + filepath);
+			logger.println(pluginName + "Zip file path : " + filepath);
 		} else {
 			filepath = resultFile.getAbsolutePath();
 			// for zip
@@ -112,7 +117,6 @@ public class UploadToCloudV4 {
 			if (fileExtension.equals("zip")) {
 				iszip = true;
 			}
-			// End of changes
 		}
 
 		Map<String, Object> requestDataMap = new HashMap<>();
@@ -141,7 +145,7 @@ public class UploadToCloudV4 {
 		}
 
 		if (environment != null && !environment.isEmpty()) {
-			requestDataMap.put("environment ", environment.trim());
+			requestDataMap.put("environment", environment.trim());
 		}
 
 		if (build != null && !build.isEmpty()) {
@@ -178,7 +182,7 @@ public class UploadToCloudV4 {
 		}
 		if (testCycleSummary != null && !testCycleSummary.isEmpty()) {
 			isTestcycle = true;
-			testcycleDataMap.put("summary", testCycleSummary.trim() + "_"+ buildnumber);
+			testcycleDataMap.put("summary", testCycleSummary.trim() + "_" + buildnumber);
 		}
 
 		Map<String, Object> testcaseDataMap = new HashMap<>();
@@ -213,46 +217,45 @@ public class UploadToCloudV4 {
 		Map<String, Object> testCaseCycleDataMap = new HashMap<>();
 		if (isTestcycle) {
 			testCaseCycleDataMap.put("testCycle", testcycleDataMap);
-			logger.println("QMetry for JIRA :" + " TestCycle  : " + testcycleDataMap);
+			logger.println(pluginName + "TestCycle  : " + testcycleDataMap);
 		}
 		if (isTestcase) {
 			testCaseCycleDataMap.put("testCase", testcaseDataMap);
-			logger.println("QMetry for JIRA :" + " TestCase : " + testcaseDataMap);
+			logger.println(pluginName + "TestCase : " + testcaseDataMap);
 		}
 
 		requestDataMap.put("fields", testCaseCycleDataMap);
 
 		JSONObject jsonbody = new JSONObject(requestDataMap);
-
-		listener.getLogger().println("QMetry for JIRA : JsonBody : " + jsonbody);
+		logger.println(pluginName + "JsonBody : " + jsonbody);
 
 		OutputStream os = connection.getOutputStream();
 		os.write(jsonbody.toString().getBytes("UTF-8"));
-		// Get the response code 
+		// Get the response code
 		int statusCode = connection.getResponseCode();
-		InputStream fis = null; 
-		if(statusCode >= 200 && statusCode < 400){
+		logger.println(pluginName + "Generate URL API response code : " + statusCode);
+		InputStream fis = null;
+		if (statusCode >= 200 && statusCode < 400) {
 			fis = connection.getInputStream();
-		}else{
+		} else {
 			fis = connection.getErrorStream();
 		}
-		
 
 		StringWriter response = new StringWriter();
-
 		IOUtils.copy(fis, response, encoding);
 
 		JSONParser parser = new JSONParser();
+		logger.println(pluginName + "Generate URL API response : " + response.toString());
+
 		JSONObject obj = (JSONObject) parser.parse(response.toString());
 		if (obj != null) {
-			//logger.println("QMetry for JIRA :" + " Response : " + obj);
 			String resUrl = (String) obj.get("url");
 			if (resUrl != null && !resUrl.isEmpty()) {
 				// Call another method to upload to S3 bucket.
-				String res = uploadToS3(response.toString(), filepath);
+				String res = uploadToS3(response.toString(), filepath, apikey, basicAuth, logger, pluginName, jiraUrlServer);
 				map.put("success", "true");
 				map.put("message", res);
-			} else {		
+			} else {
 				map.put("success", "false");
 				map.put("errorMessage", response.toString());
 			}
@@ -260,48 +263,75 @@ public class UploadToCloudV4 {
 		return map;
 	}
 
-	// This method gets the response, grabs the url from response and uploads the file to that url.
-	public String uploadToS3(String response, String fileurl) throws IOException, org.json.simple.parser.ParseException {
-		// JSONParser to parse the response into JSON Object.
+	public String uploadToS3(String response, String fileurl, String apiKey, String basicAuth, PrintStream logger,
+			String pluginName, String jiraUrlServer) throws IOException, org.json.simple.parser.ParseException {
+
 		JSONParser parser = new JSONParser();
 		Object obj = parser.parse(response);
 		JSONObject jsonObject = (JSONObject) obj;
 		String urlForUpload = (String) jsonObject.get("url");
-		URL url = new URL(urlForUpload);
-		HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-		connection.setRequestMethod("PUT");
-		connection.setRequestProperty("Content-Type", "multipart/form-data");
-		connection.setDoOutput(true);
-		connection.setDoInput(true);
-		String encoding = "UTF-8";
-		String responseValue = "";
-		int count = 0;
+		String trackingId = (String) jsonObject.get("trackingId");
+		String uploadResponseString = "";
 
-		// Read the file from the path, copy the content to the url property of JSON
-		// Object.
-		while (count < 3) {
-			FileInputStream file = new FileInputStream(fileurl);
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		try {
+			HttpPost httppost = new HttpPost(urlForUpload);
+			httppost.addHeader("apikey", apiKey);
+			httppost.addHeader("Authorization", basicAuth);
+			FileBody fileBody = new FileBody(new File(fileurl));
+
+			HttpEntity reqEntity = MultipartEntityBuilder.create().addPart("file", fileBody).build();
+			httppost.setEntity(reqEntity);
+
+			CloseableHttpResponse uploadResponse = httpclient.execute(httppost);
 			try {
-				OutputStream os = connection.getOutputStream();
-				IOUtils.copy(file, os);
-				break;
-			} catch (SSLException e) {
-				count++;
+				int statusCode = uploadResponse.getStatusLine().getStatusCode();
+				logger.println(pluginName + "File upload status code : " + uploadResponse.getStatusLine().getStatusCode());
+				if (statusCode == 204) {
+					logger.println(pluginName + "File uploaded successfully.");
+					uploadResponseString = checkStatus(jiraUrlServer, trackingId, apiKey, basicAuth, logger, pluginName);
+				} else {
+					uploadResponseString = "false";
+				}
+			} catch (Exception e) {
+				logger.println(pluginName + "ERROR - Upload file : " + e.getMessage());
 			} finally {
-				file.close();
+				uploadResponse.close();
 			}
+		} catch (Exception e) {
+			logger.println(pluginName + "ERROR - Upload file : " + e.getMessage());
+		} finally {
+			httpclient.close();
 		}
+		return uploadResponseString;
+	}
 
-		InputStream fis = connection.getInputStream();
-		StringWriter writer = new StringWriter();
-		IOUtils.copy(fis, writer, encoding);
-		if (connection.getResponseCode() == 200) {
-			responseValue = "Publishing results has been successful. \n Response: " + connection.getResponseMessage()
-					+ "\n";
-		} else {
-			responseValue = "false";
+	public String checkStatus(String jiraUrlServer, String trackingId, String apiKey, String basicAuth, PrintStream logger, String pluginName) {
+		
+		String trackUrl = jiraUrlServer + "/rest/qtm4j/automation/latest/importresult/track?trackingId=" + trackingId;
+		String trackResponseString = "";
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		try {
+			HttpGet httpGet = new HttpGet(trackUrl);
+			httpGet.addHeader("apikey", apiKey);
+			httpGet.addHeader("Authorization", basicAuth);
+			httpGet.addHeader("Content-Type", "application/json");
+
+			HttpResponse trackResponse = httpclient.execute(httpGet);
+			HttpEntity entity = trackResponse.getEntity();
+			trackResponseString = EntityUtils.toString(entity, "UTF-8");
+			try {
+				int statusCode = trackResponse.getStatusLine().getStatusCode();
+				logger.println(pluginName + "Progress response code : " + statusCode);	
+			} catch (Exception e) {
+				trackResponseString = e.getMessage();
+			} finally {
+				trackResponse.getEntity().getContent().close();
+			}
+		} catch (Exception e) {
+			trackResponseString = e.getMessage();
 		}
-		return responseValue;
+		return trackResponseString;
 	}
 
 	public JSONArray commaSepratedStringtoJson(String commaSeparatedString) {

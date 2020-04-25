@@ -2,33 +2,39 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
    <!--
       This jelly script is used for per-project configuration.
-      
       See global.jelly for a general discussion about jelly script.
       -->
    <f:entry title="Disable This Action" field="disableaction">
       <f:checkbox checked="${it.start}"/>
    </f:entry>
+
    <f:section title="">
       <f:radioBlock name="testToRun" value="CLOUD" checked="${instance.isTestType('CLOUD')}" title="Cloud" inline="true">
          <f:nested>
             <f:entry title="Automation API Key" field="apikey">
                <f:textbox />
             </f:entry>
+            
             <f:entry title="Format" field="format" >
                <f:select/>
             </f:entry>
+            
             <f:entry title="Test Results File/Directory Path" field="file">
                <f:textbox />
             </f:entry>
+            
             <f:entry title="Test Cycle To Reuse" field="testCycleToReuse" >   
                <f:textbox />
             </f:entry>
+            
             <f:entry title="Environment" field="environment" >
                <f:textbox />
             </f:entry>
+            
             <f:entry title="Build" field="build" >
                <f:textbox />
             </f:entry>
+            
             <f:entry title="Upload Screenshots" field="attachFile">
                <f:checkbox />
             </f:entry>
@@ -79,6 +85,98 @@
             </f:section>
 
          </f:nested>
-      </f:radioBlock>      
+      </f:radioBlock>
+
+      <f:radioBlock name="testToRun" value="SERVER" checked="${instance.isTestType('SERVER')}" title="Server" inline="true">
+         <f:nested>
+
+            <f:entry title="JIRA URL" field="jiraUrlServer">
+					<f:textbox />
+				</f:entry>
+
+         	<f:entry title="JIRA Username" field="username">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="JIRA Password" field="password">
+					<f:password />
+				</f:entry>
+
+            <f:entry title="Automation API Key" field="apikeyServer">
+               <f:textbox />
+            </f:entry>
+            
+            <f:entry title="Format" field="formatServer">
+               <f:select/>
+            </f:entry>
+            
+            <f:entry title="Test Results File/Directory Path" field="fileServer">
+               <f:textbox />
+            </f:entry>
+            
+            <f:entry title="Test Cycle To Reuse" field="testCycleToReuseServer" >   
+               <f:textbox />
+            </f:entry>
+            
+            <f:entry title="Environment" field="environmentServer" >
+               <f:textbox />
+            </f:entry>
+            
+            <f:entry title="Build" field="buildServer" >
+               <f:textbox />
+            </f:entry>
+            
+            <f:entry title="Upload Screenshots" field="attachFileServer">
+               <f:checkbox />
+            </f:entry>
+                   
+            <f:section title="Test Cycle">
+               <f:entry title="Summary" field="testCycleSummaryServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Priority" field="testCyclePriorityServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Status" field="testCycleStatusServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Components" field="testCycleComponentsServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Labels" field="testCycleLabelsServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Sprint Id" field="testCycleSprintIdServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Fix Version Id" field="testCycleFixVersionIdServer" >
+                  <f:textbox />
+               </f:entry>
+            </f:section>  
+                      
+            <f:section title="Test Case">  
+               <f:entry title="Priority" field="testCasePriorityServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Status" field="testCaseStatusServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Labels" field="testCaseLabelsServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Components" field="testCaseComponentsServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Sprint Id" field="testCaseSprintIdServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Fix Version Id" field="testCaseFixVersionIdServer" >
+                  <f:textbox />
+               </f:entry>
+            </f:section>
+
+         </f:nested>
+      </f:radioBlock>
+
    </f:section>
 </j:jelly>

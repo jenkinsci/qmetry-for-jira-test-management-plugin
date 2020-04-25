@@ -66,7 +66,7 @@ public class UploadToServer {
 			String componentserver, String username, String fileserver, boolean attachFileServer,
 			String selectionserver, String platformserver, String commentserver, String testrunkeyserver,
 			String testassethierarchyserver, String testCaseUpdateLevelServer, String jirafieldsserver, int buildnumber,
-			Run<?, ?> run, TaskListener listener, FilePath workspace)
+			Run<?, ?> run, TaskListener listener, FilePath workspace, String pluginName)
 			throws InvalidCredentialsException, AuthenticationException, ProtocolException, IOException, ParseException,
 			InterruptedException, FileNotFoundException {
 
@@ -75,13 +75,12 @@ public class UploadToServer {
 			return null;
 		}
 		Map<String, String> map = new HashMap<String, String>();
-		//listener.getLogger().println(">>>>>"+password.getPlainText());
+		
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		String toEncode = username.trim() + ":" + password.getPlainText().trim();
 
 		byte[] mes = toEncode.getBytes("UTF-8");
 		String encodedString = DatatypeConverter.printBase64Binary(mes);
-
 		String basicAuth = "Basic " + encodedString;
 
 		if ((testrunnameserver != null && !testrunnameserver.isEmpty())) {
@@ -93,10 +92,10 @@ public class UploadToServer {
 
 		if (resultFile.isDirectory()) {
 			iszip = true;
-			listener.getLogger().println("QMetry for JIRA : Given Path is Directory.");
-			listener.getLogger().println("QMetry for JIRA : Creating Zip...");
+			listener.getLogger().println(pluginName + "Given Path is Directory.");
+			listener.getLogger().println(pluginName + "Creating Zip...");
 			filepathserver = CreateZip.createZip(resultFile.getAbsolutePath(), selectionserver, attachFileServer);
-			listener.getLogger().println("QMetry for JIRA : Zip file path : " + filepathserver);
+			listener.getLogger().println(pluginName + "Zip file path : " + filepathserver);
 		} else {
 			filepathserver = resultFile.getAbsolutePath();
 			// for zip
@@ -108,6 +107,10 @@ public class UploadToServer {
 				iszip = true;
 			}
 			// End of changes
+		}
+
+		if (jiraurlserver != null && jiraurlserver.length() > 0 && jiraurlserver.charAt(jiraurlserver.length() - 1) == '/') {
+			jiraurlserver = jiraurlserver.substring(0, jiraurlserver.length() - 1);
 		}
 
 		HttpPost uploadFile = new HttpPost(jiraurlserver.trim() + "/rest/qtm/latest/automation/importresults");
@@ -175,8 +178,9 @@ public class UploadToServer {
 		CloseableHttpResponse response = httpClient.execute(uploadFile);
 
 		StatusLine statusLine = response.getStatusLine();
+		listener.getLogger().println(pluginName + "Response code: " + statusLine.getStatusCode());
 
-		if (statusLine.getStatusCode() == 200) {
+		try {
 			HttpEntity entity = response.getEntity();
 			if (entity != null) {
 				InputStream content = entity.getContent();
@@ -188,38 +192,46 @@ public class UploadToServer {
 					while ((line = reader.readLine()) != null) {
 						builder1.append(line);
 					}
-
 				} finally {
 					reader.close();
 					content.close();
 				}
 				JSONParser parser = new JSONParser();
 				JSONObject responsejson = (JSONObject) parser.parse(builder1.toString());
-				Boolean success = (Boolean) responsejson.get("success");
-				if (success.booleanValue()) {
-					map.put("success", "true");
-					JSONObject result = (JSONObject) responsejson.get("result");
-					if (result != null) {
 
-						map.put("iszip", "false");
-						String trk = (String) result.get("testRunKey");
-						String tru = (String) result.get("testRunUrl");
-						String message = (String) result.get("message");
+				if (statusLine.getStatusCode() == 200) {
+					Boolean success = (Boolean) responsejson.get("success");
+					if (success.booleanValue()) {
+						map.put("success", "true");
+						JSONObject result = (JSONObject) responsejson.get("result");
+						if (result != null) {
 
-						map.put("testRunKey", trk);
-						map.put("testRunUrl", tru);
-						map.put("message", message);
-						map.put("response", builder1.toString());
-					}
+							map.put("iszip", "false");
+							String trk = (String) result.get("testRunKey");
+							String tru = (String) result.get("testRunUrl");
+							String message = (String) result.get("message");
+
+							map.put("testRunKey", trk);
+							map.put("testRunUrl", tru);
+							map.put("message", message);
+							map.put("response", builder1.toString());
+						}
+					} else {
+						map.put("success", "false");
+						map.put("errorMessage", responsejson.toString());
+					}	
 				} else {
-					map.put("success", "false");
-					String errorMessage = (String) responsejson.get("errorMessage");
-					map.put("errorMessage", errorMessage);
-				}
+					map.put("errorMessage", responsejson.toString());
+					map.put("success", "error");
+					map.put("responseCode", String.valueOf(statusLine.getStatusCode()));
+				}	
 			}
-		} else {
+		} catch (Exception e) {
 			map.put("success", "error");
 			map.put("responseCode", String.valueOf(statusLine.getStatusCode()));
+			map.put("errorMessage", e.getMessage());
+			listener.getLogger().println(pluginName + "Error in response : " + e);
+			e.printStackTrace();
 		}
 
 		return map;
