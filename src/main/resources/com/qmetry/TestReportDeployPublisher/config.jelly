@@ -1,161 +1,158 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-  <!--
+<!--
     This jelly script is used for per-project configuration.
-
     See global.jelly for a general discussion about jelly script.
-  -->
-  <f:entry title="Disable This Action" field="disableaction">
-    <f:checkbox checked="${it.start}"/>
-  </f:entry>
-  <f:section title="">
-   <f:radioBlock name="testToRun" value="CLOUD" checked="${instance.isTestType('CLOUD')}" title="Cloud" inline="true">
-   
-   <f:nested>
-   
-   <f:entry title="Automation API Key" field="apikey">
-	 <f:textbox />
-   </f:entry>
+-->
+	<f:entry title="Disable This Action" field="disableaction">
+		<f:checkbox checked="${it.start}" />
+	</f:entry>
 
-   <f:entry title="Format" field="format" >
-  <f:select/>
-  </f:entry>
-  
-   <f:entry title="Test Results File/Directory Path" field="file">
-    <f:textbox />
-  </f:entry>
-  
-   <f:entry title="Upload Screenshots" field="attachFile">
-	<f:checkbox />
-   </f:entry>
+	<f:section title="">
+		<f:radioBlock name="testToRun" value="CLOUD" checked="${instance.isTestType('CLOUD')}" title="Cloud" inline="true">
 
-   <f:entry title="Test Run Name" field="testrunname" >
-    <f:textbox />
-  </f:entry>
-  
-  <f:entry title="Test Run Key" field="testrunkey">
-    <f:textbox/>
-  </f:entry>
-  
-  <f:entry title="Test Asset Hierarchy" field="testassethierarchy">
-    <f:select/>
-  </f:entry>
-   
-   <f:entry title="Test Case Update Level" field="testCaseUpdateLevel">
-	<f:select/>
-   </f:entry>
-   
-   <f:entry title="Platform" field="platform" >
-    <f:textbox />
-  </f:entry>
-   
-   <f:entry title="Labels" field="labels" >
-    <f:textbox />
-  </f:entry>
-  
-  <f:entry title="Versions" field="version" >
-    <f:textbox />
-  </f:entry>
-  
-  <f:entry title="Components" field="component" >
-    <f:textbox />
-  </f:entry>
-  
-   <f:entry title="Sprint" field="sprint" >
-    <f:textbox />
-  </f:entry>
-  
-  <f:entry title="Comment" field="comment" >
-    <f:textbox />
-  </f:entry>
-  
-  <f:entry title="JIRA Fields" field="jirafields">
-	<f:textarea/>
-  </f:entry>
-  
-  </f:nested>
-   </f:radioBlock>
+			<f:nested>
 
+				<f:entry title="Automation API Key" field="apikey">
+					<f:textbox />
+				</f:entry>
 
-   <f:radioBlock name="testToRun" value="SERVER" checked="${instance.isTestType('SERVER')}" title="Server" inline="true">
-   
-    <f:nested> 
-  <f:entry title="JIRA URL" field="jiraurlserver">
-    <f:textbox />
-  </f:entry>
-  
-  
- 
-  <f:entry title="JIRA Username" field="username">
-    <f:textbox />
-  </f:entry>
-  
-   <f:entry title="JIRA Password" field="password">
-    <f:password />
-  </f:entry>
-  
-  <f:entry title="Automation API Key" field="apikeyserver">
-    <f:textbox />
-  </f:entry>
-  
-  <f:entry title="Format" field="formatserver" >
-  <f:select/>
-  </f:entry>
-  
-  <f:entry title="Test Results File/Directory Path" field="fileserver" >
-    <f:textbox />
-  </f:entry>
-  
-  <f:entry title="Upload Screenshots" field="attachFileServer">
-	<f:checkbox />
-  </f:entry>
-  
-   <f:entry title="Test Run Name" field="testrunnameserver">
-    <f:textbox />
-  </f:entry>
-  
-  <f:entry title="TestRun Key" field="testrunkeyserver">
-    <f:textbox/>
-  </f:entry>
-  
-  <f:entry title="Test Asset Hierarchy" field="testassethierarchyserver">
-	<f:select/>
-  </f:entry>
-  
-  <f:entry title="Test Case Update Level" field="testCaseUpdateLevelServer">
-	<f:select/>
-  </f:entry>
-  
-   <f:entry title="Platform" field="platformserver">
-    <f:textbox />
-  </f:entry>
-  
-   <f:entry title="Labels" field="labelsserver">
-    <f:textbox />
-  </f:entry>
-  
-    <f:entry title="Versions" field="versionserver">
-    <f:textbox />
-  </f:entry>
-  
-    <f:entry title="Components" field="componentserver">
-    <f:textbox />
-  </f:entry>
-  
-   <f:entry title="Sprint" field="sprintserver">
-    <f:textbox />
-  </f:entry>
-  
-  <f:entry title="Comment" field="commentserver">
-    <f:textbox />
-  </f:entry>
+				<f:entry title="Format" field="format">
+					<f:select />
+				</f:entry>
 
-  <f:entry title="JIRA Fields" field="jirafieldsserver">
-    <f:textarea/>
-  </f:entry>
-  
-  </f:nested>
-   </f:radioBlock>
-</f:section>
+				<f:entry title="Test Results File/Directory Path" field="file">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="Upload Screenshots" field="attachFile">
+					<f:checkbox />
+				</f:entry>
+
+				<f:entry title="Test Run Name" field="testrunname">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="Test Run Key" field="testrunkey">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="Test Asset Hierarchy" field="testassethierarchy">
+					<f:select />
+				</f:entry>
+
+				<f:entry title="Test Case Update Level" field="testCaseUpdateLevel">
+					<f:select />
+				</f:entry>
+
+				<f:entry title="Platform" field="platform">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="Labels" field="labels">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="Versions" field="version">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="Components" field="component">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="Sprint" field="sprint">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="Comment" field="comment">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="JIRA Fields" field="jirafields">
+					<f:textarea />
+				</f:entry>
+
+			</f:nested>
+		</f:radioBlock>
+
+		<f:radioBlock name="testToRun" value="SERVER" checked="${instance.isTestType('SERVER')}" title="Server" inline="true">
+
+			<f:nested>
+				<f:entry title="JIRA URL" field="jiraurlserver">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="JIRA Username" field="username">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="JIRA Password" field="password">
+					<f:password />
+				</f:entry>
+
+				<f:entry title="Automation API Key" field="apikeyserver">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="Format" field="formatserver">
+					<f:select />
+				</f:entry>
+
+				<f:entry title="Test Results File/Directory Path" field="fileserver">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="Upload Screenshots" field="attachFileServer">
+					<f:checkbox />
+				</f:entry>
+
+				<f:entry title="Test Run Name" field="testrunnameserver">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="TestRun Key" field="testrunkeyserver">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="Test Asset Hierarchy" field="testassethierarchyserver">
+					<f:select />
+				</f:entry>
+
+				<f:entry title="Test Case Update Level" field="testCaseUpdateLevelServer">
+					<f:select />
+				</f:entry>
+
+				<f:entry title="Platform" field="platformserver">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="Labels" field="labelsserver">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="Versions" field="versionserver">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="Components" field="componentserver">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="Sprint" field="sprintserver">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="Comment" field="commentserver">
+					<f:textbox />
+				</f:entry>
+
+				<f:entry title="JIRA Fields" field="jirafieldsserver">
+					<f:textarea />
+				</f:entry>
+
+			</f:nested>
+		</f:radioBlock>
+	</f:section>
 
 </j:jelly>

@@ -109,7 +109,7 @@ public class UploadToServer {
 			// End of changes
 		}
 
-		if (jiraurlserver != null && jiraurlserver.length() > 0 && jiraurlserver.charAt(jiraurlserver.length() - 1) == '/') {
+		if (jiraurlserver.charAt(jiraurlserver.length() - 1) == '/') {
 			jiraurlserver = jiraurlserver.substring(0, jiraurlserver.length() - 1);
 		}
 
@@ -226,6 +226,12 @@ public class UploadToServer {
 					map.put("responseCode", String.valueOf(statusLine.getStatusCode()));
 				}	
 			}
+		} catch (RuntimeException e) {
+			map.put("success", "error");
+			map.put("responseCode", String.valueOf(statusLine.getStatusCode()));
+			map.put("errorMessage", e.getMessage());
+			listener.getLogger().println(pluginName + "Error in response : " + e);
+			e.printStackTrace();
 		} catch (Exception e) {
 			map.put("success", "error");
 			map.put("responseCode", String.valueOf(statusLine.getStatusCode()));
