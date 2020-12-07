@@ -61,6 +61,9 @@
                <f:entry title="Fix Version Id" field="testCycleFixVersionId" >
                   <f:textbox />
                </f:entry>
+               <f:entry title="Custom Fields" field="testCycleCustomFields" >
+                  <f:textbox />
+               </f:entry>
             </f:section>  
                       
             <f:section title="Test Case">  
@@ -80,6 +83,9 @@
                   <f:textbox />
                </f:entry>
                <f:entry title="Fix Version Id" field="testCaseFixVersionId" >
+                  <f:textbox />
+               </f:entry>
+                <f:entry title="Custom Fields" field="testCaseCustomFields" >
                   <f:textbox />
                </f:entry>
             </f:section>

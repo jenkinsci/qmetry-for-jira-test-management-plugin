@@ -59,8 +59,8 @@ public class UploadToCloudV4 {
 	public Map<String, String> uploadToTheCloud(String apikey, String file, boolean attachFile, String format,
 			String testCycleToReuse, String environment, String build, String testCycleLabels,
 			String testCycleComponents, String testCyclePriority, String testCycleStatus, String testCycleSprintId,
-			String testCycleFixVersionId, String testCycleSummary, String testCaseLabels, String testCaseComponents,
-			String testCasePriority, String testCaseStatus, String testCaseSprintId, String testCaseFixVersionId,
+			String testCycleFixVersionId, String testCycleSummary, String testCycleCustomFields, String testCaseLabels, String testCaseComponents,
+			String testCasePriority, String testCaseStatus, String testCaseSprintId, String testCaseFixVersionId, String testCaseCustomFields,
 			int buildnumber, Run<?, ?> run, TaskListener listener, FilePath workspace)
 			throws MalformedURLException, IOException, UnsupportedEncodingException, ProtocolException, ParseException,
 			FileNotFoundException, InterruptedException {
@@ -180,6 +180,12 @@ public class UploadToCloudV4 {
 			isTestcycle = true;
 			testcycleDataMap.put("summary", testCycleSummary.trim() + "_"+ buildnumber);
 		}
+		if (testCycleCustomFields != null && !testCycleCustomFields.isEmpty()) {
+			isTestcycle = true;
+			JSONParser parser = new JSONParser(); 
+			org.json.simple.JSONArray testcycleCustomFieldsJson = (org.json.simple.JSONArray) parser.parse(testCycleCustomFields);
+			testcycleDataMap.put("customFields", testcycleCustomFieldsJson);
+		}
 
 		Map<String, Object> testcaseDataMap = new HashMap<>();
 		boolean isTestcase = false;
@@ -208,6 +214,12 @@ public class UploadToCloudV4 {
 		if (testCaseFixVersionId != null && !testCaseFixVersionId.isEmpty()) {
 			isTestcase = true;
 			testcaseDataMap.put("fixVersionId", testCaseFixVersionId.trim());
+		}
+		if (testCaseCustomFields != null && !testCaseCustomFields.isEmpty()) {
+			isTestcase = true;
+			JSONParser parser = new JSONParser(); 
+			org.json.simple.JSONArray testcaseCustomFieldsJson = (org.json.simple.JSONArray) parser.parse(testCaseCustomFields);
+			testcaseDataMap.put("customFields", testcaseCustomFieldsJson);
 		}
 
 		Map<String, Object> testCaseCycleDataMap = new HashMap<>();
