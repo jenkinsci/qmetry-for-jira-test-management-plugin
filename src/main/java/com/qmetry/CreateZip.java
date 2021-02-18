@@ -21,11 +21,10 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream; 
 import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 public class CreateZip
 {
@@ -42,10 +41,8 @@ public class CreateZip
 		}
 	};
 
-	public static final FileFilter PNG_FILE_FILTER = new FileFilter()
-	{
-		public boolean accept(File file)
-		{
+	public static final FileFilter PNG_FILE_FILTER = new FileFilter() {
+		public boolean accept(File file) {
 			return file.isDirectory() || file.getName().toLowerCase().endsWith(".png");
 		}
 	};
@@ -68,7 +65,7 @@ public class CreateZip
 		File zipFile = new File(zipfile);
 		FileOutputStream fout = new FileOutputStream(zipFile,false);
 		ZipOutputStream zout = new ZipOutputStream(fout);
-		zipSubDirectory("", dir, zout,extention);
+		zipSubDirectory("", dir, zout, extention);
 		if(attachFile && formats.equals("qas/json"))
 		{
 			File imageDir = new File(sourceDir + "/img");
@@ -137,4 +134,3 @@ public class CreateZip
 		}
 	}
 }
-
