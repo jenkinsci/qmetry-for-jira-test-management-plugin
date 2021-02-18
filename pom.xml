@@ -1,250 +1,257 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.jenkins-ci.plugins</groupId>
-    <artifactId>plugin</artifactId>
-    <version>2.5</version>
-  </parent>
-  
-  <artifactId>qmetry-for-jira-test-management</artifactId>
-  <version>1.16</version>
-  <packaging>hpi</packaging>
-  <name>QMetry for JIRA - Test Management Plugin </name>
-  <description>QMetry Test Management for JIRA plugin for Jenkins has been designed to seamlessly integrate your CI/CD pipeline with QMetry.
-  </description>
-  <url>https://qmetrysupport.atlassian.net/wiki/spaces/JQTMJP/overview</url>
-  <licenses>
-    <license>
-      <name>GNU General Public License v3.0</name>
-      <url>https://github.com/jenkinsci/qmetry-for-jira-test-management-plugin/blob/master/LICENSE</url>
-    </license>
-  </licenses> 
-  
-  
-   <developers>
-    <developer>
-      <id>dharaghodasara</id>
-      <name>Dhara Ghodasara</name>
-      <email>dhara.ghodasara@infostretch.com</email>
-    </developer>
-  </developers>
-  
-  <profiles>
-  <profile>
-    <id>dev</id>
-    <properties>
-      <upload.cloud.url>https://importresults.qmetry.com/QmetryWisdom/importresults-qtm4j</upload.cloud.url>
-    </properties>
-  </profile>
-  <profile>
-    <id>production</id>
-    <activation>
-            <activeByDefault>true</activeByDefault>
-        </activation>
-    <properties>
-      <upload.cloud.url>https://importresults.qmetry.com/prod/importresults-qtm4j</upload.cloud.url>
-    </properties>
-  </profile>
-  <profile>
-    <id>prod</id>
-    <activation>
-            <activeByDefault>true</activeByDefault>
-        </activation>
-    <properties>
-      <upload.cloud.url.v4>https://qtmcloud.qmetry.com/rest/api/automation/importresult</upload.cloud.url.v4>
-    </properties>
-  </profile>
-  </profiles>
-  
-  <properties>
-   <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-     <jenkins.version>2.0</jenkins.version>
-     <maven.javadoc.skip>true</maven.javadoc.skip>
-  </properties>
-  
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-hpi-plugin</artifactId>
-          <version>2.7.1</version>
-          <configuration>
-            <disabledTestInjection>true</disabledTestInjection>
-            <targetJdk>1.8</targetJdk>
-          </configuration>
-        </plugin>
-        
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>2.5.1</version>
-          <configuration>
-            <source>1.8</source>
-            <target>1.8</target>
-            <debug>true</debug>
-          </configuration>
-        </plugin>
-        <plugin>
-          <artifactId>maven-release-plugin</artifactId>
-        </plugin>
-        <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-          <artifactId>animal-sniffer-maven-plugin</artifactId>
-          <version>1.15</version>
-       </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>findbugs-maven-plugin</artifactId>
-          <version>3.0.4</version>
-          <configuration>
-            <failOnError>${maven.findbugs.failure.strict}</failOnError>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  <resources>
-    <resource>
-      <directory>src/main/resources</directory>
-      <filtering>true</filtering>
-    </resource>
-  </resources>
-  </build>
- 
-  <scm>
-    <connection>scm:git:git://github.com/jenkinsci/qmetry-for-jira-test-management-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:jenkinsci/qmetry-for-jira-test-management-plugin.git</developerConnection>
-    <url>https://github.com/jenkinsci/qmetry-for-jira-test-management-plugin/</url>
-    <tag>qmetry-for-jira-test-management-1.16</tag>
-  </scm>
- 
-   <repositories>
-    <repository>
-      <id>repo.jenkins-ci.org</id>
-      <url>https://repo.jenkins-ci.org/public/</url>
-    </repository>
-  </repositories>
-  
-    <pluginRepositories>
-    <pluginRepository>
-      <id>repo.jenkins-ci.org</id>
-      <url>https://repo.jenkins-ci.org/public/</url>
-    </pluginRepository>
-  </pluginRepositories>
-  
-  <dependencies>
-    <dependency>
-        <groupId>org.jenkins-ci.plugins</groupId>
-        <artifactId>junit</artifactId>
-        <version>1.6</version>
-        <scope>compile</scope>
-      </dependency> 
-    
-       <dependency>
-            <groupId>commons-configuration</groupId>
-            <artifactId>commons-configuration</artifactId>
-            <version>1.10</version>
-        </dependency>
-      
-      <dependency>
-        <groupId>org.jenkins-ci.plugins</groupId>
-        <artifactId>credentials</artifactId>
-        <version>2.0</version>
-      </dependency>
-    
-    <dependency>
-        <groupId>commons-io</groupId>
-        <artifactId>commons-io</artifactId>
-        <version>2.5</version>
-    </dependency>
-      
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient-cache</artifactId>
-      <version>4.5.3</version>
-    </dependency>
+	<parent>
+		<groupId>org.jenkins-ci.plugins</groupId>
+		<artifactId>plugin</artifactId>
+		<version>2.5</version>
+	</parent>
 
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpmime</artifactId>
-      <version>4.5.3</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>fluent-hc</artifactId>
-      <version>4.5.3</version>
-    </dependency>
-    
-    <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpclient</artifactId>
-        <version>4.5.2</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>com.googlecode.json-simple</groupId>
-      <artifactId>json-simple</artifactId>
-      <version>1.1.1</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.json</groupId>
-      <artifactId>json</artifactId>
-      <version>20171018</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.jenkins-ci.plugins.workflow</groupId>
-      <artifactId>workflow-job</artifactId>
-      <version>2.1</version>
-    </dependency>
-    
-    <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-step-api</artifactId>
-            <version>2.12</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-cps</artifactId>
-            <version>2.39</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-      <groupId>org.jenkins-ci.plugins</groupId>
-      <artifactId>pipeline-utility-steps</artifactId>
-      <version>1.1.1</version>
-    </dependency>
+	<artifactId>qmetry-for-jira-test-management</artifactId>
+	<version>1.16-SNAPSHOT</version>
+	<packaging>hpi</packaging>
+	<name>QMetry for JIRA - Test Management Plugin </name>
+	<description>QMetry Test Management for JIRA plugin for Jenkins has been designed to seamlessly integrate your CI/CD pipeline with QMetry.
+  	</description>
+	<url>https://qmetrysupport.atlassian.net/wiki/spaces/JQTMJP/overview</url>
+	<licenses>
+		<license>
+			<name>GNU General Public License v3.0</name>
+			<url>https://github.com/jenkinsci/qmetry-for-jira-test-management-plugin/blob/master/LICENSE</url>
+		</license>
+	</licenses>
 
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-basic-steps</artifactId>
-            <version>2.6</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-durable-task-step</artifactId>
-            <version>2.13</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-api</artifactId>
-            <version>2.20</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-support</artifactId>
-            <version>2.14</version>
-            <scope>test</scope>
-        </dependency>
+	<developers>
+		<developer>
+			<id>priankashah</id>
+			<name>Priyanka Shah</name>
+			<email>priyanka.shah@qmetry.com</email>
+		</developer>
+	</developers>
 
-  </dependencies>
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<upload.cloud.url>https://importresults.qmetry.com/QmetryWisdom/importresults-qtm4j</upload.cloud.url>
+			</properties>
+		</profile>
+		<profile>
+			<id>production</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<upload.cloud.url>https://importresults.qmetry.com/prod/importresults-qtm4j</upload.cloud.url>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<upload.cloud.url.v4>https://qtmcloud.qmetry.com/rest/api/automation/importresult</upload.cloud.url.v4>
+			</properties>
+		</profile>
+	</profiles>
 
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jenkins.version>2.0</jenkins.version>
+		<maven.javadoc.skip>true</maven.javadoc.skip>
+	</properties>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-hpi-plugin</artifactId>
+					<version>2.7.1</version>
+					<configuration>
+						<disabledTestInjection>true</disabledTestInjection>
+						<targetJdk>1.8</targetJdk>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.5.1</version>
+					<configuration>
+						<source>1.8</source>
+						<target>1.8</target>
+						<debug>true</debug>
+					</configuration>
+				</plugin>
+				
+				<plugin>
+					<artifactId>maven-release-plugin</artifactId>
+				</plugin>
+				
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>animal-sniffer-maven-plugin</artifactId>
+					<version>1.15</version>
+				</plugin>
+				
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>findbugs-maven-plugin</artifactId>
+					<version>3.0.4</version>
+					<configuration>
+						<failOnError>${maven.findbugs.failure.strict}</failOnError>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+	</build>
+
+	<scm>
+		<connection>scm:git:git://github.com/jenkinsci/qmetry-for-jira-test-management-plugin.git</connection>
+		<developerConnection>scm:git:git@github.com:jenkinsci/qmetry-for-jira-test-management-plugin.git</developerConnection>
+		<url>https://github.com/jenkinsci/qmetry-for-jira-test-management-plugin/</url>
+		<tag>HEAD</tag>
+	</scm>
+
+	<repositories>
+		<repository>
+			<id>repo.jenkins-ci.org</id>
+			<url>https://repo.jenkins-ci.org/public/</url>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>repo.jenkins-ci.org</id>
+			<url>https://repo.jenkins-ci.org/public/</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>junit</artifactId>
+			<version>1.6</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+			<version>1.10</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>credentials</artifactId>
+			<version>2.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient-cache</artifactId>
+			<version>4.5.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+			<version>4.5.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>fluent-hc</artifactId>
+			<version>4.5.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20171018</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jenkins-ci.plugins.workflow</groupId>
+			<artifactId>workflow-job</artifactId>
+			<version>2.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jenkins-ci.plugins.workflow</groupId>
+			<artifactId>workflow-step-api</artifactId>
+			<version>2.12</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jenkins-ci.plugins.workflow</groupId>
+			<artifactId>workflow-cps</artifactId>
+			<version>2.39</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>pipeline-utility-steps</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jenkins-ci.plugins.workflow</groupId>
+			<artifactId>workflow-basic-steps</artifactId>
+			<version>2.6</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jenkins-ci.plugins.workflow</groupId>
+			<artifactId>workflow-durable-task-step</artifactId>
+			<version>2.13</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jenkins-ci.plugins.workflow</groupId>
+			<artifactId>workflow-api</artifactId>
+			<version>2.20</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jenkins-ci.plugins.workflow</groupId>
+			<artifactId>workflow-support</artifactId>
+			<version>2.14</version>
+			<scope>tegit pust</scope>
+		</dependency>
+	</dependencies>
 </project>
