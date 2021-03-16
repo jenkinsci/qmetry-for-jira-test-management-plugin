@@ -141,7 +141,7 @@ public class UploadToCloudV4 {
 		}
 
 		if (environment != null && !environment.isEmpty()) {
-			requestDataMap.put("environment ", environment.trim());
+			requestDataMap.put("environment", environment.trim());
 		}
 
 		if (build != null && !build.isEmpty()) {
