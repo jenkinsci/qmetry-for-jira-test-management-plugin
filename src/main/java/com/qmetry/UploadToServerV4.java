@@ -60,10 +60,12 @@ public class UploadToServerV4 {
 	public Map<String, String> uploadToTheServer(String jiraUrlServer, String username_chkd, Secret password_chkd,
 			String apikey, String file, boolean attachFile, String format, String testCycleToReuse, String environment,
 			String build, String testCycleLabels, String testCycleComponents, String testCyclePriority,
-			String testCycleStatus, String testCycleSprintId, String testCycleFixVersionId, String testCycleSummary,
-			String testCaseLabels, String testCaseComponents, String testCasePriority, String testCaseStatus,
-			String testCaseSprintId, String testCaseFixVersionId, int buildnumber, Run<?, ?> run, TaskListener listener,
-			FilePath workspace, String pluginName)
+			String testCycleStatus, String testCycleSprintId, String testCycleFixVersionId, String testCycleSummary, 
+			String testCycleCustomFields, String testCycleDescription, String testCycleAssignee, String testCycleReporter, 
+			String testCycleStartDate, String testCycleEndDate, String testCaseDescription, String testCaseAssignee,
+			String testCaseReporter, String testCaseEstimatedTime, String testCaseLabels, String testCaseComponents, 
+			String testCasePriority, String testCaseStatus,	String testCaseSprintId, String testCaseFixVersionId, 
+			String testCaseCustomFields, int buildnumber, Run<?, ?> run, TaskListener listener, FilePath workspace, String pluginName)
 			throws MalformedURLException, IOException, UnsupportedEncodingException, ProtocolException, ParseException,
 			FileNotFoundException, InterruptedException {
 
@@ -184,6 +186,32 @@ public class UploadToServerV4 {
 			isTestcycle = true;
 			testcycleDataMap.put("summary", testCycleSummary.trim() + "_" + buildnumber);
 		}
+		if (testCycleDescription != null && !testCycleDescription.isEmpty()) {
+			isTestcycle = true;
+			testcycleDataMap.put("description", testCycleDescription.trim());
+		}
+		if (testCycleStartDate != null && !testCycleStartDate.isEmpty()) {
+			isTestcycle = true;
+			testcycleDataMap.put("plannedStartDate", testCycleStartDate.trim());
+		}
+		if (testCycleEndDate != null && !testCycleEndDate.isEmpty()) {
+			isTestcycle = true;
+			testcycleDataMap.put("plannedEndDate", testCycleEndDate.trim());
+		}
+		if (testCycleAssignee != null && !testCycleAssignee.isEmpty()) {
+			isTestcycle = true;
+			testcycleDataMap.put("assignee", testCycleAssignee.trim());
+		}
+		if (testCycleReporter != null && !testCycleReporter.isEmpty()) {
+			isTestcycle = true;
+			testcycleDataMap.put("reporter", testCycleReporter.trim());
+		}
+		if (testCycleCustomFields != null && !testCycleCustomFields.isEmpty()) {
+			isTestcycle = true;
+			JSONParser parser = new JSONParser(); 
+			org.json.simple.JSONArray testcycleCustomFieldsJson = (org.json.simple.JSONArray) parser.parse(testCycleCustomFields);
+			testcycleDataMap.put("customFields", testcycleCustomFieldsJson);
+		}
 
 		Map<String, Object> testcaseDataMap = new HashMap<>();
 		boolean isTestcase = false;
@@ -212,6 +240,28 @@ public class UploadToServerV4 {
 		if (testCaseFixVersionId != null && !testCaseFixVersionId.isEmpty()) {
 			isTestcase = true;
 			testcaseDataMap.put("fixVersionId", testCaseFixVersionId.trim());
+		}
+		if (testCaseDescription != null && !testCaseDescription.isEmpty()) {
+			isTestcase = true;
+			testcaseDataMap.put("description", testCaseDescription.trim());
+		}
+		if (testCaseAssignee != null && !testCaseAssignee.isEmpty()) {
+			isTestcase = true;
+			testcaseDataMap.put("assignee", testCaseAssignee.trim());
+		}
+		if (testCaseReporter != null && !testCaseReporter.isEmpty()) {
+			isTestcase = true;
+			testcaseDataMap.put("reporter", testCaseReporter.trim());
+		}
+		if (testCaseEstimatedTime != null && !testCaseEstimatedTime.isEmpty()) {
+			isTestcase = true;
+			testcaseDataMap.put("estimatedTime", testCaseEstimatedTime.trim());
+		}
+		if (testCaseCustomFields != null && !testCaseCustomFields.isEmpty()) {
+			isTestcase = true;
+			JSONParser parser = new JSONParser(); 
+			org.json.simple.JSONArray testcaseCustomFieldsJson = (org.json.simple.JSONArray) parser.parse(testCaseCustomFields);
+			testcaseDataMap.put("customFields", testcaseCustomFieldsJson);
 		}
 
 		Map<String, Object> testCaseCycleDataMap = new HashMap<>();

@@ -249,7 +249,7 @@
 			<groupId>org.jenkins-ci.plugins.workflow</groupId>
 			<artifactId>workflow-support</artifactId>
 			<version>2.14</version>
-			<scope>tegit pust</scope>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
