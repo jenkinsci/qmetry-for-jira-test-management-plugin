@@ -43,6 +43,9 @@
                <f:entry title="Summary" field="testCycleSummary" >
                   <f:textbox />
                </f:entry>
+               <f:entry title="Description" field="testCycleDescription" >
+                  <f:textarea />
+               </f:entry>
                <f:entry title="Priority" field="testCyclePriority" >
                   <f:textbox />
                </f:entry>
@@ -61,22 +64,40 @@
                <f:entry title="Fix Version Id" field="testCycleFixVersionId" >
                   <f:textbox />
                </f:entry>
-               <f:entry title="Custom Fields" field="testCycleCustomFields" >
+               <f:entry title="Assignee" field="testCycleAssignee" >
                   <f:textbox />
+               </f:entry>
+               <f:entry title="Reporter" field="testCycleReporter" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Planned Start Date" field="testCycleStartDate" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Planned End Date" field="testCycleEndDate" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Custom Fields" field="testCycleCustomFields" >
+                  <f:textarea />
                </f:entry>
             </f:section>  
                       
             <f:section title="Test Case">  
+            	<f:entry title="Description" field="testCaseDescription" >
+                  <f:textarea />
+               </f:entry>
+               <f:entry title="Precondition" field="testCasePrecondition" >
+                  <f:textarea />
+               </f:entry>
                <f:entry title="Priority" field="testCasePriority" >
                   <f:textbox />
                </f:entry>
                <f:entry title="Status" field="testCaseStatus" >
                   <f:textbox />
                </f:entry>
-               <f:entry title="Labels" field="testCaseLabels" >
+               <f:entry title="Components" field="testCaseComponents" >
                   <f:textbox />
                </f:entry>
-               <f:entry title="Components" field="testCaseComponents" >
+               <f:entry title="Labels" field="testCaseLabels" >
                   <f:textbox />
                </f:entry>
                <f:entry title="Sprint Id" field="testCaseSprintId" >
@@ -85,8 +106,17 @@
                <f:entry title="Fix Version Id" field="testCaseFixVersionId" >
                   <f:textbox />
                </f:entry>
-                <f:entry title="Custom Fields" field="testCaseCustomFields" >
+               <f:entry title="Assignee" field="testCaseAssignee" >
                   <f:textbox />
+               </f:entry>
+               <f:entry title="Reporter" field="testCaseReporter" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="EstimatedTime" field="testCaseEstimatedTime" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Custom Fields" field="testCaseCustomFields" >
+                  <f:textarea />
                </f:entry>
             </f:section>
 
@@ -140,6 +170,9 @@
                <f:entry title="Summary" field="testCycleSummaryServer" >
                   <f:textbox />
                </f:entry>
+               <f:entry title="Description" field="testCycleDescriptionServer" >
+                  <f:textarea />
+               </f:entry>
                <f:entry title="Priority" field="testCyclePriorityServer" >
                   <f:textbox />
                </f:entry>
@@ -158,19 +191,37 @@
                <f:entry title="Fix Version Id" field="testCycleFixVersionIdServer" >
                   <f:textbox />
                </f:entry>
+               <f:entry title="Assignee" field="testCycleAssigneeServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Reporter" field="testCycleReporterServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Planned Start Date" field="testCycleStartDateServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Planned End Date" field="testCycleEndDateServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Custom Fields" field="testCycleCustomFieldsServer" >
+                  <f:textarea />
+               </f:entry>
             </f:section>  
                       
             <f:section title="Test Case">  
+               <f:entry title="Description" field="testCaseDescriptionServer" >
+                  <f:textarea />
+               </f:entry>
                <f:entry title="Priority" field="testCasePriorityServer" >
                   <f:textbox />
                </f:entry>
                <f:entry title="Status" field="testCaseStatusServer" >
                   <f:textbox />
                </f:entry>
-               <f:entry title="Labels" field="testCaseLabelsServer" >
+               <f:entry title="Components" field="testCaseComponentsServer" >
                   <f:textbox />
                </f:entry>
-               <f:entry title="Components" field="testCaseComponentsServer" >
+               <f:entry title="Labels" field="testCaseLabelsServer" >
                   <f:textbox />
                </f:entry>
                <f:entry title="Sprint Id" field="testCaseSprintIdServer" >
@@ -178,6 +229,18 @@
                </f:entry>
                <f:entry title="Fix Version Id" field="testCaseFixVersionIdServer" >
                   <f:textbox />
+               </f:entry>
+               <f:entry title="Assignee" field="testCaseAssigneeServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Reporter" field="testCaseReporterServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="EstimatedTime" field="testCaseEstimatedTimeServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Custom Fields" field="testCaseCustomFieldsServer" >
+                  <f:textarea />
                </f:entry>
             </f:section>
 

@@ -72,20 +72,10 @@ public class FindFile {
 				 * if(filePath.startsWith("/")) { filePath=filePath.substring(1); }
 				 */
 				FilePath f = null;
-//				if (format.equals("qas/json")) {
-//				    // Getting latest testresult files for QAS
-//				    listener.getLogger().println("QMetry for JIRA : Getting latest test-result folder for QAS...");
-//				    f = lastFileModified(slaveMachineWorkspace, filePath);
-//				    filePath = filePath + "/" + f.getName();
-//				    listener.getLogger().println("QMetry for JIRA : Latest test-result folder : " + f.toString());
-//				    // listener.getLogger().println("[DEBUG] : final path : "+f.toString());
-//				    // listener.getLogger().println("[DEBUG] : filepath : " +filePath);
-//				} else {
-				    f = new FilePath(slaveMachineWorkspace, filePath);
-				    if (!f.exists()) {
-					throw new FileNotFoundException("cannot find file : " + f);
-				    }
-				//}
+				f = new FilePath(slaveMachineWorkspace, filePath);
+				if (!f.exists()) {
+				    throw new FileNotFoundException("cannot find file : " + f);
+				}
 
 				// boolean filter = false;
 				// String fileMask = "";

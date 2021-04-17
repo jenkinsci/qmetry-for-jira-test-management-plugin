@@ -22,7 +22,11 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 
@@ -89,6 +93,11 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     private String testCycleFixVersionId;
     private String testCycleSummary;
     private String testCycleCustomFields;
+    private String testCycleDescription;
+    private String testCycleAssignee;
+    private String testCycleReporter;
+    private String testCycleStartDate;
+    private String testCycleEndDate;
 
     private String testCaseLabels;
     private String testCaseComponents;
@@ -97,6 +106,11 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     private String testCaseSprintId;
     private String testCaseFixVersionId;
     private String testCaseCustomFields;
+    private String testCaseDescription;
+    private String testCasePrecondition;
+    private String testCaseAssignee;
+    private String testCaseReporter;
+    private String testCaseEstimatedTime;
 
     // Server Fields
     private String jiraUrlServer;
@@ -118,6 +132,12 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     private String testCycleSprintIdServer;
     private String testCycleFixVersionIdServer;
     private String testCycleSummaryServer;
+    private String testCycleCustomFieldsServer;
+    private String testCycleDescriptionServer;
+    private String testCycleAssigneeServer;
+    private String testCycleReporterServer;
+    private String testCycleStartDateServer;
+    private String testCycleEndDateServer;
 
     private String testCaseLabelsServer;
     private String testCaseComponentsServer;
@@ -125,6 +145,11 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     private String testCaseStatusServer;
     private String testCaseSprintIdServer;
     private String testCaseFixVersionIdServer;
+    private String testCaseCustomFieldsServer;
+    private String testCaseDescriptionServer;
+    private String testCaseAssigneeServer;
+    private String testCaseReporterServer;
+    private String testCaseEstimatedTimeServer;
 
     //Cloud getter setter
     public String getTestCycleToReuse() {
@@ -217,6 +242,36 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     public void setTtestCycleCustomFields(String testCycleCustomFields) {
 	this.testCycleCustomFields = testCycleCustomFields;
     }
+    public String getTestCycleDescription() {
+        return testCycleDescription;
+    }
+    public void setTestCycleDescription(String testCycleDescription) {
+        this.testCycleDescription = testCycleDescription;
+    }
+    public String getTestCycleAssignee() {
+        return testCycleAssignee;
+    }
+    public void setTestCycleAssignee(String testCycleAssignee) {
+        this.testCycleAssignee = testCycleAssignee;
+    }
+    public String getTestCycleReporter() {
+        return testCycleReporter;
+    }
+    public void setTestCycleReporter(String testCycleReporter) {
+        this.testCycleReporter = testCycleReporter;
+    }
+    public String getTestCycleStartDate() {
+        return testCycleStartDate;
+    }
+    public void setTestCycleStartDate(String testCycleStartDate) {
+        this.testCycleStartDate = testCycleStartDate;
+    }
+    public String getTestCycleEndDate() {
+        return testCycleEndDate;
+    }
+    public void setTestCycleEndDate(String testCycleEndDate) {
+        this.testCycleEndDate = testCycleEndDate;
+    }
     public String getTestCaseLabels() {
 	return testCaseLabels;
     }
@@ -258,6 +313,36 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     }
     public void setTtestCaseCustomFields(String testCaseCustomFields) {
 	this.testCaseCustomFields = testCaseCustomFields;
+    }
+    public String getTestCaseDescription() {
+        return testCaseDescription;
+    }
+    public void setTestCaseDescription(String testCaseDescription) {
+        this.testCaseDescription = testCaseDescription;
+    }
+    public String getTestCasePrecondition() {
+        return testCasePrecondition;
+    }
+    public void setTestCasePrecondition(String testCasePrecondition) {
+        this.testCasePrecondition = testCasePrecondition;
+    }
+    public String getTestCaseAssignee() {
+        return testCaseAssignee;
+    }
+    public void setTestCaseAssignee(String testCaseAssignee) {
+        this.testCaseAssignee = testCaseAssignee;
+    }
+    public String getTestCaseReporter() {
+        return testCaseReporter;
+    }
+    public void setTestCaseReporter(String testCaseReporter) {
+        this.testCaseReporter = testCaseReporter;
+    }
+    public String getTestCaseEstimatedTime() {
+        return testCaseEstimatedTime;
+    }
+    public void setTestCaseEstimatedTime(String testCaseEstimatedTime) {
+        this.testCaseEstimatedTime = testCaseEstimatedTime;
     }
 
     // Server Getter Setter
@@ -369,6 +454,42 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     public void setTestCycleSummaryServer(String testCycleSummaryServer) {
 	this.testCycleSummaryServer = testCycleSummaryServer;
     }
+    public String getTestCycleCustomFieldsServer() {
+        return testCycleCustomFieldsServer;
+    }
+    public void setTestCycleCustomFieldsServer(String testCycleCustomFieldsServer) {
+        this.testCycleCustomFieldsServer = testCycleCustomFieldsServer;
+    }
+    public String getTestCycleDescriptionServer() {
+        return testCycleDescriptionServer;
+    }
+    public void setTestCycleDescriptionServer(String testCycleDescriptionServer) {
+        this.testCycleDescriptionServer = testCycleDescriptionServer;
+    }
+    public String getTestCycleAssigneeServer() {
+        return testCycleAssigneeServer;
+    }
+    public void setTestCycleAssigneeServer(String testCycleAssigneeServer) {
+        this.testCycleAssigneeServer = testCycleAssigneeServer;
+    }
+    public String getTestCycleReporterServer() {
+        return testCycleReporterServer;
+    }
+    public void setTestCycleReporterServer(String testCycleReporterServer) {
+        this.testCycleReporterServer = testCycleReporterServer;
+    }
+    public String getTestCycleStartDateServer() {
+        return testCycleStartDateServer;
+    }
+    public void setTestCycleStartDateServer(String testCycleStartDateServer) {
+        this.testCycleStartDateServer = testCycleStartDateServer;
+    }
+    public String getTestCycleEndDateServer() {
+        return testCycleEndDateServer;
+    }
+    public void setTestCycleEndDateServer(String testCycleEndDateServer) {
+        this.testCycleEndDateServer = testCycleEndDateServer;
+    }
     public String getTestCaseLabelsServer() {
 	return testCaseLabelsServer;
     }
@@ -405,7 +526,37 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     public void setTestCaseFixVersionIdServer(String testCaseFixVersionIdServer) {
 	this.testCaseFixVersionIdServer = testCaseFixVersionIdServer;
     }
-
+    public String getTestCaseCustomFieldsServer() {
+        return testCaseCustomFieldsServer;
+    }
+    public void setTestCaseCustomFieldsServer(String testCaseCustomFieldsServer) {
+        this.testCaseCustomFieldsServer = testCaseCustomFieldsServer;
+    }
+    public String getTestCaseDescriptionServer() {
+        return testCaseDescriptionServer;
+    }
+    public void setTestCaseDescriptionServer(String testCaseDescriptionServer) {
+        this.testCaseDescriptionServer = testCaseDescriptionServer;
+    }
+    public String getTestCaseAssigneeServer() {
+        return testCaseAssigneeServer;
+    }
+    public void setTestCaseAssigneeServer(String testCaseAssigneeServer) {
+        this.testCaseAssigneeServer = testCaseAssigneeServer;
+    }
+    public String getTestCaseReporterServer() {
+        return testCaseReporterServer;
+    }
+    public void setTestCaseReporterServer(String testCaseReporterServer) {
+        this.testCaseReporterServer = testCaseReporterServer;
+    }
+    public String getTestCaseEstimatedTimeServer() {
+        return testCaseEstimatedTimeServer;
+    }
+    public void setTestCaseEstimatedTimeServer(String testCaseEstimatedTimeServer) {
+        this.testCaseEstimatedTimeServer = testCaseEstimatedTimeServer;
+    }
+    
     public TestReportDeployPublisherCloudV4() {
 
     }
@@ -414,13 +565,16 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     @DataBoundConstructor
     public TestReportDeployPublisherCloudV4(String testToRun, String apikey, String file, boolean attachFile,String format, boolean disableaction,
 	    String testCycleToReuse, String environment, String build, String testCycleLabels, String testCycleComponents, String testCyclePriority,
-	    String testCycleStatus, String testCycleSprintId, String testCycleFixVersionId, String testCycleSummary, String testCycleCustomFields, String testCaseLabels,
-	    String testCaseComponents, String testCasePriority, String testCaseStatus, String testCaseSprintId, String testCaseFixVersionId, String testCaseCustomFields, 
-	    String jiraUrlServer, String proxyUrl, String username, Secret password, String apikeyServer, String formatServer, String fileServer,
-	    String testCycleToReuseServer, String environmentServer, String buildServer, boolean attachFileServer, String testCycleLabelsServer, String testCycleComponentsServer,
-	    String testCyclePriorityServer, String testCycleStatusServer, String testCycleSprintIdServer, String testCycleFixVersionIdServer,
-	    String testCycleSummaryServer, String testCaseLabelsServer, String testCaseComponentsServer, String testCasePriorityServer, String testCaseStatusServer, 
-	    String testCaseSprintIdServer, String testCaseFixVersionIdServer) throws AbortException {
+	    String testCycleStatus, String testCycleSprintId, String testCycleFixVersionId, String testCycleSummary, String testCycleCustomFields, String testCycleStartDate, 
+	    String testCycleEndDate, String testCycleReporter, String testCycleAssignee, String testCycleDescription, String testCaseLabels, String testCaseEstimatedTime,
+	    String testCaseReporter, String testCaseAssignee, String testCaseDescription, String testCasePrecondition, String testCaseComponents, String testCasePriority, 
+	    String testCaseStatus, String testCaseSprintId, String testCaseFixVersionId, String testCaseCustomFields, String jiraUrlServer, String proxyUrl, String username, 
+	    Secret password, String apikeyServer, String formatServer, String fileServer, String testCycleToReuseServer, String environmentServer, String buildServer,
+	    boolean attachFileServer, String testCycleLabelsServer, String testCycleComponentsServer, String testCyclePriorityServer, String testCycleStatusServer, 
+	    String testCycleSprintIdServer, String testCycleFixVersionIdServer, String testCycleSummaryServer, String testCycleStartDateServer, String testCycleEndDateServer,
+	    String testCycleAssigneeServer, String testCycleReporterServer, String testCycleDescriptionServer, String testCycleCustomFieldsServer, String testCaseEstimatedTimeServer,
+	    String testCaseAssigneeServer, String testCaseReporterServer, String testCaseDescriptionServer, String testCaseCustomFieldsServer, String testCaseLabelsServer, 
+	    String testCaseComponentsServer, String testCasePriorityServer, String testCaseStatusServer, String testCaseSprintIdServer, String testCaseFixVersionIdServer) throws AbortException {
 
 	this.testToRun = testToRun;
 	this.disableaction = disableaction;
@@ -442,6 +596,11 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	this.testCycleFixVersionId = testCycleFixVersionId;
 	this.testCycleSummary = testCycleSummary;
 	this.testCycleCustomFields = testCycleCustomFields;
+	this.testCycleEndDate = testCycleEndDate;
+	this.testCycleStartDate = testCycleStartDate;
+	this.testCycleAssignee = testCycleAssignee;
+	this.testCycleReporter = testCycleReporter;
+	this.testCycleDescription = testCycleDescription;
 
 	this.testCaseLabels = testCaseLabels;
 	this.testCaseComponents = testCaseComponents;
@@ -450,6 +609,11 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	this.testCaseSprintId = testCaseSprintId;
 	this.testCaseFixVersionId = testCaseFixVersionId;
 	this.testCaseCustomFields = testCaseCustomFields;
+	this.testCaseEstimatedTime = testCaseEstimatedTime;
+	this.testCaseReporter = testCaseReporter;
+	this.testCaseAssignee = testCaseAssignee;
+	this.testCaseDescription = testCaseDescription;
+	this.testCasePrecondition = testCasePrecondition;
 
 	if (apikey != null && !apikey.isEmpty()) {
 	    Secret ak = Secret.fromString(apikey);
@@ -476,6 +640,12 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	this.testCycleSprintIdServer = testCycleSprintIdServer;
 	this.testCycleFixVersionIdServer = testCycleFixVersionIdServer;
 	this.testCycleSummaryServer = testCycleSummaryServer;
+	this.testCycleEndDateServer = testCycleEndDateServer;
+	this.testCycleStartDateServer = testCycleStartDateServer;
+	this.testCycleAssigneeServer = testCycleAssigneeServer;
+	this.testCycleReporterServer = testCycleReporterServer;
+	this.testCycleDescriptionServer = testCycleDescriptionServer;
+	this.testCycleCustomFieldsServer = testCycleCustomFieldsServer;
 
 	this.testCaseLabelsServer = testCaseLabelsServer;
 	this.testCaseComponentsServer = testCaseComponentsServer;
@@ -483,6 +653,11 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	this.testCaseStatusServer = testCaseStatusServer;
 	this.testCaseSprintIdServer = testCaseSprintIdServer;
 	this.testCaseFixVersionIdServer = testCaseFixVersionIdServer;
+	this.testCaseEstimatedTimeServer = testCaseEstimatedTimeServer;
+	this.testCaseReporterServer = testCaseReporterServer;
+	this.testCaseAssigneeServer = testCaseAssigneeServer;
+	this.testCaseDescriptionServer = testCaseDescriptionServer;
+	this.testCaseCustomFieldsServer = testCaseCustomFieldsServer;
 
 	if (apikeyServer != null && !apikeyServer.isEmpty()) {
 	    Secret ak = Secret.fromString(apikeyServer);
@@ -550,6 +725,11 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		String testCycleFixVersionId_chkd = env.expand(this.getTestCycleFixVersionId());
 		String testCycleSummary_chkd = env.expand(this.getTestCycleSummary());
 		String testCycleCustomFields_chkd = env.expand(this.getTestCycleCustomFields());
+		String testCycleStartDate_chkd = env.expand(this.getTestCycleStartDate());
+		String testCycleEndDate_chkd = env.expand(this.getTestCycleEndDate());
+		String testCycleReporter_chkd = env.expand(this.getTestCycleReporter());
+		String testCycleAssignee_chkd = env.expand(this.getTestCycleAssignee());
+		String testCycleDescription_chkd = env.expand(this.getTestCycleDescription());
 
 		String testCaseLabels_chkd = env.expand(this.getTestCaseLabels());
 		String testCaseComponents_chkd = env.expand(this.getTestCaseComponents());
@@ -558,6 +738,11 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		String testCaseSprintId_chkd = env.expand(this.getTestCaseSprintId());
 		String testCaseFixVersionId_chkd = env.expand(this.getTestCaseFixVersionId());
 		String testCaseCustomFields_chkd = env.expand(this.getTestCaseCustomFields());
+		String testCaseEstimatedTime_chkd = env.expand(this.getTestCaseEstimatedTime());
+		String testCaseReporter_chkd = env.expand(this.getTestCaseReporter());
+		String testCaseAssignee_chkd = env.expand(this.getTestCaseAssignee());
+		String testCaseDescription_chkd = env.expand(this.getTestCaseDescription());
+		String testCasePrecondition_chkd = env.expand(this.getTestCasePrecondition());
 
 		if (apikey_chkd == null || apikey_chkd.isEmpty()) {
 		    logger.println(pluginName + " [ERROR] : Enter API Key.");
@@ -583,18 +768,25 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 
 		if (build_chkd != null && !build_chkd.isEmpty())
 		    logger.println(pluginName + " Build : " + build_chkd);
-
-		if (testCycleLabels_chkd != null && !testCycleLabels_chkd.isEmpty())
-		    logger.println(pluginName + " Test cycle labels : " + testCycleLabels_chkd);
-
+		
+		// Testcycle fields
+		if (testCycleSummary_chkd != null && !testCycleSummary_chkd.isEmpty())
+		    logger.println(pluginName + " Test cycle summary : " + testCycleSummary_chkd);
+		
+		if (testCycleDescription_chkd != null && !testCycleDescription_chkd.isEmpty())
+		    logger.println(pluginName + " Test cycle description : " + testCycleDescription_chkd);
+		
+		if (testCyclePriority_chkd != null && !testCyclePriority_chkd.isEmpty())
+		    logger.println(pluginName + " Test cycle priority : " + testCyclePriority_chkd);
+		
+		if (testCycleStatus_chkd != null && !testCycleStatus_chkd.isEmpty())
+		    logger.println(pluginName + " Test cycle status : " + testCycleStatus_chkd);
+		
 		if (testCycleComponents_chkd != null && !testCycleComponents_chkd.isEmpty())
 		    logger.println(pluginName + " Test cycle components : " + testCycleComponents_chkd);
 
-		if (testCyclePriority_chkd != null && !testCyclePriority_chkd.isEmpty())
-		    logger.println(pluginName + " Test cycle priority : " + testCyclePriority_chkd);
-
-		if (testCycleStatus_chkd != null && !testCycleStatus_chkd.isEmpty())
-		    logger.println(pluginName + " Test cycle status : " + testCycleStatus_chkd);
+		if (testCycleLabels_chkd != null && !testCycleLabels_chkd.isEmpty())
+		    logger.println(pluginName + " Test cycle labels : " + testCycleLabels_chkd);
 
 		if (testCycleSprintId_chkd != null && !testCycleSprintId_chkd.isEmpty())
 		    logger.println(pluginName + " Test cycle sprint id : " + testCycleSprintId_chkd);
@@ -602,41 +794,66 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		if (testCycleFixVersionId_chkd != null && !testCycleFixVersionId_chkd.isEmpty())
 		    logger.println(pluginName + " Test cycle fix version id : " + testCycleFixVersionId_chkd);
 
-		if (testCycleSummary_chkd != null && !testCycleSummary_chkd.isEmpty())
-		    logger.println(pluginName + " Test cycle summary : " + testCycleSummary_chkd);
+		if (testCycleAssignee_chkd != null && !testCycleAssignee_chkd.isEmpty())
+		    logger.println(pluginName + " Test cycle assignee : " + testCycleAssignee_chkd);
+		
+		if (testCycleReporter_chkd != null && !testCycleReporter_chkd.isEmpty())
+		    logger.println(pluginName + " Test cycle reporter : " + testCycleReporter_chkd);
+		
+		if (testCycleStartDate_chkd != null && !testCycleStartDate_chkd.isEmpty())
+		    logger.println(pluginName + " Test cycle planned start date : " + testCycleStartDate_chkd);
+		
+		if (testCycleEndDate_chkd != null && !testCycleEndDate_chkd.isEmpty())
+		    logger.println(pluginName + " Test cycle planned end date : " + testCycleEndDate_chkd);
 		
 		if (testCycleCustomFields_chkd != null && !testCycleCustomFields_chkd.isEmpty())
 		    logger.println(pluginName + " Test cycle custom fields : " + testCycleCustomFields_chkd);
 
-		if (testCaseLabels_chkd != null && !testCaseLabels_chkd.isEmpty())
-		    logger.println(pluginName + " Test case label : " + testCaseLabels_chkd);
-
-		if (testCaseComponents_chkd != null && !testCaseComponents_chkd.isEmpty())
-		    logger.println(pluginName + " Test case components : " + testCaseComponents_chkd);
-
+		//Testcase fields
+		if (testCaseDescription_chkd != null && !testCaseDescription_chkd.isEmpty())
+		    logger.println(pluginName + " Test case description : " + testCaseDescription_chkd);
+		
+		if (testCasePrecondition_chkd != null && !testCasePrecondition_chkd.isEmpty())
+		    logger.println(pluginName + " Test case precondition : " + testCasePrecondition_chkd);
+		
 		if (testCasePriority_chkd != null && !testCasePriority_chkd.isEmpty())
 		    logger.println(pluginName + " Test case priority : " + testCasePriority_chkd);
 
 		if (testCaseStatus_chkd != null && !testCaseStatus_chkd.isEmpty())
 		    logger.println(pluginName + " Test case status : " + testCaseStatus_chkd);
 
+		if (testCaseComponents_chkd != null && !testCaseComponents_chkd.isEmpty())
+		    logger.println(pluginName + " Test case components : " + testCaseComponents_chkd);
+		
+		if (testCaseLabels_chkd != null && !testCaseLabels_chkd.isEmpty())
+		    logger.println(pluginName + " Test case labels : " + testCaseLabels_chkd);
+		
 		if (testCaseSprintId_chkd != null && !testCaseSprintId_chkd.isEmpty())
 		    logger.println(pluginName + " Test case sprintId : " + testCaseSprintId_chkd);
 
 		if (testCaseFixVersionId_chkd != null && !testCaseFixVersionId_chkd.isEmpty())
 		    logger.println(pluginName + " Test case fix version id : " + testCaseFixVersionId_chkd);
 		
+		if (testCaseAssignee_chkd != null && !testCaseAssignee_chkd.isEmpty())
+		    logger.println(pluginName + " Test case assignee : " + testCaseAssignee_chkd);
+		
+		if (testCaseReporter_chkd != null && !testCaseReporter_chkd.isEmpty())
+		    logger.println(pluginName + " Test case reporter : " + testCaseReporter_chkd);
+		
+		if (testCaseEstimatedTime_chkd != null && !testCaseEstimatedTime_chkd.isEmpty())
+		    logger.println(pluginName + " Test case estimated time : " + testCaseEstimatedTime_chkd);
+		
 		if (testCaseCustomFields_chkd != null && !testCaseCustomFields_chkd.isEmpty())
 		    logger.println(pluginName + " Test case custom fields : " + testCaseCustomFields_chkd);
 
 		try {
 		    Map response = uploadToCloud.uploadToTheCloud(apikey_chkd, file_chkd.trim().replace("\\", "/"),
-			    attachFile, format_chkd, testCycleToReuse_chkd, environment_chkd, build_chkd,
-			    testCycleLabels_chkd, testCycleComponents_chkd, testCyclePriority_chkd,
-			    testCycleStatus_chkd, testCycleSprintId_chkd, testCycleFixVersionId_chkd,
-			    testCycleSummary_chkd, testCycleCustomFields_chkd, testCaseLabels_chkd, testCaseComponents_chkd, testCasePriority_chkd,
-			    testCaseStatus_chkd, testCaseSprintId_chkd, testCaseFixVersionId_chkd, testCaseCustomFields_chkd, buildnumber, run,
-			    listener, workspace);
+			    attachFile, format_chkd, testCycleToReuse_chkd, environment_chkd, build_chkd, testCycleLabels_chkd, testCycleComponents_chkd, 
+			    testCyclePriority_chkd, testCycleStatus_chkd, testCycleSprintId_chkd, testCycleFixVersionId_chkd, testCycleSummary_chkd, 
+			    testCycleCustomFields_chkd, testCycleDescription_chkd, testCycleAssignee_chkd, testCycleReporter_chkd, testCycleStartDate_chkd, 
+			    testCycleEndDate_chkd, testCaseDescription_chkd, testCasePrecondition_chkd, testCaseAssignee_chkd, testCaseReporter_chkd,
+			    testCaseEstimatedTime_chkd, testCaseLabels_chkd, testCaseComponents_chkd, testCasePriority_chkd, testCaseStatus_chkd, 
+			    testCaseSprintId_chkd, testCaseFixVersionId_chkd, testCaseCustomFields_chkd, buildnumber, run, listener, workspace);
 		    if (response != null) {
 			if (response.get("success").equals("true")) {
 			    if (response.get("message").equals("false")) {
@@ -745,6 +962,12 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		String testCycleSprintIdServer_chkd = env.expand(this.getTestCycleSprintIdServer());
 		String testCycleFixVersionIdServer_chkd = env.expand(this.getTestCycleFixVersionIdServer());
 		String testCycleSummaryServer_chkd = env.expand(this.getTestCycleSummaryServer());
+		String testCycleCustomFieldsServer_chkd = env.expand(this.getTestCycleCustomFieldsServer());
+		String testCycleStartDateServer_chkd = env.expand(this.getTestCycleStartDateServer());
+		String testCycleEndDateServer_chkd = env.expand(this.getTestCycleEndDateServer());
+		String testCycleReporterServer_chkd = env.expand(this.getTestCycleReporterServer());
+		String testCycleAssigneeServer_chkd = env.expand(this.getTestCycleAssigneeServer());
+		String testCycleDescriptionServer_chkd = env.expand(this.getTestCycleDescriptionServer());
 
 		String testCaseLabelsServer_chkd = env.expand(this.getTestCaseLabelsServer());
 		String testCaseComponentsServer_chkd = env.expand(this.getTestCaseComponentsServer());
@@ -752,6 +975,11 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		String testCaseStatusServer_chkd = env.expand(this.getTestCaseStatusServer());
 		String testCaseSprintIdServer_chkd = env.expand(this.getTestCaseSprintIdServer());
 		String testCaseFixVersionIdServer_chkd = env.expand(this.getTestCaseFixVersionIdServer());
+		String testCaseCustomFieldsServer_chkd = env.expand(this.getTestCaseCustomFieldsServer());
+		String testCaseEstimatedTimeServer_chkd = env.expand(this.getTestCaseEstimatedTimeServer());
+		String testCaseReporterServer_chkd = env.expand(this.getTestCaseReporterServer());
+		String testCaseAssigneeServer_chkd = env.expand(this.getTestCaseAssigneeServer());
+		String testCaseDescriptionServer_chkd = env.expand(this.getTestCaseDescriptionServer());
 
 		if (jiraUrlServer_chkd == null || jiraUrlServer_chkd.isEmpty()) {
 		    logger.println(pluginName + "[ERROR] : Enter JIRA URL.");
@@ -795,6 +1023,12 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		    logger.println(pluginName + " Build : " + buildServer_chkd);
 
 		// Testcycle fields	
+		if (testCycleSummaryServer_chkd != null && !testCycleSummaryServer_chkd.isEmpty())
+		    logger.println(pluginName + " Test cycle summary : " + testCycleSummaryServer_chkd);
+		
+		if (testCycleDescriptionServer_chkd != null && !testCycleDescriptionServer_chkd.isEmpty())
+		    logger.println(pluginName + " Test cycle description : " + testCycleDescriptionServer_chkd);
+		
 		if (testCycleLabelsServer_chkd != null && !testCycleLabelsServer_chkd.isEmpty())
 		    logger.println(pluginName + " Test cycle labels : " + testCycleLabelsServer_chkd);
 
@@ -812,11 +1046,26 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 
 		if (testCycleFixVersionIdServer_chkd != null && !testCycleFixVersionIdServer_chkd.isEmpty())
 		    logger.println(pluginName + " Test cycle fix version id : " + testCycleFixVersionIdServer_chkd);
+		
+		if (testCycleAssigneeServer_chkd != null && !testCycleAssigneeServer_chkd.isEmpty())
+		    logger.println(pluginName + " Test cycle assignee : " + testCycleAssigneeServer_chkd);
+		
+		if (testCycleReporterServer_chkd != null && !testCycleReporterServer_chkd.isEmpty())
+		    logger.println(pluginName + " Test cycle reporter : " + testCycleReporterServer_chkd);
+		
+		if (testCycleStartDateServer_chkd != null && !testCycleStartDateServer_chkd.isEmpty())
+		    logger.println(pluginName + " Test cycle planned start date : " + testCycleStartDateServer_chkd);
+		
+		if (testCycleEndDateServer_chkd != null && !testCycleEndDateServer_chkd.isEmpty())
+		    logger.println(pluginName + " Test cycle planned end date : " + testCycleEndDateServer_chkd);
+		
+		if (testCycleCustomFieldsServer_chkd != null && !testCycleCustomFieldsServer_chkd.isEmpty())
+		    logger.println(pluginName + " Test cycle custom fields : " + testCycleCustomFieldsServer_chkd);
 
-		if (testCycleSummaryServer_chkd != null && !testCycleSummaryServer_chkd.isEmpty())
-		    logger.println(pluginName + " Test cycle summary : " + testCycleSummaryServer_chkd);
-
-		//Testcase fields	
+		//Testcase fields
+		if (testCaseDescriptionServer_chkd != null && !testCaseDescriptionServer_chkd.isEmpty())
+		    logger.println(pluginName + " Test case description : " + testCaseDescriptionServer_chkd);
+			
 		if (testCaseLabelsServer_chkd != null && !testCaseLabelsServer_chkd.isEmpty())
 		    logger.println(pluginName + " Test case label : " + testCaseLabelsServer_chkd);
 
@@ -834,14 +1083,28 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 
 		if (testCaseFixVersionIdServer_chkd != null && !testCaseFixVersionIdServer_chkd.isEmpty())
 		    logger.println(pluginName + " Test case fix version id : " + testCaseFixVersionIdServer_chkd);
+		
+		if (testCaseAssigneeServer_chkd != null && !testCaseAssigneeServer_chkd.isEmpty())
+		    logger.println(pluginName + " Test case assignee : " + testCaseAssigneeServer_chkd);
+		
+		if (testCaseReporterServer_chkd != null && !testCaseReporterServer_chkd.isEmpty())
+		    logger.println(pluginName + " Test case reporter : " + testCaseReporterServer_chkd);
+		
+		if (testCaseEstimatedTimeServer_chkd != null && !testCaseEstimatedTimeServer_chkd.isEmpty())
+		    logger.println(pluginName + " Test case estimated time : " + testCaseEstimatedTimeServer_chkd);
+		
+		if (testCaseCustomFieldsServer_chkd != null && !testCaseCustomFieldsServer_chkd.isEmpty())
+		    logger.println(pluginName + " Test case custom fields : " + testCaseCustomFieldsServer_chkd);
 
 		try {
 		    Map response = uploadToServer.uploadToTheServer(jiraUrlServer_chkd, username_chkd, password_chkd, apikeyServer_chkd, fileServer_chkd.trim().replace("\\", "/"),
 			    attachFileServer, formatServer_chkd, testCycleToReuseServer_chkd, environmentServer_chkd, buildServer_chkd,
 			    testCycleLabelsServer_chkd, testCycleComponentsServer_chkd, testCyclePriorityServer_chkd,
 			    testCycleStatusServer_chkd, testCycleSprintIdServer_chkd, testCycleFixVersionIdServer_chkd,
-			    testCycleSummaryServer_chkd, testCaseLabelsServer_chkd, testCaseComponentsServer_chkd, testCasePriorityServer_chkd,
-			    testCaseStatusServer_chkd, testCaseSprintIdServer_chkd, testCaseFixVersionIdServer_chkd, buildnumber, run,
+			    testCycleSummaryServer_chkd, testCycleCustomFieldsServer_chkd, testCycleDescriptionServer_chkd, testCycleAssigneeServer_chkd, testCycleReporterServer_chkd, testCycleStartDateServer_chkd, 
+			    testCycleEndDateServer_chkd, testCaseDescriptionServer_chkd, testCaseAssigneeServer_chkd, testCaseReporterServer_chkd,
+			    testCaseEstimatedTimeServer_chkd, testCaseLabelsServer_chkd, testCaseComponentsServer_chkd, testCasePriorityServer_chkd,
+			    testCaseStatusServer_chkd, testCaseSprintIdServer_chkd, testCaseFixVersionIdServer_chkd, testCaseCustomFieldsServer_chkd, buildnumber, run,
 			    listener, workspace, pluginName);
 		    if (response != null) {
 			if (response.get("success").equals("true")) {
@@ -1017,6 +1280,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	    }
 	    return FormValidation.ok();
 	}
+	
 	@SuppressFBWarnings(value = "DLS_DEAD_LOCAL_STORE")
 	public FormValidation doCheckTestCycleCustomFields(@QueryParameter String value) throws IOException, ServletException {
 	    if (value.length() != 0) {
@@ -1031,7 +1295,121 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	    }
 	    return FormValidation.ok();
 	}
+	
+	@SuppressFBWarnings(value = "DLS_DEAD_LOCAL_STORE")
+	public FormValidation doCheckTestCaseCustomFieldsServer(@QueryParameter String value) throws IOException, ServletException {
+	    if (value.length() != 0) {
+		try {
+		    JSONParser parser = new JSONParser();
+		    JSONArray j = (JSONArray) parser.parse(value);
+		    value = j.toString();
 
+		} catch (Exception ex) {
+		    return FormValidation.error("Invalid JSON Array");
+		}
+	    }
+	    return FormValidation.ok();
+	}
+	
+	@SuppressFBWarnings(value = "DLS_DEAD_LOCAL_STORE")
+	public FormValidation doCheckTestCycleCustomFieldsServer(@QueryParameter String value) throws IOException, ServletException {
+	    if (value.length() != 0) {
+		try {
+		    JSONParser parser = new JSONParser();
+		    JSONArray j = (JSONArray) parser.parse(value);
+		    value = j.toString();
+
+		} catch (Exception ex) {
+		    return FormValidation.error("Invalid JSON Array");
+		}
+	    }
+	    return FormValidation.ok();
+	}
+	
+	public FormValidation doCheckTestCycleStartDate(@QueryParameter String value) throws IOException, ServletException {
+	    if (value.length() != 0) {
+		try
+		{
+		    SimpleDateFormat format = new SimpleDateFormat("dd/MMM/yyyy HH:mm");
+		    format.setLenient(false);
+		    format.parse(value); 
+
+		} catch (ParseException e) {
+		    return FormValidation.error("Either Invalid date passed or format is not correct for planned start date. Pass in 'dd/MMM/yyyy HH:mm' format");
+		}
+	    }
+	    return FormValidation.ok();
+	}
+	
+	public FormValidation doCheckTestCycleEndDate(@QueryParameter String value) throws IOException, ServletException {
+	    if (value.length() != 0) {
+		try
+		{
+		    SimpleDateFormat format = new SimpleDateFormat("dd/MMM/yyyy HH:mm");
+		    format.setLenient(false);
+		    format.parse(value); 
+
+		} catch (ParseException e) {
+		    return FormValidation.error("Either Invalid date passed or format is not correct for planned end date. Pass in 'dd/MMM/yyyy HH:mm' format");
+		}
+	    }
+	    return FormValidation.ok();
+	}
+
+	public FormValidation doCheckTestCycleStartDateServer(@QueryParameter String value) throws IOException, ServletException {
+	    if (value.length() != 0) {
+		try
+		{
+		    SimpleDateFormat format = new SimpleDateFormat("dd/MMM/yyyy HH:mm");
+		    format.setLenient(false);
+		    format.parse(value); 
+
+		} catch (ParseException e) {
+		    return FormValidation.error("Either Invalid date passed or format is not correct for planned start date. Pass in 'dd/MMM/yyyy HH:mm' format");
+		}
+	    }
+	    return FormValidation.ok();
+	}
+
+	public FormValidation doCheckTestCycleEndDateServer(@QueryParameter String value) throws IOException, ServletException {
+	    if (value.length() != 0) {
+		try
+		{
+		    SimpleDateFormat format = new SimpleDateFormat("dd/MMM/yyyy HH:mm");
+		    format.setLenient(false);
+		    format.parse(value); 
+
+		} catch (ParseException e) {
+		    return FormValidation.error("Either Invalid date passed or format is not correct for planned end date. Pass in 'dd/MMM/yyyy HH:mm' format");
+		}
+	    }
+	    return FormValidation.ok();
+	}
+	
+	public FormValidation doCheckTestCaseEstimatedTime(@QueryParameter String value) throws IOException, ServletException {
+	    if (value.length() != 0) {
+		String regex = "([0-1][0-9]|2[0-3]):[0-5][0-9]";
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(value);
+		Boolean result = m.matches();
+		if (!result) 
+		    return FormValidation.error("Either invalid time or invalid time format for estimated time. Pass in 'HH:mm' format");
+	    } //try-catch
+	    return FormValidation.ok();
+	}
+	
+	public FormValidation doCheckTestCaseEstimatedTimeServer(@QueryParameter String value) throws IOException, ServletException {
+	    if (value.length() != 0) {
+		String regex = "([0-1][0-9]|2[0-3]):[0-5][0-9]";
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(value);
+		Boolean result = m.matches();
+		if (!result) 
+		    return FormValidation.error("Either invalid time or invalid time format for estimated time. Pass in 'HH:mm' format");
+	    } //try-catch
+	    return FormValidation.ok();
+	}
+	
 	public FormValidation doCheckApikeyServer(@QueryParameter String value) throws IOException, ServletException {
 	    if (value.length() == 0)
 		return FormValidation.error("Required");

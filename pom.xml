@@ -11,7 +11,7 @@
 	</parent>
 
 	<artifactId>qmetry-for-jira-test-management</artifactId>
-	<version>1.16-SNAPSHOT</version>
+	<version>1.17-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 	<name>QMetry for JIRA - Test Management Plugin </name>
 	<description>QMetry Test Management for JIRA plugin for Jenkins has been designed to seamlessly integrate your CI/CD pipeline with QMetry.
@@ -251,7 +251,7 @@
 			<groupId>org.jenkins-ci.plugins.workflow</groupId>
 			<artifactId>workflow-support</artifactId>
 			<version>2.14</version>
-			<scope>tegit pust</scope>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

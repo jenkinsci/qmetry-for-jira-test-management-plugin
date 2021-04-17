@@ -57,13 +57,15 @@ public class UploadToCloudV4 {
 
 	// Call to 1st URL which gets
 	public Map<String, String> uploadToTheCloud(String apikey, String file, boolean attachFile, String format,
-			String testCycleToReuse, String environment, String build, String testCycleLabels,
-			String testCycleComponents, String testCyclePriority, String testCycleStatus, String testCycleSprintId,
-			String testCycleFixVersionId, String testCycleSummary, String testCycleCustomFields, String testCaseLabels, String testCaseComponents,
-			String testCasePriority, String testCaseStatus, String testCaseSprintId, String testCaseFixVersionId, String testCaseCustomFields,
-			int buildnumber, Run<?, ?> run, TaskListener listener, FilePath workspace)
-			throws MalformedURLException, IOException, UnsupportedEncodingException, ProtocolException, ParseException,
-			FileNotFoundException, InterruptedException {
+			String testCycleToReuse, String environment, String build, String testCycleLabels, String testCycleComponents, 
+			String testCyclePriority, String testCycleStatus, String testCycleSprintId, String testCycleFixVersionId, 
+			String testCycleSummary, String testCycleCustomFields, String testCycleDescription, String testCycleAssignee, 
+			String testCycleReporter, String testCycleStartDate, String testCycleEndDate, String testCaseDescription, 
+			String testCasePrecondition, String testCaseAssignee, String testCaseReporter, String testCaseEstimatedTime, 
+			String testCaseLabels, String testCaseComponents, String testCasePriority, String testCaseStatus, String testCaseSprintId, 
+			String testCaseFixVersionId, String testCaseCustomFields, int buildnumber, Run<?, ?> run, TaskListener listener,
+			FilePath workspace) throws MalformedURLException, IOException, UnsupportedEncodingException, ProtocolException,
+			ParseException, FileNotFoundException, InterruptedException {
 
 		PrintStream logger = listener.getLogger();
 
@@ -141,7 +143,7 @@ public class UploadToCloudV4 {
 		}
 
 		if (environment != null && !environment.isEmpty()) {
-			requestDataMap.put("environment ", environment.trim());
+			requestDataMap.put("environment", environment.trim());
 		}
 
 		if (build != null && !build.isEmpty()) {
@@ -180,6 +182,26 @@ public class UploadToCloudV4 {
 			isTestcycle = true;
 			testcycleDataMap.put("summary", testCycleSummary.trim() + "_"+ buildnumber);
 		}
+		if (testCycleDescription != null && !testCycleDescription.isEmpty()) {
+			isTestcycle = true;
+			testcycleDataMap.put("description", testCycleDescription.trim());
+		}
+		if (testCycleStartDate != null && !testCycleStartDate.isEmpty()) {
+			isTestcycle = true;
+			testcycleDataMap.put("plannedStartDate", testCycleStartDate.trim());
+		}
+		if (testCycleEndDate != null && !testCycleEndDate.isEmpty()) {
+			isTestcycle = true;
+			testcycleDataMap.put("plannedEndDate", testCycleEndDate.trim());
+		}
+		if (testCycleAssignee != null && !testCycleAssignee.isEmpty()) {
+			isTestcycle = true;
+			testcycleDataMap.put("assignee", testCycleAssignee.trim());
+		}
+		if (testCycleReporter != null && !testCycleReporter.isEmpty()) {
+			isTestcycle = true;
+			testcycleDataMap.put("reporter", testCycleReporter.trim());
+		}
 		if (testCycleCustomFields != null && !testCycleCustomFields.isEmpty()) {
 			isTestcycle = true;
 			JSONParser parser = new JSONParser(); 
@@ -214,6 +236,26 @@ public class UploadToCloudV4 {
 		if (testCaseFixVersionId != null && !testCaseFixVersionId.isEmpty()) {
 			isTestcase = true;
 			testcaseDataMap.put("fixVersionId", testCaseFixVersionId.trim());
+		}
+		if (testCaseDescription != null && !testCaseDescription.isEmpty()) {
+			isTestcase = true;
+			testcaseDataMap.put("description", testCaseDescription.trim());
+		}
+		if (testCasePrecondition != null && !testCasePrecondition.isEmpty()) {
+			isTestcase = true;
+			testcaseDataMap.put("precondition", testCasePrecondition.trim());
+		}
+		if (testCaseAssignee != null && !testCaseAssignee.isEmpty()) {
+			isTestcase = true;
+			testcaseDataMap.put("assignee", testCaseAssignee.trim());
+		}
+		if (testCaseReporter != null && !testCaseReporter.isEmpty()) {
+			isTestcase = true;
+			testcaseDataMap.put("reporter", testCaseReporter.trim());
+		}
+		if (testCaseEstimatedTime != null && !testCaseEstimatedTime.isEmpty()) {
+			isTestcase = true;
+			testcaseDataMap.put("estimatedTime", testCaseEstimatedTime.trim());
 		}
 		if (testCaseCustomFields != null && !testCaseCustomFields.isEmpty()) {
 			isTestcase = true;
