@@ -80,6 +80,9 @@ public class QTM4JResultPublisher extends Recorder implements SimpleBuildStep {
 
     public String testToRun;
 
+    public String serverAuthenticationType;
+    private String personalAccessToken;
+
     public String getPlatformserver() {
 	return platformserver;
     }
@@ -156,6 +159,20 @@ public class QTM4JResultPublisher extends Recorder implements SimpleBuildStep {
 
     public String getProxyUrl() {
 	return proxyUrl;
+    }
+
+    public String getServerAuthenticationType() {
+        return serverAuthenticationType;
+    }
+    public void setServerAuthenticationType(String serverAuthenticationType) {
+        this.serverAuthenticationType = serverAuthenticationType;
+    }
+
+    public String getPersonalAccessToken() {
+        return personalAccessToken;
+    }
+    public void setPersonalAccessToken(String personalAccessToken) {
+        this.personalAccessToken = personalAccessToken;
     }
 
     public String getUsername() {
@@ -466,12 +483,13 @@ public class QTM4JResultPublisher extends Recorder implements SimpleBuildStep {
     }
 
     @Override
-    public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener) throws InterruptedException, IOException 
+    public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener) throws InterruptedException, IOException
     {
 	TestReportDeployPublisher trdp =new TestReportDeployPublisher(name,apikey, file,attachFile,  testrunname, labels, sprint, version, component, format, platform, comment, apikeyserver, jiraurlserver, proxyUrl, password, testrunnameserver,
-		labelsserver, sprintserver, versionserver, 
+		labelsserver, sprintserver, versionserver,
 		componentserver, username, fileserver,attachFileServer, formatserver, platformserver, commentserver,
-		testToRun, testrunkey, testassethierarchy, testCaseUpdateLevel, jirafields, testrunkeyserver, testassethierarchyserver, testCaseUpdateLevelServer, jirafieldsserver, disableaction);
+		testToRun, testrunkey, testassethierarchy, testCaseUpdateLevel, jirafields, testrunkeyserver, testassethierarchyserver, testCaseUpdateLevelServer, jirafieldsserver, disableaction,
+        serverAuthenticationType, personalAccessToken);
 	trdp.perform(run,workspace,launcher,listener);
     }
 

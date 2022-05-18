@@ -66,7 +66,8 @@ public class UploadToServer {
 			String componentserver, String username, String fileserver, boolean attachFileServer,
 			String selectionserver, String platformserver, String commentserver, String testrunkeyserver,
 			String testassethierarchyserver, String testCaseUpdateLevelServer, String jirafieldsserver, int buildnumber,
-			Run<?, ?> run, TaskListener listener, FilePath workspace, String pluginName)
+			Run<?, ?> run, TaskListener listener, FilePath workspace, String pluginName,
+			String serverAuthenticationType, String personalAccessToken)
 			throws InvalidCredentialsException, AuthenticationException, ProtocolException, IOException, ParseException,
 			InterruptedException, FileNotFoundException {
 
@@ -77,11 +78,17 @@ public class UploadToServer {
 		Map<String, String> map = new HashMap<String, String>();
 		
 		CloseableHttpClient httpClient = HttpClients.createDefault();
-		String toEncode = username.trim() + ":" + password.getPlainText().trim();
 
-		byte[] mes = toEncode.getBytes("UTF-8");
-		String encodedString = DatatypeConverter.printBase64Binary(mes);
-		String basicAuth = "Basic " + encodedString;
+		String auth = "";
+		if (serverAuthenticationType.equalsIgnoreCase("BASICAUTH")) {
+			String toEncode = username.trim() + ":" + password.getPlainText().trim();
+			byte[] mes = toEncode.getBytes("UTF-8");
+			String encodedString = DatatypeConverter.printBase64Binary(mes);
+			auth = "Basic " + encodedString;
+		} else {
+			auth = "Bearer " + personalAccessToken;
+		}
+		listener.getLogger().println(pluginName + "Server_Authentication_Type : " + serverAuthenticationType);
 
 		if ((testrunnameserver != null && !testrunnameserver.isEmpty())) {
 			testrunnameserver = testrunnameserver.trim() + " #" + buildnumber;
@@ -114,7 +121,7 @@ public class UploadToServer {
 		}
 
 		HttpPost uploadFile = new HttpPost(jiraurlserver.trim() + "/rest/qtm/latest/automation/importresults");
-		uploadFile.addHeader("Authorization", basicAuth);
+		uploadFile.addHeader("Authorization", auth);
 
 		if (proxyUrl != null && !proxyUrl.isEmpty()) {
 			listener.getLogger().println("Proxy Url '" + proxyUrl + "'");
