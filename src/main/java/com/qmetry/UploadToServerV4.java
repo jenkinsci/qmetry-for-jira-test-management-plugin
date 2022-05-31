@@ -65,7 +65,8 @@ public class UploadToServerV4 {
 			String testCycleStartDate, String testCycleEndDate, String testCaseDescription, String testCaseAssignee,
 			String testCaseReporter, String testCaseEstimatedTime, String testCaseLabels, String testCaseComponents, 
 			String testCasePriority, String testCaseStatus,	String testCaseSprintId, String testCaseFixVersionId, 
-			String testCaseCustomFields, int buildnumber, Run<?, ?> run, TaskListener listener, FilePath workspace, String pluginName)
+			String testCaseCustomFields, int buildnumber, Run<?, ?> run, TaskListener listener, FilePath workspace, String pluginName,
+			String serverAuthenticationType, String personalAccessToken)
 			throws MalformedURLException, IOException, UnsupportedEncodingException, ProtocolException, ParseException,
 			FileNotFoundException, InterruptedException {
 
@@ -84,11 +85,17 @@ public class UploadToServerV4 {
 		}
 
 		String uploadserverurlv4 = jiraUrlServer + "/rest/qtm4j/automation/latest/importresult";
-		String toEncode = username_chkd.trim() + ":" + password_chkd.getPlainText().trim();
 
-		byte[] mes = toEncode.getBytes("UTF-8");
-		String encodedString = DatatypeConverter.printBase64Binary(mes);
-		String basicAuth = "Basic " + encodedString;
+		String auth = "";
+		if (serverAuthenticationType.equalsIgnoreCase("BASICAUTH")) {
+			String toEncode = username_chkd.trim() + ":" + password_chkd.getPlainText().trim();
+			byte[] mes = toEncode.getBytes("UTF-8");
+			String encodedString = DatatypeConverter.printBase64Binary(mes);
+			auth = "Basic " + encodedString;
+		} else {
+			auth = "Bearer " + personalAccessToken;
+		}
+		logger.println(pluginName + "Server_Authentication_Type : " + serverAuthenticationType);
 
 		String encoding = "UTF-8";
 		URL url = new URL(uploadserverurlv4);
@@ -96,7 +103,7 @@ public class UploadToServerV4 {
 		connection.setRequestMethod("POST");
 		connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 		connection.setRequestProperty("apiKey", apikey.trim());
-		connection.setRequestProperty("Authorization", basicAuth);
+		connection.setRequestProperty("Authorization", auth);
 		connection.setDoInput(true);
 		connection.setDoOutput(true);
 
@@ -302,7 +309,7 @@ public class UploadToServerV4 {
 			String resUrl = (String) obj.get("url");
 			if (resUrl != null && !resUrl.isEmpty()) {
 				// Call another method to upload to S3 bucket.
-				String res = uploadToS3(response.toString(), filepath, apikey, basicAuth, logger, pluginName, jiraUrlServer);
+				String res = uploadToS3(response.toString(), filepath, apikey, auth, logger, pluginName, jiraUrlServer);
 				map.put("success", "true");
 				map.put("message", res);
 			} else {
@@ -313,7 +320,7 @@ public class UploadToServerV4 {
 		return map;
 	}
 
-	public String uploadToS3(String response, String fileurl, String apiKey, String basicAuth, PrintStream logger,
+	public String uploadToS3(String response, String fileurl, String apiKey, String auth, PrintStream logger,
 			String pluginName, String jiraUrlServer) throws IOException, org.json.simple.parser.ParseException {
 
 		JSONParser parser = new JSONParser();
@@ -327,7 +334,7 @@ public class UploadToServerV4 {
 		try {
 			HttpPost httppost = new HttpPost(urlForUpload);
 			httppost.addHeader("apikey", apiKey);
-			httppost.addHeader("Authorization", basicAuth);
+			httppost.addHeader("Authorization", auth);
 			FileBody fileBody = new FileBody(new File(fileurl));
 
 			HttpEntity reqEntity = MultipartEntityBuilder.create().addPart("file", fileBody).build();
@@ -339,7 +346,7 @@ public class UploadToServerV4 {
 				logger.println(pluginName + "File upload status code : " + uploadResponse.getStatusLine().getStatusCode());
 				if (statusCode == 204) {
 					logger.println(pluginName + "File uploaded successfully.");
-					uploadResponseString = checkStatus(jiraUrlServer, trackingId, apiKey, basicAuth, logger, pluginName);
+					uploadResponseString = checkStatus(jiraUrlServer, trackingId, apiKey, auth, logger, pluginName);
 				} else {
 					uploadResponseString = "false";
 				}
@@ -356,7 +363,7 @@ public class UploadToServerV4 {
 		return uploadResponseString;
 	}
 
-	public String checkStatus(String jiraUrlServer, String trackingId, String apiKey, String basicAuth, PrintStream logger, String pluginName) {
+	public String checkStatus(String jiraUrlServer, String trackingId, String apiKey, String auth, PrintStream logger, String pluginName) {
 		
 		String trackUrl = jiraUrlServer + "/rest/qtm4j/automation/latest/importresult/track?trackingId=" + trackingId;
 		String trackResponseString = "";
@@ -364,7 +371,7 @@ public class UploadToServerV4 {
 		try {
 			HttpGet httpGet = new HttpGet(trackUrl);
 			httpGet.addHeader("apikey", apiKey);
-			httpGet.addHeader("Authorization", basicAuth);
+			httpGet.addHeader("Authorization", auth);
 			httpGet.addHeader("Content-Type", "application/json");
 
 			HttpResponse trackResponse = httpclient.execute(httpGet);

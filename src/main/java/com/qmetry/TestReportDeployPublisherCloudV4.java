@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -150,6 +151,9 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     private String testCaseAssigneeServer;
     private String testCaseReporterServer;
     private String testCaseEstimatedTimeServer;
+
+    public String serverAuthenticationType;
+    private String personalAccessToken;
 
     //Cloud getter setter
     public String getTestCycleToReuse() {
@@ -358,6 +362,21 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     public void setProxyUrl(String proxyUrl) {
 	this.proxyUrl = proxyUrl;
     }
+
+    public String getServerAuthenticationType() {
+        return serverAuthenticationType;
+    }
+    public void setServerAuthenticationType(String serverAuthenticationType) {
+        this.serverAuthenticationType = serverAuthenticationType;
+    }
+
+    public String getPersonalAccessToken() {
+        return personalAccessToken;
+    }
+    public void setPersonalAccessToken(String personalAccessToken) {
+        this.personalAccessToken = personalAccessToken;
+    }
+
     public String getUsername() {
 	return username;
     }
@@ -574,7 +593,8 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	    String testCycleSprintIdServer, String testCycleFixVersionIdServer, String testCycleSummaryServer, String testCycleStartDateServer, String testCycleEndDateServer,
 	    String testCycleAssigneeServer, String testCycleReporterServer, String testCycleDescriptionServer, String testCycleCustomFieldsServer, String testCaseEstimatedTimeServer,
 	    String testCaseAssigneeServer, String testCaseReporterServer, String testCaseDescriptionServer, String testCaseCustomFieldsServer, String testCaseLabelsServer, 
-	    String testCaseComponentsServer, String testCasePriorityServer, String testCaseStatusServer, String testCaseSprintIdServer, String testCaseFixVersionIdServer) throws AbortException {
+	    String testCaseComponentsServer, String testCasePriorityServer, String testCaseStatusServer, String testCaseSprintIdServer, String testCaseFixVersionIdServer,
+        String serverAuthenticationType, String personalAccessToken) throws AbortException {
 
 	this.testToRun = testToRun;
 	this.disableaction = disableaction;
@@ -659,6 +679,9 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	this.testCaseDescriptionServer = testCaseDescriptionServer;
 	this.testCaseCustomFieldsServer = testCaseCustomFieldsServer;
 
+    this.serverAuthenticationType = serverAuthenticationType;
+    this.personalAccessToken = personalAccessToken;
+
 	if (apikeyServer != null && !apikeyServer.isEmpty()) {
 	    Secret ak = Secret.fromString(apikeyServer);
 	    this.apikeyServer = ak.getEncryptedValue();
@@ -680,6 +703,20 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 
     public String isTestType(String testTypeName) {
 	return this.testToRun.equalsIgnoreCase(testTypeName) ? "true" : "";
+    }
+
+    /**
+     * Test if the authentication type match (for marking the radio button).
+     *
+     * @param authenticationType The String representation of the authentication type.
+     * @return Whether or not the authentication type string matches.
+     */
+
+    public String isServerAuthenticationType(String authenticationType) {
+        if (this.serverAuthenticationType == null) {
+            this.serverAuthenticationType = "BASICAUTH";
+        }
+        return this.serverAuthenticationType.equalsIgnoreCase(authenticationType) ? "true" : "";
     }
 
     @Override
@@ -981,18 +1018,35 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		String testCaseAssigneeServer_chkd = env.expand(this.getTestCaseAssigneeServer());
 		String testCaseDescriptionServer_chkd = env.expand(this.getTestCaseDescriptionServer());
 
+        String serverAuthenticationType_chkd = env.expand(this.getServerAuthenticationType());
+        String personalAccessToken_chkd = env.expand(this.getPersonalAccessToken());
+
 		if (jiraUrlServer_chkd == null || jiraUrlServer_chkd.isEmpty()) {
 		    logger.println(pluginName + "[ERROR] : Enter JIRA URL.");
 		    throw new AbortException();
 		}
-		if (username_chkd == null || username_chkd.isEmpty()) {
-		    logger.println(pluginName + "[ERROR] : Enter jira username.");
-		    throw new AbortException();
-		}
-		if (password_chkd == null) {
-		    logger.println(pluginName + "[ERROR] : Enter jira password.");
-		    throw new AbortException();
-		}
+
+        if (serverAuthenticationType_chkd == null || serverAuthenticationType_chkd.isEmpty()) {
+            logger.println(pluginName + "[ERROR] : Select server authentication type.");
+            throw new AbortException();
+        }
+
+        if(serverAuthenticationType_chkd.equalsIgnoreCase("BASICAUTH")) {
+            if (username_chkd == null || username_chkd.isEmpty()) {
+                logger.println(pluginName + "[ERROR] : Enter jira username.");
+                throw new AbortException();
+            }
+            if (password_chkd == null) {
+                logger.println(pluginName + "[ERROR] : Enter jira password.");
+                throw new AbortException();
+            }
+        } else {
+            if (personalAccessToken_chkd == null || personalAccessToken_chkd.isEmpty()) {
+                logger.println(pluginName + "[ERROR] : Enter personal access token.");
+                throw new AbortException();
+            }
+        }
+
 		if (apikeyServer_chkd == null || apikeyServer_chkd.isEmpty()) {
 		    logger.println(pluginName + " [ERROR] : Enter API Key.");
 		    throw new AbortException();
@@ -1105,7 +1159,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 			    testCycleEndDateServer_chkd, testCaseDescriptionServer_chkd, testCaseAssigneeServer_chkd, testCaseReporterServer_chkd,
 			    testCaseEstimatedTimeServer_chkd, testCaseLabelsServer_chkd, testCaseComponentsServer_chkd, testCasePriorityServer_chkd,
 			    testCaseStatusServer_chkd, testCaseSprintIdServer_chkd, testCaseFixVersionIdServer_chkd, testCaseCustomFieldsServer_chkd, buildnumber, run,
-			    listener, workspace, pluginName);
+			    listener, workspace, pluginName, serverAuthenticationType_chkd, personalAccessToken_chkd);
 		    if (response != null) {
 			if (response.get("success").equals("true")) {
 			    if (response.get("message").equals("false")) {
@@ -1439,6 +1493,12 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		return FormValidation.error("Required");
 	    return FormValidation.ok();
 	}
+
+    public FormValidation doCheckPersonalAccessToken(@QueryParameter String value) throws IOException, ServletException {
+        if (value.length() == 0 || StringUtils.isBlank(value))
+        return FormValidation.error("Required");
+        return FormValidation.ok();
+    }
 
 	public boolean isApplicable(Class<? extends AbstractProject> aClass) {
 	    // Indicates that this builder can be used with all kinds of project types

@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.servlet.ServletException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -110,6 +111,9 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 
 	public String testToRun;
 
+	public String serverAuthenticationType;
+	private String personalAccessToken;
+
 	public String getPlatformserver() {
 		return platformserver;
 	}
@@ -186,6 +190,20 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 
 	public String getProxyUrl() {
 		return this.proxyUrl;
+	}
+
+	public String getServerAuthenticationType() {
+		return serverAuthenticationType;
+	}
+	public void setServerAuthenticationType(String serverAuthenticationType) {
+		this.serverAuthenticationType = serverAuthenticationType;
+	}
+
+	public String getPersonalAccessToken() {
+		return personalAccessToken;
+	}
+	public void setPersonalAccessToken(String personalAccessToken) {
+		this.personalAccessToken = personalAccessToken;
 	}
 
 	public String getUsername() {
@@ -408,7 +426,8 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 			String componentserver, String username, String fileserver, boolean attachFileServer, String formatserver,
 			String platformserver, String commentserver, String testToRun, String testrunkey, String testassethierarchy,
 			String testCaseUpdateLevel, String jirafields, String testrunkeyserver, String testassethierarchyserver,
-			String testCaseUpdateLevelServer, String jirafieldsserver, boolean disableaction) throws AbortException {
+			String testCaseUpdateLevelServer, String jirafieldsserver, boolean disableaction,
+			String serverAuthenticationType, String personalAccessToken) throws AbortException {
 		this.disableaction = disableaction;
 		this.attachFile = attachFile;
 		this.attachFileServer = attachFileServer;
@@ -461,6 +480,9 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 		this.testCaseUpdateLevelServer = testCaseUpdateLevelServer;
 		this.jirafieldsserver = jirafieldsserver;
 		this.testToRun = testToRun;
+
+		this.serverAuthenticationType = serverAuthenticationType;
+		this.personalAccessToken = personalAccessToken;
 	}
 
 	/**
@@ -478,6 +500,20 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 
 	public String isTestType(String testTypeName) {
 		return this.testToRun.equalsIgnoreCase(testTypeName) ? "true" : "";
+	}
+
+	/**
+	 * Test if the authentication type match (for marking the radio button).
+	 *
+	 * @param authenticationType The String representation of the authentication type.
+	 * @return Whether or not the authentication type string matches.
+	 */
+
+	public String isServerAuthenticationType(String authenticationType) {
+		if (this.serverAuthenticationType == null) {
+			this.serverAuthenticationType = "BASICAUTH";
+		}
+		return this.serverAuthenticationType.equalsIgnoreCase(authenticationType) ? "true" : "";
 	}
 
 	@Override
@@ -676,18 +712,36 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 				String username_chkd = env.expand(this.getUsername());
 				//Secret password_chkd = env.expand(Secret.toString(Secret.fromString(this.getPassword())));
 				Secret password_chkd = Secret.fromString(env.expand(Secret.toString(this.getPassword())));
+
+				String serverAuthenticationType_chkd = env.expand(this.getServerAuthenticationType());
+				String personalAccessToken_chkd = env.expand(this.getPersonalAccessToken());
+
 				if (jiraurlserver_chkd == null || jiraurlserver_chkd.isEmpty()) {
 					logger.println(pluginName + "[ERROR] : Enter JIRA URL for server instance.");
 					throw new AbortException();
 				}
-				if (username_chkd == null || username_chkd.isEmpty()) {
-					logger.println(pluginName + "[ERROR] : Enter Username for JIRA server instance.");
+
+				if (serverAuthenticationType_chkd == null || serverAuthenticationType_chkd.isEmpty()) {
+					logger.println(pluginName + "[ERROR] : Select server authentication type.");
 					throw new AbortException();
 				}
-				if (password_chkd == null) {
-					logger.println(pluginName + "[ERROR] : Enter Password for JIRA server instance.");
-					throw new AbortException();
+
+				if (serverAuthenticationType_chkd.equalsIgnoreCase("BASICAUTH")) {
+					if (username_chkd == null || username_chkd.isEmpty()) {
+						logger.println(pluginName + "[ERROR] : Enter Username for JIRA server instance.");
+						throw new AbortException();
+					}
+					if (password_chkd == null) {
+						logger.println(pluginName + "[ERROR] : Enter Password for JIRA server instance.");
+						throw new AbortException();
+					}
+				} else {
+					if (personalAccessToken_chkd == null || personalAccessToken_chkd.isEmpty()) {
+						logger.println(pluginName + "[ERROR] : Enter Personal Access Token for JIRA server instance.");
+						throw new AbortException();
+					}
 				}
+
 				if (apikey_chkd == null || apikey_chkd.isEmpty()) {
 					logger.println(pluginName + "[ERROR] : Enter API Key for your project.");
 					throw new AbortException();
@@ -735,7 +789,8 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 							proxyUrl_chkd, password_chkd, testrunname_chkd, labels_chkd, sprint_chkd, version_chkd,
 							component_chkd, username_chkd, file_chkd.trim().replace("\\", "/"), attachFileServer,
 							format_chkd, platform_chkd, comment_chkd, testrunkey_chkd, testassethierarchy_chkd,
-							testCaseUpdateLevelServer, jirafields_chkd, buildnumber, run, listener, workspace, pluginName);
+							testCaseUpdateLevelServer, jirafields_chkd, buildnumber, run, listener, workspace, pluginName,
+							serverAuthenticationType_chkd, personalAccessToken_chkd);
 					if (response != null) {
 						if (response.get("success").equals("error")) {
 							logger.println(pluginName + "Error has occurred while uploading the file with response code: "
@@ -969,6 +1024,12 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 
 		public FormValidation doCheckPassword(@QueryParameter String value) throws IOException, ServletException {
 			if (value.length() == 0)
+				return FormValidation.error("Required");
+			return FormValidation.ok();
+		}
+
+		public FormValidation doCheckPersonalAccessToken(@QueryParameter String value) throws IOException, ServletException {
+			if (value.length() == 0 || StringUtils.isBlank(value))
 				return FormValidation.error("Required");
 			return FormValidation.ok();
 		}

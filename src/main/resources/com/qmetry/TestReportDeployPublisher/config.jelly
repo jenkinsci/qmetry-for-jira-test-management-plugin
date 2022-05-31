@@ -83,13 +83,25 @@
 					<f:textbox />
 				</f:entry>
 
-				<f:entry title="JIRA Username" field="username">
-					<f:textbox />
-				</f:entry>
+                <f:radioBlock name="serverAuthenticationType" value="BASICAUTH" checked="${instance.isServerAuthenticationType('BASICAUTH')}" title="Basic Authentication" inline="true">
+                    <f:nested>
+                        <f:entry title="JIRA Username" field="username">
+                            <f:textbox />
+                        </f:entry>
 
-				<f:entry title="JIRA Password" field="password">
-					<f:password />
-				</f:entry>
+                        <f:entry title="JIRA Password" field="password">
+                            <f:password />
+                        </f:entry>
+                    </f:nested>
+                </f:radioBlock>
+
+                <f:radioBlock name="serverAuthenticationType" value="TOKENAUTH" checked="${instance.isServerAuthenticationType('TOKENAUTH')}" title="Personal Access Token" inline="true">
+                    <f:nested>
+                        <f:entry title="Personal Access Token" field="personalAccessToken">
+                            <f:textbox />
+                        </f:entry>
+                    </f:nested>
+                </f:radioBlock>
 
 				<f:entry title="Automation API Key" field="apikeyserver">
 					<f:textbox />
