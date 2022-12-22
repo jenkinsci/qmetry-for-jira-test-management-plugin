@@ -66,7 +66,7 @@ public class UploadToServerV4 {
 			String testCaseReporter, String testCaseEstimatedTime, String testCaseLabels, String testCaseComponents, 
 			String testCasePriority, String testCaseStatus,	String testCaseSprintId, String testCaseFixVersionId, 
 			String testCaseCustomFields, int buildnumber, Run<?, ?> run, TaskListener listener, FilePath workspace, String pluginName,
-			String serverAuthenticationType, String personalAccessToken)
+			String serverAuthenticationType, String personalAccessToken, String testCycleFolderPath, String testCaseFolderPath)
 			throws MalformedURLException, IOException, UnsupportedEncodingException, ProtocolException, ParseException,
 			FileNotFoundException, InterruptedException {
 
@@ -213,6 +213,10 @@ public class UploadToServerV4 {
 			isTestcycle = true;
 			testcycleDataMap.put("reporter", testCycleReporter.trim());
 		}
+		if (testCycleFolderPath != null && !testCycleFolderPath.isEmpty()) {
+			isTestcycle = true;
+			testcycleDataMap.put("folderPath", testCycleFolderPath.trim());
+		}
 		if (testCycleCustomFields != null && !testCycleCustomFields.isEmpty()) {
 			isTestcycle = true;
 			JSONParser parser = new JSONParser(); 
@@ -263,6 +267,10 @@ public class UploadToServerV4 {
 		if (testCaseEstimatedTime != null && !testCaseEstimatedTime.isEmpty()) {
 			isTestcase = true;
 			testcaseDataMap.put("estimatedTime", testCaseEstimatedTime.trim());
+		}
+		if (testCaseFolderPath != null && !testCaseFolderPath.isEmpty()) {
+			isTestcase = true;
+			testcaseDataMap.put("folderPath", testCaseFolderPath.trim());
 		}
 		if (testCaseCustomFields != null && !testCaseCustomFields.isEmpty()) {
 			isTestcase = true;

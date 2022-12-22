@@ -185,6 +185,9 @@
                <f:entry title="Description" field="testCycleDescriptionServer" >
                   <f:textarea />
                </f:entry>
+               <f:entry title="Folder Path" field="testCycleFolderPathServer" >
+                   <f:textbox />
+               </f:entry>
                <f:entry title="Priority" field="testCyclePriorityServer" >
                   <f:textbox />
                </f:entry>
@@ -223,6 +226,9 @@
             <f:section title="Test Case">  
                <f:entry title="Description" field="testCaseDescriptionServer" >
                   <f:textarea />
+               </f:entry>
+               <f:entry title="Folder Path" field="testCaseFolderPathServer" >
+                   <f:textbox />
                </f:entry>
                <f:entry title="Priority" field="testCasePriorityServer" >
                   <f:textbox />

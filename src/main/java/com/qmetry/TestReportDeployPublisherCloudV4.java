@@ -139,6 +139,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     private String testCycleReporterServer;
     private String testCycleStartDateServer;
     private String testCycleEndDateServer;
+    private String testCycleFolderPathServer;
 
     private String testCaseLabelsServer;
     private String testCaseComponentsServer;
@@ -151,6 +152,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     private String testCaseAssigneeServer;
     private String testCaseReporterServer;
     private String testCaseEstimatedTimeServer;
+    private String testCaseFolderPathServer;
 
     public String serverAuthenticationType;
     private String personalAccessToken;
@@ -509,6 +511,14 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     public void setTestCycleEndDateServer(String testCycleEndDateServer) {
         this.testCycleEndDateServer = testCycleEndDateServer;
     }
+
+    public String getTestCycleFolderPathServer() {
+        return testCycleFolderPathServer;
+    }
+    public void setTestCycleFolderPathServer(String testCycleFolderPathServer) {
+        this.testCycleFolderPathServer = testCycleFolderPathServer;
+    }
+
     public String getTestCaseLabelsServer() {
 	return testCaseLabelsServer;
     }
@@ -575,6 +585,13 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     public void setTestCaseEstimatedTimeServer(String testCaseEstimatedTimeServer) {
         this.testCaseEstimatedTimeServer = testCaseEstimatedTimeServer;
     }
+
+    public String getTestCaseFolderPathServer() {
+        return testCaseFolderPathServer;
+    }
+    public void setTestCaseFolderPathServer(String testCaseFolderPathServer) {
+        this.testCaseFolderPathServer = testCaseFolderPathServer;
+    }
     
     public TestReportDeployPublisherCloudV4() {
 
@@ -594,7 +611,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	    String testCycleAssigneeServer, String testCycleReporterServer, String testCycleDescriptionServer, String testCycleCustomFieldsServer, String testCaseEstimatedTimeServer,
 	    String testCaseAssigneeServer, String testCaseReporterServer, String testCaseDescriptionServer, String testCaseCustomFieldsServer, String testCaseLabelsServer, 
 	    String testCaseComponentsServer, String testCasePriorityServer, String testCaseStatusServer, String testCaseSprintIdServer, String testCaseFixVersionIdServer,
-        String serverAuthenticationType, String personalAccessToken) throws AbortException {
+        String serverAuthenticationType, String personalAccessToken, String testCycleFolderPathServer, String testCaseFolderPathServer) throws AbortException {
 
 	this.testToRun = testToRun;
 	this.disableaction = disableaction;
@@ -666,6 +683,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	this.testCycleReporterServer = testCycleReporterServer;
 	this.testCycleDescriptionServer = testCycleDescriptionServer;
 	this.testCycleCustomFieldsServer = testCycleCustomFieldsServer;
+    this.testCycleFolderPathServer = testCycleFolderPathServer;
 
 	this.testCaseLabelsServer = testCaseLabelsServer;
 	this.testCaseComponentsServer = testCaseComponentsServer;
@@ -678,6 +696,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	this.testCaseAssigneeServer = testCaseAssigneeServer;
 	this.testCaseDescriptionServer = testCaseDescriptionServer;
 	this.testCaseCustomFieldsServer = testCaseCustomFieldsServer;
+    this.testCaseFolderPathServer = testCaseFolderPathServer;
 
     this.serverAuthenticationType = serverAuthenticationType;
     this.personalAccessToken = personalAccessToken;
@@ -1005,6 +1024,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		String testCycleReporterServer_chkd = env.expand(this.getTestCycleReporterServer());
 		String testCycleAssigneeServer_chkd = env.expand(this.getTestCycleAssigneeServer());
 		String testCycleDescriptionServer_chkd = env.expand(this.getTestCycleDescriptionServer());
+        String testCycleFolderPathServer_chkd = env.expand(this.getTestCycleFolderPathServer());
 
 		String testCaseLabelsServer_chkd = env.expand(this.getTestCaseLabelsServer());
 		String testCaseComponentsServer_chkd = env.expand(this.getTestCaseComponentsServer());
@@ -1017,6 +1037,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		String testCaseReporterServer_chkd = env.expand(this.getTestCaseReporterServer());
 		String testCaseAssigneeServer_chkd = env.expand(this.getTestCaseAssigneeServer());
 		String testCaseDescriptionServer_chkd = env.expand(this.getTestCaseDescriptionServer());
+        String testCaseFolderPathServer_chkd = env.expand(this.getTestCaseFolderPathServer());
 
         String serverAuthenticationType_chkd = env.expand(this.getServerAuthenticationType());
         String personalAccessToken_chkd = env.expand(this.getPersonalAccessToken());
@@ -1116,6 +1137,9 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		if (testCycleCustomFieldsServer_chkd != null && !testCycleCustomFieldsServer_chkd.isEmpty())
 		    logger.println(pluginName + " Test cycle custom fields : " + testCycleCustomFieldsServer_chkd);
 
+        if (testCycleFolderPathServer_chkd != null && !testCycleFolderPathServer_chkd.isEmpty())
+            logger.println(pluginName + " Test cycle folder path : " + testCycleFolderPathServer_chkd);
+
 		//Testcase fields
 		if (testCaseDescriptionServer_chkd != null && !testCaseDescriptionServer_chkd.isEmpty())
 		    logger.println(pluginName + " Test case description : " + testCaseDescriptionServer_chkd);
@@ -1150,6 +1174,9 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		if (testCaseCustomFieldsServer_chkd != null && !testCaseCustomFieldsServer_chkd.isEmpty())
 		    logger.println(pluginName + " Test case custom fields : " + testCaseCustomFieldsServer_chkd);
 
+        if (testCaseFolderPathServer_chkd != null && !testCaseFolderPathServer_chkd.isEmpty())
+            logger.println(pluginName + " Test case folder path : " + testCaseFolderPathServer_chkd);
+
 		try {
 		    Map response = uploadToServer.uploadToTheServer(jiraUrlServer_chkd, username_chkd, password_chkd, apikeyServer_chkd, fileServer_chkd.trim().replace("\\", "/"),
 			    attachFileServer, formatServer_chkd, testCycleToReuseServer_chkd, environmentServer_chkd, buildServer_chkd,
@@ -1159,7 +1186,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 			    testCycleEndDateServer_chkd, testCaseDescriptionServer_chkd, testCaseAssigneeServer_chkd, testCaseReporterServer_chkd,
 			    testCaseEstimatedTimeServer_chkd, testCaseLabelsServer_chkd, testCaseComponentsServer_chkd, testCasePriorityServer_chkd,
 			    testCaseStatusServer_chkd, testCaseSprintIdServer_chkd, testCaseFixVersionIdServer_chkd, testCaseCustomFieldsServer_chkd, buildnumber, run,
-			    listener, workspace, pluginName, serverAuthenticationType_chkd, personalAccessToken_chkd);
+			    listener, workspace, pluginName, serverAuthenticationType_chkd, personalAccessToken_chkd, testCycleFolderPathServer_chkd, testCaseFolderPathServer_chkd);
 		    if (response != null) {
 			if (response.get("success").equals("true")) {
 			    if (response.get("message").equals("false")) {
