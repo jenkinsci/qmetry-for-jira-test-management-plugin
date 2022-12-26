@@ -154,6 +154,11 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     private String testCaseEstimatedTimeServer;
     private String testCaseFolderPathServer;
 
+    private String testCaseExecutionCommentServer;
+    private String testCaseExecutionActualTimeServer;
+    private String testCaseExecutionAssigneeServer;
+    private String testCaseExecutionCustomFieldsServer;
+
     public String serverAuthenticationType;
     private String personalAccessToken;
 
@@ -592,7 +597,35 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     public void setTestCaseFolderPathServer(String testCaseFolderPathServer) {
         this.testCaseFolderPathServer = testCaseFolderPathServer;
     }
-    
+
+    public String getTestCaseExecutionCommentServer() {
+        return testCaseExecutionCommentServer;
+    }
+    public void setTestCaseExecutionCommentServer(String testCaseExecutionCommentServer) {
+        this.testCaseExecutionCommentServer = testCaseExecutionCommentServer;
+    }
+
+    public String getTestCaseExecutionActualTimeServer() {
+        return testCaseExecutionActualTimeServer;
+    }
+    public void setTestCaseExecutionActualTimeServer(String testCaseExecutionActualTimeServer) {
+        this.testCaseExecutionActualTimeServer = testCaseExecutionActualTimeServer;
+    }
+
+    public String getTestCaseExecutionAssigneeServer() {
+        return testCaseExecutionAssigneeServer;
+    }
+    public void setTestCaseExecutionAssigneeServer(String testCaseExecutionAssigneeServer) {
+        this.testCaseExecutionAssigneeServer = testCaseExecutionAssigneeServer;
+    }
+
+    public String getTestCaseExecutionCustomFieldsServer() {
+        return testCaseExecutionCustomFieldsServer;
+    }
+    public void setTestCaseExecutionCustomFieldsServer(String testCaseExecutionCustomFieldsServer) {
+        this.testCaseExecutionCustomFieldsServer = testCaseExecutionCustomFieldsServer;
+    }
+
     public TestReportDeployPublisherCloudV4() {
 
     }
@@ -611,7 +644,8 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	    String testCycleAssigneeServer, String testCycleReporterServer, String testCycleDescriptionServer, String testCycleCustomFieldsServer, String testCaseEstimatedTimeServer,
 	    String testCaseAssigneeServer, String testCaseReporterServer, String testCaseDescriptionServer, String testCaseCustomFieldsServer, String testCaseLabelsServer, 
 	    String testCaseComponentsServer, String testCasePriorityServer, String testCaseStatusServer, String testCaseSprintIdServer, String testCaseFixVersionIdServer,
-        String serverAuthenticationType, String personalAccessToken, String testCycleFolderPathServer, String testCaseFolderPathServer) throws AbortException {
+        String serverAuthenticationType, String personalAccessToken, String testCycleFolderPathServer, String testCaseFolderPathServer, String testCaseExecutionCommentServer,
+        String testCaseExecutionActualTimeServer, String testCaseExecutionAssigneeServer, String testCaseExecutionCustomFieldsServer) throws AbortException {
 
 	this.testToRun = testToRun;
 	this.disableaction = disableaction;
@@ -700,6 +734,11 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 
     this.serverAuthenticationType = serverAuthenticationType;
     this.personalAccessToken = personalAccessToken;
+
+    this.testCaseExecutionCommentServer = testCaseExecutionCommentServer;
+    this.testCaseExecutionActualTimeServer = testCaseExecutionActualTimeServer;
+    this.testCaseExecutionAssigneeServer = testCaseExecutionAssigneeServer;
+    this.testCaseExecutionCustomFieldsServer = testCaseExecutionCustomFieldsServer;
 
 	if (apikeyServer != null && !apikeyServer.isEmpty()) {
 	    Secret ak = Secret.fromString(apikeyServer);
@@ -1039,6 +1078,11 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		String testCaseDescriptionServer_chkd = env.expand(this.getTestCaseDescriptionServer());
         String testCaseFolderPathServer_chkd = env.expand(this.getTestCaseFolderPathServer());
 
+        String testCaseExecutionCommentServer_chkd = env.expand(this.getTestCaseExecutionCommentServer());
+        String testCaseExecutionActualTimeServer_chkd = env.expand(this.getTestCaseExecutionActualTimeServer());
+        String testCaseExecutionAssigneeServer_chkd = env.expand(this.getTestCaseExecutionAssigneeServer());
+        String testCaseExecutionCustomFieldsServer_chkd = env.expand(this.getTestCaseExecutionCustomFieldsServer());
+
         String serverAuthenticationType_chkd = env.expand(this.getServerAuthenticationType());
         String personalAccessToken_chkd = env.expand(this.getPersonalAccessToken());
 
@@ -1177,6 +1221,19 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
         if (testCaseFolderPathServer_chkd != null && !testCaseFolderPathServer_chkd.isEmpty())
             logger.println(pluginName + " Test case folder path : " + testCaseFolderPathServer_chkd);
 
+        //TestCaseExecution fields
+        if (testCaseExecutionCommentServer_chkd!= null && !testCaseExecutionCommentServer_chkd.isEmpty())
+            logger.println(pluginName + " Test case execution comment : " + testCaseExecutionCommentServer_chkd);
+
+        if (testCaseExecutionActualTimeServer_chkd!= null && !testCaseExecutionActualTimeServer_chkd.isEmpty())
+            logger.println(pluginName + " Test case execution actual time : " + testCaseExecutionActualTimeServer_chkd);
+
+        if (testCaseExecutionAssigneeServer_chkd!= null && !testCaseExecutionAssigneeServer_chkd.isEmpty())
+            logger.println(pluginName + " Test case execution assignee : " + testCaseExecutionAssigneeServer_chkd);
+
+        if (testCaseExecutionCustomFieldsServer_chkd!= null && !testCaseExecutionCustomFieldsServer_chkd.isEmpty())
+            logger.println(pluginName + " Test case execution custom fields : " + testCaseExecutionCustomFieldsServer_chkd);
+
 		try {
 		    Map response = uploadToServer.uploadToTheServer(jiraUrlServer_chkd, username_chkd, password_chkd, apikeyServer_chkd, fileServer_chkd.trim().replace("\\", "/"),
 			    attachFileServer, formatServer_chkd, testCycleToReuseServer_chkd, environmentServer_chkd, buildServer_chkd,
@@ -1186,7 +1243,8 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 			    testCycleEndDateServer_chkd, testCaseDescriptionServer_chkd, testCaseAssigneeServer_chkd, testCaseReporterServer_chkd,
 			    testCaseEstimatedTimeServer_chkd, testCaseLabelsServer_chkd, testCaseComponentsServer_chkd, testCasePriorityServer_chkd,
 			    testCaseStatusServer_chkd, testCaseSprintIdServer_chkd, testCaseFixVersionIdServer_chkd, testCaseCustomFieldsServer_chkd, buildnumber, run,
-			    listener, workspace, pluginName, serverAuthenticationType_chkd, personalAccessToken_chkd, testCycleFolderPathServer_chkd, testCaseFolderPathServer_chkd);
+			    listener, workspace, pluginName, serverAuthenticationType_chkd, personalAccessToken_chkd, testCycleFolderPathServer_chkd, testCaseFolderPathServer_chkd,
+                testCaseExecutionCommentServer_chkd, testCaseExecutionActualTimeServer_chkd, testCaseExecutionAssigneeServer_chkd, testCaseExecutionCustomFieldsServer_chkd);
 		    if (response != null) {
 			if (response.get("success").equals("true")) {
 			    if (response.get("message").equals("false")) {
@@ -1490,7 +1548,34 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	    } //try-catch
 	    return FormValidation.ok();
 	}
-	
+
+    public FormValidation doCheckTestCaseExecutionActualTimeServer(@QueryParameter String value) throws IOException, ServletException {
+        if (value.length() != 0) {
+        String regex = "([0-1][0-9]|2[0-3]):[0-5][0-9]";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(value);
+        Boolean result = m.matches();
+        if (!result)
+            return FormValidation.error("Either invalid time or invalid time format for actual time. Pass in 'HH:mm' format");
+        }
+        return FormValidation.ok();
+    }
+
+    @SuppressFBWarnings(value = "DLS_DEAD_LOCAL_STORE")
+    public FormValidation doCheckTestCaseExecutionCustomFieldsServer(@QueryParameter String value) throws IOException, ServletException {
+        if (value.length() != 0) {
+            try {
+                JSONParser parser = new JSONParser();
+                JSONArray j = (JSONArray) parser.parse(value);
+                value = j.toString();
+
+            } catch (Exception ex) {
+                return FormValidation.error("Invalid JSON Array");
+            }
+            }
+        return FormValidation.ok();
+    }
+
 	public FormValidation doCheckApikeyServer(@QueryParameter String value) throws IOException, ServletException {
 	    if (value.length() == 0)
 		return FormValidation.error("Required");

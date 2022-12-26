@@ -262,6 +262,21 @@
                </f:entry>
             </f:section>
 
+            <f:section title="Test Case Execution">
+               <f:entry title="Comment" field="testCaseExecutionCommentServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Actual Time" field="testCaseExecutionActualTimeServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Assignee" field="testCaseExecutionAssigneeServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Custom Fields" field="testCaseExecutionCustomFieldsServer" >
+                  <f:textarea />
+               </f:entry>
+            </f:section>
+
          </f:nested>
       </f:radioBlock>
 
