@@ -39,7 +39,7 @@
                <f:checkbox />
             </f:entry>
                    
-            <f:section title="Test Cycle">
+            <f:section title="${instance.isTestType('CLOUD')?'Test Cycle':null}">
                <f:entry title="Summary" field="testCycleSummary" >
                   <f:textbox />
                </f:entry>
@@ -81,7 +81,7 @@
                </f:entry>
             </f:section>  
                       
-            <f:section title="Test Case">  
+            <f:section title="${instance.isTestType('CLOUD')?'Test Case':null}">
             	<f:entry title="Description" field="testCaseDescription" >
                   <f:textarea />
                </f:entry>
@@ -178,12 +178,15 @@
                <f:checkbox />
             </f:entry>
                    
-            <f:section title="Test Cycle">
+            <f:section title="${instance.isTestType('SERVER')?'Test Cycle':null}">
                <f:entry title="Summary" field="testCycleSummaryServer" >
                   <f:textbox />
                </f:entry>
                <f:entry title="Description" field="testCycleDescriptionServer" >
                   <f:textarea />
+               </f:entry>
+               <f:entry title="Folder Path" field="testCycleFolderPathServer" >
+                   <f:textbox />
                </f:entry>
                <f:entry title="Priority" field="testCyclePriorityServer" >
                   <f:textbox />
@@ -220,9 +223,12 @@
                </f:entry>
             </f:section>  
                       
-            <f:section title="Test Case">  
+            <f:section title="${instance.isTestType('SERVER')?'Test Case':null}">
                <f:entry title="Description" field="testCaseDescriptionServer" >
                   <f:textarea />
+               </f:entry>
+               <f:entry title="Folder Path" field="testCaseFolderPathServer" >
+                   <f:textbox />
                </f:entry>
                <f:entry title="Priority" field="testCasePriorityServer" >
                   <f:textbox />
@@ -252,6 +258,21 @@
                   <f:textbox />
                </f:entry>
                <f:entry title="Custom Fields" field="testCaseCustomFieldsServer" >
+                  <f:textarea />
+               </f:entry>
+            </f:section>
+
+            <f:section title="${instance.isTestType('SERVER')?'Test Case Execution':null}">
+               <f:entry title="Comment" field="testCaseExecutionCommentServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Actual Time" field="testCaseExecutionActualTimeServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Assignee" field="testCaseExecutionAssigneeServer" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Custom Fields" field="testCaseExecutionCustomFieldsServer" >
                   <f:textarea />
                </f:entry>
             </f:section>

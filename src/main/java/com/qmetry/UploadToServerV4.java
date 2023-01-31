@@ -66,7 +66,8 @@ public class UploadToServerV4 {
 			String testCaseReporter, String testCaseEstimatedTime, String testCaseLabels, String testCaseComponents, 
 			String testCasePriority, String testCaseStatus,	String testCaseSprintId, String testCaseFixVersionId, 
 			String testCaseCustomFields, int buildnumber, Run<?, ?> run, TaskListener listener, FilePath workspace, String pluginName,
-			String serverAuthenticationType, String personalAccessToken)
+			String serverAuthenticationType, String personalAccessToken, String testCycleFolderPath, String testCaseFolderPath,
+			String testCaseExecutionComment, String testCaseExecutionActualTime, String testCaseExecutionAssignee, String testCaseExecutionCustomFields)
 			throws MalformedURLException, IOException, UnsupportedEncodingException, ProtocolException, ParseException,
 			FileNotFoundException, InterruptedException {
 
@@ -213,6 +214,10 @@ public class UploadToServerV4 {
 			isTestcycle = true;
 			testcycleDataMap.put("reporter", testCycleReporter.trim());
 		}
+		if (testCycleFolderPath != null && !testCycleFolderPath.isEmpty()) {
+			isTestcycle = true;
+			testcycleDataMap.put("folderPath", testCycleFolderPath.trim());
+		}
 		if (testCycleCustomFields != null && !testCycleCustomFields.isEmpty()) {
 			isTestcycle = true;
 			JSONParser parser = new JSONParser(); 
@@ -264,6 +269,10 @@ public class UploadToServerV4 {
 			isTestcase = true;
 			testcaseDataMap.put("estimatedTime", testCaseEstimatedTime.trim());
 		}
+		if (testCaseFolderPath != null && !testCaseFolderPath.isEmpty()) {
+			isTestcase = true;
+			testcaseDataMap.put("folderPath", testCaseFolderPath.trim());
+		}
 		if (testCaseCustomFields != null && !testCaseCustomFields.isEmpty()) {
 			isTestcase = true;
 			JSONParser parser = new JSONParser(); 
@@ -271,17 +280,42 @@ public class UploadToServerV4 {
 			testcaseDataMap.put("customFields", testcaseCustomFieldsJson);
 		}
 
-		Map<String, Object> testCaseCycleDataMap = new HashMap<>();
+		Map<String, Object> testCaseExecutionDataMap = new HashMap<>();
+		boolean isTestCaseExecution = false;
+		if (testCaseExecutionComment != null && !testCaseExecutionComment.isEmpty()) {
+			isTestCaseExecution = true;
+			testCaseExecutionDataMap.put("comment", testCaseExecutionComment.trim());
+		}
+		if (testCaseExecutionActualTime != null && !testCaseExecutionActualTime.isEmpty()) {
+			isTestCaseExecution = true;
+			testCaseExecutionDataMap.put("actualTime", testCaseExecutionActualTime.trim());
+		}
+		if (testCaseExecutionAssignee != null && !testCaseExecutionAssignee.isEmpty()) {
+			isTestCaseExecution = true;
+			testCaseExecutionDataMap.put("assignee", testCaseExecutionAssignee.trim());
+		}
+		if (testCaseExecutionCustomFields != null && !testCaseExecutionCustomFields.isEmpty()) {
+			isTestCaseExecution = true;
+			JSONParser parser = new JSONParser();
+			org.json.simple.JSONArray testCaseExecutionCustomFieldsJson = (org.json.simple.JSONArray) parser.parse(testCaseExecutionCustomFields);
+			testCaseExecutionDataMap.put("customFields", testCaseExecutionCustomFieldsJson);
+		}
+
+		Map<String, Object> testCaseCycleTcExecutionDataMap = new HashMap<>();
 		if (isTestcycle) {
-			testCaseCycleDataMap.put("testCycle", testcycleDataMap);
+			testCaseCycleTcExecutionDataMap.put("testCycle", testcycleDataMap);
 			logger.println(pluginName + "TestCycle  : " + testcycleDataMap);
 		}
 		if (isTestcase) {
-			testCaseCycleDataMap.put("testCase", testcaseDataMap);
+			testCaseCycleTcExecutionDataMap.put("testCase", testcaseDataMap);
 			logger.println(pluginName + "TestCase : " + testcaseDataMap);
 		}
+		if (isTestCaseExecution) {
+			testCaseCycleTcExecutionDataMap.put("testCaseExecution", testCaseExecutionDataMap);
+			logger.println(pluginName + "TestCaseExecution : " + testCaseExecutionDataMap);
+		}
 
-		requestDataMap.put("fields", testCaseCycleDataMap);
+		requestDataMap.put("fields", testCaseCycleTcExecutionDataMap);
 
 		JSONObject jsonbody = new JSONObject(requestDataMap);
 		logger.println(pluginName + "JsonBody : " + jsonbody);
