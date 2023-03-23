@@ -46,6 +46,9 @@
                <f:entry title="Description" field="testCycleDescription" >
                   <f:textarea />
                </f:entry>
+               <f:entry title="Folder Id" field="testCycleFolderId" >
+                  <f:textbox />
+               </f:entry>
                <f:entry title="Priority" field="testCyclePriority" >
                   <f:textbox />
                </f:entry>
@@ -87,6 +90,9 @@
                </f:entry>
                <f:entry title="Precondition" field="testCasePrecondition" >
                   <f:textarea />
+               </f:entry>
+               <f:entry title="Folder Id" field="testCaseFolderId" >
+                  <f:textbox />
                </f:entry>
                <f:entry title="Priority" field="testCasePriority" >
                   <f:textbox />

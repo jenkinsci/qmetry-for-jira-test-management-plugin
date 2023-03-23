@@ -99,6 +99,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     private String testCycleReporter;
     private String testCycleStartDate;
     private String testCycleEndDate;
+    private String testCycleFolderId;
 
     private String testCaseLabels;
     private String testCaseComponents;
@@ -112,6 +113,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     private String testCaseAssignee;
     private String testCaseReporter;
     private String testCaseEstimatedTime;
+    private String testCaseFolderId;
 
     // Server Fields
     private String jiraUrlServer;
@@ -283,6 +285,15 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     public void setTestCycleEndDate(String testCycleEndDate) {
         this.testCycleEndDate = testCycleEndDate;
     }
+
+    public String getTestCycleFolderId() {
+        return testCycleFolderId;
+    }
+
+    public void setTestCycleFolderId(String testCycleFolderId) {
+        this.testCycleFolderId = testCycleFolderId;
+    }
+
     public String getTestCaseLabels() {
 	return testCaseLabels;
     }
@@ -354,6 +365,14 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     }
     public void setTestCaseEstimatedTime(String testCaseEstimatedTime) {
         this.testCaseEstimatedTime = testCaseEstimatedTime;
+    }
+
+    public String getTestCaseFolderId() {
+        return testCaseFolderId;
+    }
+
+    public void setTestCaseFolderId(String testCaseFolderId) {
+        this.testCaseFolderId = testCaseFolderId;
     }
 
     // Server Getter Setter
@@ -635,9 +654,9 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     public TestReportDeployPublisherCloudV4(String testToRun, String apikey, String file, boolean attachFile,String format, boolean disableaction,
 	    String testCycleToReuse, String environment, String build, String testCycleLabels, String testCycleComponents, String testCyclePriority,
 	    String testCycleStatus, String testCycleSprintId, String testCycleFixVersionId, String testCycleSummary, String testCycleCustomFields, String testCycleStartDate, 
-	    String testCycleEndDate, String testCycleReporter, String testCycleAssignee, String testCycleDescription, String testCaseLabels, String testCaseEstimatedTime,
+	    String testCycleEndDate, String testCycleReporter, String testCycleAssignee, String testCycleDescription, String testCycleFolderId, String testCaseLabels, String testCaseEstimatedTime,
 	    String testCaseReporter, String testCaseAssignee, String testCaseDescription, String testCasePrecondition, String testCaseComponents, String testCasePriority, 
-	    String testCaseStatus, String testCaseSprintId, String testCaseFixVersionId, String testCaseCustomFields, String jiraUrlServer, String proxyUrl, String username, 
+	    String testCaseStatus, String testCaseSprintId, String testCaseFixVersionId, String testCaseCustomFields, String testCaseFolderId, String jiraUrlServer, String proxyUrl, String username,
 	    Secret password, String apikeyServer, String formatServer, String fileServer, String testCycleToReuseServer, String environmentServer, String buildServer,
 	    boolean attachFileServer, String testCycleLabelsServer, String testCycleComponentsServer, String testCyclePriorityServer, String testCycleStatusServer, 
 	    String testCycleSprintIdServer, String testCycleFixVersionIdServer, String testCycleSummaryServer, String testCycleStartDateServer, String testCycleEndDateServer,
@@ -672,6 +691,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	this.testCycleAssignee = testCycleAssignee;
 	this.testCycleReporter = testCycleReporter;
 	this.testCycleDescription = testCycleDescription;
+    this.testCycleFolderId = testCycleFolderId;
 
 	this.testCaseLabels = testCaseLabels;
 	this.testCaseComponents = testCaseComponents;
@@ -685,6 +705,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	this.testCaseAssignee = testCaseAssignee;
 	this.testCaseDescription = testCaseDescription;
 	this.testCasePrecondition = testCasePrecondition;
+    this.testCaseFolderId = testCaseFolderId;
 
 	if (apikey != null && !apikey.isEmpty()) {
 	    Secret ak = Secret.fromString(apikey);
@@ -825,6 +846,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		String testCycleReporter_chkd = env.expand(this.getTestCycleReporter());
 		String testCycleAssignee_chkd = env.expand(this.getTestCycleAssignee());
 		String testCycleDescription_chkd = env.expand(this.getTestCycleDescription());
+        String testCycleFolderId_chkd = env.expand(this.getTestCycleFolderId());
 
 		String testCaseLabels_chkd = env.expand(this.getTestCaseLabels());
 		String testCaseComponents_chkd = env.expand(this.getTestCaseComponents());
@@ -838,6 +860,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		String testCaseAssignee_chkd = env.expand(this.getTestCaseAssignee());
 		String testCaseDescription_chkd = env.expand(this.getTestCaseDescription());
 		String testCasePrecondition_chkd = env.expand(this.getTestCasePrecondition());
+        String testCaseFolderId_chkd = env.expand(this.getTestCaseFolderId());
 
 		if (apikey_chkd == null || apikey_chkd.isEmpty()) {
 		    logger.println(pluginName + " [ERROR] : Enter API Key.");
@@ -904,6 +927,9 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		if (testCycleCustomFields_chkd != null && !testCycleCustomFields_chkd.isEmpty())
 		    logger.println(pluginName + " Test cycle custom fields : " + testCycleCustomFields_chkd);
 
+        if (testCycleFolderId_chkd != null && !testCycleFolderId_chkd.isEmpty())
+            logger.println(pluginName + " Test cycle folder id : " + testCycleFolderId_chkd);
+
 		//Testcase fields
 		if (testCaseDescription_chkd != null && !testCaseDescription_chkd.isEmpty())
 		    logger.println(pluginName + " Test case description : " + testCaseDescription_chkd);
@@ -941,14 +967,17 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		if (testCaseCustomFields_chkd != null && !testCaseCustomFields_chkd.isEmpty())
 		    logger.println(pluginName + " Test case custom fields : " + testCaseCustomFields_chkd);
 
+        if (testCaseFolderId_chkd != null && !testCaseFolderId_chkd.isEmpty())
+            logger.println(pluginName + " Test case folder id : " + testCaseFolderId_chkd);
+
 		try {
 		    Map response = uploadToCloud.uploadToTheCloud(apikey_chkd, file_chkd.trim().replace("\\", "/"),
 			    attachFile, format_chkd, testCycleToReuse_chkd, environment_chkd, build_chkd, testCycleLabels_chkd, testCycleComponents_chkd, 
 			    testCyclePriority_chkd, testCycleStatus_chkd, testCycleSprintId_chkd, testCycleFixVersionId_chkd, testCycleSummary_chkd, 
 			    testCycleCustomFields_chkd, testCycleDescription_chkd, testCycleAssignee_chkd, testCycleReporter_chkd, testCycleStartDate_chkd, 
-			    testCycleEndDate_chkd, testCaseDescription_chkd, testCasePrecondition_chkd, testCaseAssignee_chkd, testCaseReporter_chkd,
+			    testCycleEndDate_chkd, testCycleFolderId_chkd, testCaseDescription_chkd, testCasePrecondition_chkd, testCaseAssignee_chkd, testCaseReporter_chkd,
 			    testCaseEstimatedTime_chkd, testCaseLabels_chkd, testCaseComponents_chkd, testCasePriority_chkd, testCaseStatus_chkd, 
-			    testCaseSprintId_chkd, testCaseFixVersionId_chkd, testCaseCustomFields_chkd, buildnumber, run, listener, workspace);
+			    testCaseSprintId_chkd, testCaseFixVersionId_chkd, testCaseCustomFields_chkd, testCaseFolderId_chkd, buildnumber, run, listener, workspace);
 		    if (response != null) {
 			if (response.get("success").equals("true")) {
 			    if (response.get("message").equals("false")) {
