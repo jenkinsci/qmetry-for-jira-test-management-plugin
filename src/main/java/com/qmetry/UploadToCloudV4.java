@@ -60,10 +60,10 @@ public class UploadToCloudV4 {
 			String testCycleToReuse, String environment, String build, String testCycleLabels, String testCycleComponents, 
 			String testCyclePriority, String testCycleStatus, String testCycleSprintId, String testCycleFixVersionId, 
 			String testCycleSummary, String testCycleCustomFields, String testCycleDescription, String testCycleAssignee, 
-			String testCycleReporter, String testCycleStartDate, String testCycleEndDate, String testCaseDescription, 
+			String testCycleReporter, String testCycleStartDate, String testCycleEndDate, String testCycleFolderId, String testCaseDescription,
 			String testCasePrecondition, String testCaseAssignee, String testCaseReporter, String testCaseEstimatedTime, 
 			String testCaseLabels, String testCaseComponents, String testCasePriority, String testCaseStatus, String testCaseSprintId, 
-			String testCaseFixVersionId, String testCaseCustomFields, int buildnumber, Run<?, ?> run, TaskListener listener,
+			String testCaseFixVersionId, String testCaseCustomFields, String testCaseFolderId, int buildnumber, Run<?, ?> run, TaskListener listener,
 			FilePath workspace) throws MalformedURLException, IOException, UnsupportedEncodingException, ProtocolException,
 			ParseException, FileNotFoundException, InterruptedException {
 
@@ -178,6 +178,10 @@ public class UploadToCloudV4 {
 			isTestcycle = true;
 			testcycleDataMap.put("fixVersionId", testCycleFixVersionId.trim());
 		}
+		if (testCycleFolderId != null && !testCycleFolderId.isEmpty()) {
+			isTestcycle = true;
+			testcycleDataMap.put("folderId", testCycleFolderId.trim());
+		}
 		if (testCycleSummary != null && !testCycleSummary.isEmpty()) {
 			isTestcycle = true;
 			testcycleDataMap.put("summary", testCycleSummary.trim() + "_"+ buildnumber);
@@ -236,6 +240,10 @@ public class UploadToCloudV4 {
 		if (testCaseFixVersionId != null && !testCaseFixVersionId.isEmpty()) {
 			isTestcase = true;
 			testcaseDataMap.put("fixVersionId", testCaseFixVersionId.trim());
+		}
+		if (testCaseFolderId != null && !testCaseFolderId.isEmpty()) {
+			isTestcase = true;
+			testcaseDataMap.put("folderId", testCaseFolderId.trim());
 		}
 		if (testCaseDescription != null && !testCaseDescription.isEmpty()) {
 			isTestcase = true;
