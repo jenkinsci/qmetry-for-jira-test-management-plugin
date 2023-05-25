@@ -66,7 +66,7 @@ public class UploadToServerV4 {
 			String testCaseReporter, String testCaseEstimatedTime, String testCaseLabels, String testCaseComponents, 
 			String testCasePriority, String testCaseStatus,	String testCaseSprintId, String testCaseFixVersionId, 
 			String testCaseCustomFields, int buildnumber, Run<?, ?> run, TaskListener listener, FilePath workspace, String pluginName,
-			String serverAuthenticationType, String personalAccessToken, String testCycleFolderPath, String testCaseFolderPath,
+			String serverAuthenticationType, String personalAccessToken, String testCycleFolderPath, String testCaseFolderPath, String testCasePrecondition,
 			String testCaseExecutionComment, String testCaseExecutionActualTime, String testCaseExecutionAssignee, String testCaseExecutionCustomFields)
 			throws MalformedURLException, IOException, UnsupportedEncodingException, ProtocolException, ParseException,
 			FileNotFoundException, InterruptedException {
@@ -272,6 +272,10 @@ public class UploadToServerV4 {
 		if (testCaseFolderPath != null && !testCaseFolderPath.isEmpty()) {
 			isTestcase = true;
 			testcaseDataMap.put("folderPath", testCaseFolderPath.trim());
+		}
+		if (testCasePrecondition != null && !testCasePrecondition.isEmpty()) {
+			isTestcase = true;
+			testcaseDataMap.put("precondition", testCasePrecondition.trim());
 		}
 		if (testCaseCustomFields != null && !testCaseCustomFields.isEmpty()) {
 			isTestcase = true;
