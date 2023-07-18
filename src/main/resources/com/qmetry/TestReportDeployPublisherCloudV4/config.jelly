@@ -233,6 +233,9 @@
                <f:entry title="Description" field="testCaseDescriptionServer" >
                   <f:textarea />
                </f:entry>
+               <f:entry title="Precondition" field="testCasePreconditionServer" >
+                  <f:textarea />
+               </f:entry>
                <f:entry title="Folder Path" field="testCaseFolderPathServer" >
                    <f:textbox />
                </f:entry>

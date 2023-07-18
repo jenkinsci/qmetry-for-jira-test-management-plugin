@@ -155,6 +155,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     private String testCaseReporterServer;
     private String testCaseEstimatedTimeServer;
     private String testCaseFolderPathServer;
+    private String testCasePreconditionServer;
 
     private String testCaseExecutionCommentServer;
     private String testCaseExecutionActualTimeServer;
@@ -617,6 +618,13 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
         this.testCaseFolderPathServer = testCaseFolderPathServer;
     }
 
+    public String getTestCasePreconditionServer() {
+        return testCasePreconditionServer;
+    }
+    public void setTestCasePreconditionServer(String testCasePreconditionServer) {
+        this.testCasePreconditionServer = testCasePreconditionServer;
+    }
+
     public String getTestCaseExecutionCommentServer() {
         return testCaseExecutionCommentServer;
     }
@@ -663,7 +671,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	    String testCycleAssigneeServer, String testCycleReporterServer, String testCycleDescriptionServer, String testCycleCustomFieldsServer, String testCaseEstimatedTimeServer,
 	    String testCaseAssigneeServer, String testCaseReporterServer, String testCaseDescriptionServer, String testCaseCustomFieldsServer, String testCaseLabelsServer, 
 	    String testCaseComponentsServer, String testCasePriorityServer, String testCaseStatusServer, String testCaseSprintIdServer, String testCaseFixVersionIdServer,
-        String serverAuthenticationType, String personalAccessToken, String testCycleFolderPathServer, String testCaseFolderPathServer, String testCaseExecutionCommentServer,
+        String serverAuthenticationType, String personalAccessToken, String testCycleFolderPathServer, String testCaseFolderPathServer, String testCasePreconditionServer, String testCaseExecutionCommentServer,
         String testCaseExecutionActualTimeServer, String testCaseExecutionAssigneeServer, String testCaseExecutionCustomFieldsServer) throws AbortException {
 
 	this.testToRun = testToRun;
@@ -752,6 +760,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	this.testCaseDescriptionServer = testCaseDescriptionServer;
 	this.testCaseCustomFieldsServer = testCaseCustomFieldsServer;
     this.testCaseFolderPathServer = testCaseFolderPathServer;
+    this.testCasePreconditionServer = testCasePreconditionServer;
 
     this.serverAuthenticationType = serverAuthenticationType;
     this.personalAccessToken = personalAccessToken;
@@ -1106,6 +1115,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		String testCaseAssigneeServer_chkd = env.expand(this.getTestCaseAssigneeServer());
 		String testCaseDescriptionServer_chkd = env.expand(this.getTestCaseDescriptionServer());
         String testCaseFolderPathServer_chkd = env.expand(this.getTestCaseFolderPathServer());
+        String testCasePreconditionServer_chkd = env.expand(this.getTestCasePreconditionServer());
 
         String testCaseExecutionCommentServer_chkd = env.expand(this.getTestCaseExecutionCommentServer());
         String testCaseExecutionActualTimeServer_chkd = env.expand(this.getTestCaseExecutionActualTimeServer());
@@ -1250,6 +1260,9 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
         if (testCaseFolderPathServer_chkd != null && !testCaseFolderPathServer_chkd.isEmpty())
             logger.println(pluginName + " Test case folder path : " + testCaseFolderPathServer_chkd);
 
+        if (testCasePreconditionServer_chkd != null && !testCasePreconditionServer_chkd.isEmpty())
+            logger.println(pluginName + " Test case precondition : " + testCasePreconditionServer_chkd);
+
         //TestCaseExecution fields
         if (testCaseExecutionCommentServer_chkd!= null && !testCaseExecutionCommentServer_chkd.isEmpty())
             logger.println(pluginName + " Test case execution comment : " + testCaseExecutionCommentServer_chkd);
@@ -1272,7 +1285,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 			    testCycleEndDateServer_chkd, testCaseDescriptionServer_chkd, testCaseAssigneeServer_chkd, testCaseReporterServer_chkd,
 			    testCaseEstimatedTimeServer_chkd, testCaseLabelsServer_chkd, testCaseComponentsServer_chkd, testCasePriorityServer_chkd,
 			    testCaseStatusServer_chkd, testCaseSprintIdServer_chkd, testCaseFixVersionIdServer_chkd, testCaseCustomFieldsServer_chkd, buildnumber, run,
-			    listener, workspace, pluginName, serverAuthenticationType_chkd, personalAccessToken_chkd, testCycleFolderPathServer_chkd, testCaseFolderPathServer_chkd,
+			    listener, workspace, pluginName, serverAuthenticationType_chkd, personalAccessToken_chkd, testCycleFolderPathServer_chkd, testCaseFolderPathServer_chkd, testCasePreconditionServer_chkd,
                 testCaseExecutionCommentServer_chkd, testCaseExecutionActualTimeServer_chkd, testCaseExecutionAssigneeServer_chkd, testCaseExecutionCustomFieldsServer_chkd);
 		    if (response != null) {
 			if (response.get("success").equals("true")) {
