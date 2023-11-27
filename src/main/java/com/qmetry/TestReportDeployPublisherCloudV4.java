@@ -85,6 +85,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     private String environment;
     private String build;
     private boolean attachFile;
+    private Boolean matchTestSteps;
 
     private String testCycleLabels;
     private String testCycleComponents;
@@ -127,6 +128,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     private String environmentServer;
     private String buildServer;
     private boolean attachFileServer;
+    private Boolean matchTestStepsServer;
 
     private String testCycleLabelsServer;
     private String testCycleComponentsServer;
@@ -208,6 +210,18 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     public boolean isAttachFile() {
 	return attachFile;
     }
+
+    public Boolean getMatchTestSteps() {
+        // Setting true as default value if it is null
+        if (matchTestSteps == null) {
+            setMatchTestSteps(true);
+        }
+        return matchTestSteps;
+    }
+    public void setMatchTestSteps(Boolean matchTestSteps) {
+        this.matchTestSteps = matchTestSteps;
+    }
+
     public String getTestCycleLabels() {
 	return testCycleLabels;
     }
@@ -455,6 +469,16 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     public boolean isAttachFileServer() {
 	return attachFileServer;
     }
+    public Boolean getMatchTestStepsServer() {
+        // Setting true as default value if it is null
+        if (matchTestStepsServer == null) {
+            setMatchTestStepsServer(true);
+        }
+        return matchTestStepsServer;
+    }
+    public void setMatchTestStepsServer(Boolean matchTestStepsServer) {
+        this.matchTestStepsServer = matchTestStepsServer;
+    }
     public void setAttachFileServer(boolean attachFileServer) {
 	this.attachFileServer = attachFileServer;
     }
@@ -659,14 +683,14 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
-    public TestReportDeployPublisherCloudV4(String testToRun, String apikey, String file, boolean attachFile,String format, boolean disableaction,
+    public TestReportDeployPublisherCloudV4(String testToRun, String apikey, String file, boolean attachFile, Boolean matchTestSteps, String format, boolean disableaction,
 	    String testCycleToReuse, String environment, String build, String testCycleLabels, String testCycleComponents, String testCyclePriority,
 	    String testCycleStatus, String testCycleSprintId, String testCycleFixVersionId, String testCycleSummary, String testCycleCustomFields, String testCycleStartDate, 
 	    String testCycleEndDate, String testCycleReporter, String testCycleAssignee, String testCycleDescription, String testCycleFolderId, String testCaseLabels, String testCaseEstimatedTime,
 	    String testCaseReporter, String testCaseAssignee, String testCaseDescription, String testCasePrecondition, String testCaseComponents, String testCasePriority, 
 	    String testCaseStatus, String testCaseSprintId, String testCaseFixVersionId, String testCaseCustomFields, String testCaseFolderId, String jiraUrlServer, String proxyUrl, String username,
 	    Secret password, String apikeyServer, String formatServer, String fileServer, String testCycleToReuseServer, String environmentServer, String buildServer,
-	    boolean attachFileServer, String testCycleLabelsServer, String testCycleComponentsServer, String testCyclePriorityServer, String testCycleStatusServer, 
+	    boolean attachFileServer, Boolean matchTestStepsServer, String testCycleLabelsServer, String testCycleComponentsServer, String testCyclePriorityServer, String testCycleStatusServer,
 	    String testCycleSprintIdServer, String testCycleFixVersionIdServer, String testCycleSummaryServer, String testCycleStartDateServer, String testCycleEndDateServer,
 	    String testCycleAssigneeServer, String testCycleReporterServer, String testCycleDescriptionServer, String testCycleCustomFieldsServer, String testCaseEstimatedTimeServer,
 	    String testCaseAssigneeServer, String testCaseReporterServer, String testCaseDescriptionServer, String testCaseCustomFieldsServer, String testCaseLabelsServer, 
@@ -679,6 +703,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 
 	//Cloud fields
 	this.attachFile = attachFile;
+    this.matchTestSteps = matchTestSteps;
 	this.apikey = apikey;
 	this.format = format;
 	this.file = file;
@@ -726,6 +751,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	this.password = password;
 	this.username = username;
 	this.attachFileServer = attachFileServer;
+    this.matchTestStepsServer = matchTestStepsServer;
 	this.apikeyServer = apikeyServer;
 	this.formatServer = formatServer;
 	this.fileServer = fileServer;
@@ -887,6 +913,8 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		logger.println(pluginName + " File path : " + file_chkd);
 		logger.println(pluginName + " Format : " + format_chkd);
 
+        logger.println(pluginName + " Match Test Steps for Cloud : " + env.expand(this.getMatchTestSteps().toString()));
+
 		if (testCycleToReuse_chkd != null && !testCycleToReuse_chkd.isEmpty())
 		    logger.println(pluginName + " Test cycle to reuse : " + testCycleToReuse_chkd);
 
@@ -981,7 +1009,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 
 		try {
 		    Map response = uploadToCloud.uploadToTheCloud(apikey_chkd, file_chkd.trim().replace("\\", "/"),
-			    attachFile, format_chkd, testCycleToReuse_chkd, environment_chkd, build_chkd, testCycleLabels_chkd, testCycleComponents_chkd, 
+			    attachFile, matchTestSteps, format_chkd, testCycleToReuse_chkd, environment_chkd, build_chkd, testCycleLabels_chkd, testCycleComponents_chkd,
 			    testCyclePriority_chkd, testCycleStatus_chkd, testCycleSprintId_chkd, testCycleFixVersionId_chkd, testCycleSummary_chkd, 
 			    testCycleCustomFields_chkd, testCycleDescription_chkd, testCycleAssignee_chkd, testCycleReporter_chkd, testCycleStartDate_chkd, 
 			    testCycleEndDate_chkd, testCycleFolderId_chkd, testCaseDescription_chkd, testCasePrecondition_chkd, testCaseAssignee_chkd, testCaseReporter_chkd,
@@ -1168,6 +1196,8 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		logger.println(pluginName + "File path : " + fileServer_chkd);
 		logger.println(pluginName + "Format : " + formatServer_chkd);
 
+        logger.println(pluginName + " Match Test Steps for Server : " + env.expand(this.getMatchTestStepsServer().toString()));
+
 		if (proxyUrl_chkd != null && !proxyUrl_chkd.isEmpty())
 		    logger.println(pluginName + "Proxy URL : " + proxyUrl_chkd);
 
@@ -1278,7 +1308,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 
 		try {
 		    Map response = uploadToServer.uploadToTheServer(jiraUrlServer_chkd, username_chkd, password_chkd, apikeyServer_chkd, fileServer_chkd.trim().replace("\\", "/"),
-			    attachFileServer, formatServer_chkd, testCycleToReuseServer_chkd, environmentServer_chkd, buildServer_chkd,
+			    attachFileServer, matchTestStepsServer, formatServer_chkd, testCycleToReuseServer_chkd, environmentServer_chkd, buildServer_chkd,
 			    testCycleLabelsServer_chkd, testCycleComponentsServer_chkd, testCyclePriorityServer_chkd,
 			    testCycleStatusServer_chkd, testCycleSprintIdServer_chkd, testCycleFixVersionIdServer_chkd,
 			    testCycleSummaryServer_chkd, testCycleCustomFieldsServer_chkd, testCycleDescriptionServer_chkd, testCycleAssigneeServer_chkd, testCycleReporterServer_chkd, testCycleStartDateServer_chkd, 
