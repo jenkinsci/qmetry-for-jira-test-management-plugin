@@ -38,7 +38,11 @@
             <f:entry title="Upload Screenshots" field="attachFile">
                <f:checkbox />
             </f:entry>
-                   
+
+            <f:entry title="Match Test Steps" field="matchTestSteps">
+                  <f:checkbox name="matchTestSteps" checked="${instance.matchTestSteps}" default="true"/>
+            </f:entry>
+
             <f:section title="${instance.isTestType('CLOUD')?'Test Cycle':null}">
                <f:entry title="Summary" field="testCycleSummary" >
                   <f:textbox />
@@ -182,6 +186,10 @@
             
             <f:entry title="Upload Screenshots" field="attachFileServer">
                <f:checkbox />
+            </f:entry>
+
+            <f:entry title="Match Test Steps" field="matchTestStepsServer">
+               <f:checkbox name="matchTestStepsServer" checked="${instance.matchTestStepsServer}" default="true"/>
             </f:entry>
                    
             <f:section title="${instance.isTestType('SERVER')?'Test Cycle':null}">

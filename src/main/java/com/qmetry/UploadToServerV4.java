@@ -58,7 +58,7 @@ import hudson.util.Secret;
 public class UploadToServerV4 {
 
 	public Map<String, String> uploadToTheServer(String jiraUrlServer, String username_chkd, Secret password_chkd,
-			String apikey, String file, boolean attachFile, String format, String testCycleToReuse, String environment,
+			String apikey, String file, boolean attachFile, Boolean matchTestSteps, String format, String testCycleToReuse, String environment,
 			String build, String testCycleLabels, String testCycleComponents, String testCyclePriority,
 			String testCycleStatus, String testCycleSprintId, String testCycleFixVersionId, String testCycleSummary, 
 			String testCycleCustomFields, String testCycleDescription, String testCycleAssignee, String testCycleReporter, 
@@ -150,6 +150,7 @@ public class UploadToServerV4 {
 		if (attachFile) {
 			requestDataMap.put("attachFile", String.valueOf(attachFile));
 		}
+		requestDataMap.put("matchTestSteps", matchTestSteps);
 		if (testCycleToReuse != null && !testCycleToReuse.isEmpty()) {
 			requestDataMap.put("testCycleToReuse", testCycleToReuse.trim());
 		}

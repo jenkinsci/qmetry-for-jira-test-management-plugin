@@ -56,7 +56,7 @@ import hudson.model.TaskListener;
 public class UploadToCloudV4 {
 
 	// Call to 1st URL which gets
-	public Map<String, String> uploadToTheCloud(String apikey, String file, boolean attachFile, String format,
+	public Map<String, String> uploadToTheCloud(String apikey, String file, boolean attachFile, Boolean matchTestSteps, String format,
 			String testCycleToReuse, String environment, String build, String testCycleLabels, String testCycleComponents, 
 			String testCyclePriority, String testCycleStatus, String testCycleSprintId, String testCycleFixVersionId, 
 			String testCycleSummary, String testCycleCustomFields, String testCycleDescription, String testCycleAssignee, 
@@ -138,6 +138,7 @@ public class UploadToCloudV4 {
 		if (attachFile) {
 			requestDataMap.put("attachFile", String.valueOf(attachFile));
 		}
+		requestDataMap.put("matchTestSteps", matchTestSteps);
 		if (testCycleToReuse != null && !testCycleToReuse.isEmpty()) {
 			requestDataMap.put("testCycleToReuse", testCycleToReuse.trim());
 		}
