@@ -67,7 +67,7 @@ public class UploadToServerV4 {
 			String testCasePriority, String testCaseStatus,	String testCaseSprintId, String testCaseFixVersionId, 
 			String testCaseCustomFields, int buildnumber, Run<?, ?> run, TaskListener listener, FilePath workspace, String pluginName,
 			String serverAuthenticationType, String personalAccessToken, String testCycleFolderPath, String testCaseFolderPath, String testCasePrecondition,
-			String testCaseExecutionComment, String testCaseExecutionActualTime, String testCaseExecutionAssignee, String testCaseExecutionCustomFields)
+			String testCaseExecutionComment, String testCaseExecutionActualTime, String testCaseExecutionAssignee, String testCaseExecutionCustomFields, String testCaseExecutionPlannedDate)
 			throws MalformedURLException, IOException, UnsupportedEncodingException, ProtocolException, ParseException,
 			FileNotFoundException, InterruptedException {
 
@@ -304,6 +304,10 @@ public class UploadToServerV4 {
 			JSONParser parser = new JSONParser();
 			org.json.simple.JSONArray testCaseExecutionCustomFieldsJson = (org.json.simple.JSONArray) parser.parse(testCaseExecutionCustomFields);
 			testCaseExecutionDataMap.put("customFields", testCaseExecutionCustomFieldsJson);
+		}
+		if (testCaseExecutionPlannedDate != null && !testCaseExecutionPlannedDate.isEmpty()) {
+			isTestCaseExecution = true;
+			testCaseExecutionDataMap.put("executionPlannedDate", testCaseExecutionPlannedDate.trim());
 		}
 
 		Map<String, Object> testCaseCycleTcExecutionDataMap = new HashMap<>();

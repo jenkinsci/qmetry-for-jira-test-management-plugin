@@ -163,6 +163,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     private String testCaseExecutionActualTimeServer;
     private String testCaseExecutionAssigneeServer;
     private String testCaseExecutionCustomFieldsServer;
+    private String testCaseExecutionPlannedDateServer;
 
     public String serverAuthenticationType;
     private String personalAccessToken;
@@ -677,6 +678,13 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
         this.testCaseExecutionCustomFieldsServer = testCaseExecutionCustomFieldsServer;
     }
 
+    public String getTestCaseExecutionPlannedDateServer() {
+        return testCaseExecutionPlannedDateServer;
+    }
+    public void setTestCaseExecutionPlannedDateServer(String testCaseExecutionPlannedDateServer) {
+        this.testCaseExecutionPlannedDateServer = testCaseExecutionPlannedDateServer;
+    }
+
     public TestReportDeployPublisherCloudV4() {
 
     }
@@ -696,7 +704,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	    String testCaseAssigneeServer, String testCaseReporterServer, String testCaseDescriptionServer, String testCaseCustomFieldsServer, String testCaseLabelsServer, 
 	    String testCaseComponentsServer, String testCasePriorityServer, String testCaseStatusServer, String testCaseSprintIdServer, String testCaseFixVersionIdServer,
         String serverAuthenticationType, String personalAccessToken, String testCycleFolderPathServer, String testCaseFolderPathServer, String testCasePreconditionServer, String testCaseExecutionCommentServer,
-        String testCaseExecutionActualTimeServer, String testCaseExecutionAssigneeServer, String testCaseExecutionCustomFieldsServer) throws AbortException {
+        String testCaseExecutionActualTimeServer, String testCaseExecutionAssigneeServer, String testCaseExecutionCustomFieldsServer, String testCaseExecutionPlannedDateServer) throws AbortException {
 
 	this.testToRun = testToRun;
 	this.disableaction = disableaction;
@@ -795,6 +803,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     this.testCaseExecutionActualTimeServer = testCaseExecutionActualTimeServer;
     this.testCaseExecutionAssigneeServer = testCaseExecutionAssigneeServer;
     this.testCaseExecutionCustomFieldsServer = testCaseExecutionCustomFieldsServer;
+    this.testCaseExecutionPlannedDateServer = testCaseExecutionPlannedDateServer;
 
 	if (apikeyServer != null && !apikeyServer.isEmpty()) {
 	    Secret ak = Secret.fromString(apikeyServer);
@@ -1149,6 +1158,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
         String testCaseExecutionActualTimeServer_chkd = env.expand(this.getTestCaseExecutionActualTimeServer());
         String testCaseExecutionAssigneeServer_chkd = env.expand(this.getTestCaseExecutionAssigneeServer());
         String testCaseExecutionCustomFieldsServer_chkd = env.expand(this.getTestCaseExecutionCustomFieldsServer());
+        String testCaseExecutionPlannedDateServer_chkd = env.expand(this.getTestCaseExecutionPlannedDateServer());
 
         String serverAuthenticationType_chkd = env.expand(this.getServerAuthenticationType());
         String personalAccessToken_chkd = env.expand(this.getPersonalAccessToken());
@@ -1306,6 +1316,9 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
         if (testCaseExecutionCustomFieldsServer_chkd!= null && !testCaseExecutionCustomFieldsServer_chkd.isEmpty())
             logger.println(pluginName + " Test case execution custom fields : " + testCaseExecutionCustomFieldsServer_chkd);
 
+        if (testCaseExecutionPlannedDateServer_chkd != null && !testCaseExecutionPlannedDateServer_chkd.isEmpty())
+            logger.println(pluginName + " Test case execution planned date : " + testCaseExecutionPlannedDateServer_chkd);
+
 		try {
 		    Map response = uploadToServer.uploadToTheServer(jiraUrlServer_chkd, username_chkd, password_chkd, apikeyServer_chkd, fileServer_chkd.trim().replace("\\", "/"),
 			    attachFileServer, matchTestStepsServer, formatServer_chkd, testCycleToReuseServer_chkd, environmentServer_chkd, buildServer_chkd,
@@ -1316,7 +1329,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 			    testCaseEstimatedTimeServer_chkd, testCaseLabelsServer_chkd, testCaseComponentsServer_chkd, testCasePriorityServer_chkd,
 			    testCaseStatusServer_chkd, testCaseSprintIdServer_chkd, testCaseFixVersionIdServer_chkd, testCaseCustomFieldsServer_chkd, buildnumber, run,
 			    listener, workspace, pluginName, serverAuthenticationType_chkd, personalAccessToken_chkd, testCycleFolderPathServer_chkd, testCaseFolderPathServer_chkd, testCasePreconditionServer_chkd,
-                testCaseExecutionCommentServer_chkd, testCaseExecutionActualTimeServer_chkd, testCaseExecutionAssigneeServer_chkd, testCaseExecutionCustomFieldsServer_chkd);
+                testCaseExecutionCommentServer_chkd, testCaseExecutionActualTimeServer_chkd, testCaseExecutionAssigneeServer_chkd, testCaseExecutionCustomFieldsServer_chkd, testCaseExecutionPlannedDateServer_chkd);
 		    if (response != null) {
 			if (response.get("success").equals("true")) {
 			    if (response.get("message").equals("false")) {
@@ -1681,6 +1694,20 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     public FormValidation doCheckPersonalAccessToken(@QueryParameter String value) throws IOException, ServletException {
         if (value.length() == 0 || StringUtils.isBlank(value))
         return FormValidation.error("Required");
+        return FormValidation.ok();
+    }
+
+    public FormValidation doCheckTestCaseExecutionPlannedDateServer(@QueryParameter String value) throws IOException, ServletException {
+        if (value.length() != 0) {
+            try
+            {
+                SimpleDateFormat format = new SimpleDateFormat("dd/MMM/yyyy");
+                format.setLenient(false);
+                format.parse(value);
+            } catch (ParseException e) {
+                return FormValidation.error("Either Invalid date passed or format is not correct for test case execution planned date. Pass in 'dd/MMM/yyyy' format");
+            }
+        }
         return FormValidation.ok();
     }
 
