@@ -1705,7 +1705,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
                 format.setLenient(false);
                 format.parse(value);
             } catch (ParseException e) {
-                return FormValidation.error("Either Invalid date passed or format is not correct for test case execution planned date. Pass in 'dd/MMM/yyyy' format");
+                return FormValidation.error("Either Invalid date passed or format is not correct for planned on date. Pass in 'dd/MMM/yyyy' format");
             }
         }
         return FormValidation.ok();

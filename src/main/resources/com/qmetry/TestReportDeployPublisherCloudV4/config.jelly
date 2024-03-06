@@ -286,7 +286,7 @@
                <f:entry title="Actual Time" field="testCaseExecutionActualTimeServer" >
                   <f:textbox />
                </f:entry>
-               <f:entry title="Execution Planned Date" field="testCaseExecutionPlannedDateServer" >
+               <f:entry title="Planned On" field="testCaseExecutionPlannedDateServer" >
                   <f:textbox />
                </f:entry>
                <f:entry title="Assignee" field="testCaseExecutionAssigneeServer" >
