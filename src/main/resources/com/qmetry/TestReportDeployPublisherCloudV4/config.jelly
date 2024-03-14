@@ -18,6 +18,14 @@
             <f:entry title="Format" field="format" >
                <f:select/>
             </f:entry>
+
+            <f:entry title="Automation Hierarchy" field="automationHierarchy">
+               <f:select/>
+            </f:entry>
+
+            <f:entry title="Append Test Name" field="appendTestName">
+               <f:select/>
+            </f:entry>
             
             <f:entry title="Test Results File/Directory Path" field="file">
                <f:textbox />
@@ -167,7 +175,15 @@
             <f:entry title="Format" field="formatServer">
                <f:select/>
             </f:entry>
-            
+
+            <f:entry title="Automation Hierarchy" field="automationHierarchyServer">
+               <f:select/>
+            </f:entry>
+
+            <f:entry title="Append Test Name" field="appendTestNameServer">
+               <f:select/>
+            </f:entry>
+
             <f:entry title="Test Results File/Directory Path" field="fileServer">
                <f:textbox />
             </f:entry>

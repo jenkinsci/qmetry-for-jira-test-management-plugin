@@ -35,6 +35,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -64,7 +65,7 @@ public class UploadToCloudV4 {
 			String testCasePrecondition, String testCaseAssignee, String testCaseReporter, String testCaseEstimatedTime, 
 			String testCaseLabels, String testCaseComponents, String testCasePriority, String testCaseStatus, String testCaseSprintId, 
 			String testCaseFixVersionId, String testCaseCustomFields, String testCaseFolderId, int buildnumber, Run<?, ?> run, TaskListener listener,
-			FilePath workspace) throws MalformedURLException, IOException, UnsupportedEncodingException, ProtocolException,
+			FilePath workspace, String automationHierarchy, String appendTestName) throws MalformedURLException, IOException, UnsupportedEncodingException, ProtocolException,
 			ParseException, FileNotFoundException, InterruptedException {
 
 		PrintStream logger = listener.getLogger();
@@ -133,6 +134,19 @@ public class UploadToCloudV4 {
 		} else if (String.valueOf(format).equals("specflow/json")) {
 			format_short = "specflow";
 		}
+
+        //automationHierarchy & appendTestName applicable only for JUnit/TestNG frameworks
+        if (format.equals(QTM4JConstants.JUNIT_FORMAT_TYPE) || format.equals(QTM4JConstants.TESTNG_FORMAT_TYPE)) {
+            //set automationHierarchy value for option 1/2/3. As per design, Default option is treated as null.
+            if (automationHierarchy != null && !automationHierarchy.isEmpty() && !automationHierarchy.equals(QTM4JConstants.OPTION_DEFAULT)) {
+                requestDataMap.put("automationHierarchy", Integer.parseInt(automationHierarchy));
+            }
+            //set appendTestName value if automationHierarchy is 2/3/Default (Not applicable for Hierarchy 1). As per design, Default option is treated as null.
+            if (appendTestName != null && !appendTestName.isEmpty() && !Objects.equals(automationHierarchy, QTM4JConstants.OPTION_1) && !appendTestName.equals(QTM4JConstants.OPTION_DEFAULT)) {
+                requestDataMap.put("appendTestName", Boolean.parseBoolean(appendTestName));
+            }
+        }
+
 		requestDataMap.put("format", String.valueOf(format_short));
 		requestDataMap.put("isZip", String.valueOf(iszip));
 		if (attachFile) {

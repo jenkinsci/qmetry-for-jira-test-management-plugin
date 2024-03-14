@@ -116,6 +116,9 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     private String testCaseEstimatedTime;
     private String testCaseFolderId;
 
+    private String automationHierarchy;
+    private String appendTestName;
+
     // Server Fields
     private String jiraUrlServer;
     private String proxyUrl;
@@ -167,6 +170,9 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 
     public String serverAuthenticationType;
     private String personalAccessToken;
+
+    private String automationHierarchyServer;
+    private String appendTestNameServer;
 
     //Cloud getter setter
     public String getTestCycleToReuse() {
@@ -389,6 +395,19 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 
     public void setTestCaseFolderId(String testCaseFolderId) {
         this.testCaseFolderId = testCaseFolderId;
+    }
+
+    public String getAutomationHierarchy() {
+        return automationHierarchy;
+    }
+    public void setAutomationHierarchy(String automationHierarchy) {
+        this.automationHierarchy = automationHierarchy;
+    }
+    public String getAppendTestName() {
+        return appendTestName;
+    }
+    public void setAppendTestName(String appendTestName) {
+        this.appendTestName = appendTestName;
     }
 
     // Server Getter Setter
@@ -685,6 +704,19 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
         this.testCaseExecutionPlannedDateServer = testCaseExecutionPlannedDateServer;
     }
 
+    public String getAutomationHierarchyServer() {
+        return automationHierarchyServer;
+    }
+    public void setAutomationHierarchyServer(String automationHierarchyServer) {
+        this.automationHierarchyServer = automationHierarchyServer;
+    }
+    public String getAppendTestNameServer() {
+        return appendTestNameServer;
+    }
+    public void setAppendTestNameServer(String appendTestNameServer) {
+        this.appendTestNameServer = appendTestNameServer;
+    }
+
     public TestReportDeployPublisherCloudV4() {
 
     }
@@ -704,7 +736,8 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	    String testCaseAssigneeServer, String testCaseReporterServer, String testCaseDescriptionServer, String testCaseCustomFieldsServer, String testCaseLabelsServer, 
 	    String testCaseComponentsServer, String testCasePriorityServer, String testCaseStatusServer, String testCaseSprintIdServer, String testCaseFixVersionIdServer,
         String serverAuthenticationType, String personalAccessToken, String testCycleFolderPathServer, String testCaseFolderPathServer, String testCasePreconditionServer, String testCaseExecutionCommentServer,
-        String testCaseExecutionActualTimeServer, String testCaseExecutionAssigneeServer, String testCaseExecutionCustomFieldsServer, String testCaseExecutionPlannedDateServer) throws AbortException {
+        String testCaseExecutionActualTimeServer, String testCaseExecutionAssigneeServer, String testCaseExecutionCustomFieldsServer, String testCaseExecutionPlannedDateServer,
+        String automationHierarchyServer, String appendTestNameServer, String automationHierarchy, String appendTestName) throws AbortException {
 
 	this.testToRun = testToRun;
 	this.disableaction = disableaction;
@@ -747,6 +780,9 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	this.testCaseDescription = testCaseDescription;
 	this.testCasePrecondition = testCasePrecondition;
     this.testCaseFolderId = testCaseFolderId;
+
+    this.automationHierarchy = automationHierarchy;
+    this.appendTestName = appendTestName;
 
 	if (apikey != null && !apikey.isEmpty()) {
 	    Secret ak = Secret.fromString(apikey);
@@ -804,6 +840,9 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     this.testCaseExecutionAssigneeServer = testCaseExecutionAssigneeServer;
     this.testCaseExecutionCustomFieldsServer = testCaseExecutionCustomFieldsServer;
     this.testCaseExecutionPlannedDateServer = testCaseExecutionPlannedDateServer;
+
+    this.automationHierarchyServer = automationHierarchyServer;
+    this.appendTestNameServer = appendTestNameServer;
 
 	if (apikeyServer != null && !apikeyServer.isEmpty()) {
 	    Secret ak = Secret.fromString(apikeyServer);
@@ -905,6 +944,9 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		String testCaseDescription_chkd = env.expand(this.getTestCaseDescription());
 		String testCasePrecondition_chkd = env.expand(this.getTestCasePrecondition());
         String testCaseFolderId_chkd = env.expand(this.getTestCaseFolderId());
+
+        String automationHierarchy_chkd = env.expand(this.getAutomationHierarchy());
+        String appendTestName_chkd = env.expand(this.getAppendTestName());
 
 		if (apikey_chkd == null || apikey_chkd.isEmpty()) {
 		    logger.println(pluginName + " [ERROR] : Enter API Key.");
@@ -1016,6 +1058,12 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
         if (testCaseFolderId_chkd != null && !testCaseFolderId_chkd.isEmpty())
             logger.println(pluginName + " Test case folder id : " + testCaseFolderId_chkd);
 
+        if (automationHierarchy_chkd != null && !automationHierarchy_chkd.isEmpty())
+                logger.println(pluginName + "Automation Hierarchy : " + automationHierarchy_chkd);
+
+        if (appendTestName_chkd != null && !appendTestName_chkd.isEmpty())
+                logger.println(pluginName + "Append Test Name : " + appendTestName_chkd);
+
 		try {
 		    Map response = uploadToCloud.uploadToTheCloud(apikey_chkd, file_chkd.trim().replace("\\", "/"),
 			    attachFile, matchTestSteps, format_chkd, testCycleToReuse_chkd, environment_chkd, build_chkd, testCycleLabels_chkd, testCycleComponents_chkd,
@@ -1023,7 +1071,8 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 			    testCycleCustomFields_chkd, testCycleDescription_chkd, testCycleAssignee_chkd, testCycleReporter_chkd, testCycleStartDate_chkd, 
 			    testCycleEndDate_chkd, testCycleFolderId_chkd, testCaseDescription_chkd, testCasePrecondition_chkd, testCaseAssignee_chkd, testCaseReporter_chkd,
 			    testCaseEstimatedTime_chkd, testCaseLabels_chkd, testCaseComponents_chkd, testCasePriority_chkd, testCaseStatus_chkd, 
-			    testCaseSprintId_chkd, testCaseFixVersionId_chkd, testCaseCustomFields_chkd, testCaseFolderId_chkd, buildnumber, run, listener, workspace);
+			    testCaseSprintId_chkd, testCaseFixVersionId_chkd, testCaseCustomFields_chkd, testCaseFolderId_chkd, buildnumber, run, listener, workspace,
+                automationHierarchy_chkd, appendTestName_chkd);
 		    if (response != null) {
 			if (response.get("success").equals("true")) {
 			    if (response.get("message").equals("false")) {
@@ -1162,6 +1211,9 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 
         String serverAuthenticationType_chkd = env.expand(this.getServerAuthenticationType());
         String personalAccessToken_chkd = env.expand(this.getPersonalAccessToken());
+
+        String automationHierarchyServer_chkd = env.expand(this.getAutomationHierarchyServer());
+        String appendTestNameServer_chkd = env.expand(this.getAppendTestNameServer());
 
 		if (jiraUrlServer_chkd == null || jiraUrlServer_chkd.isEmpty()) {
 		    logger.println(pluginName + "[ERROR] : Enter JIRA URL.");
@@ -1319,6 +1371,12 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
         if (testCaseExecutionPlannedDateServer_chkd != null && !testCaseExecutionPlannedDateServer_chkd.isEmpty())
             logger.println(pluginName + " Test case execution planned date : " + testCaseExecutionPlannedDateServer_chkd);
 
+        if (automationHierarchyServer_chkd != null && !automationHierarchyServer_chkd.isEmpty())
+                logger.println(pluginName + "Automation Hierarchy : " + automationHierarchyServer_chkd);
+
+        if (appendTestNameServer_chkd != null && !appendTestNameServer_chkd.isEmpty())
+                logger.println(pluginName + "Append Test Name : " + appendTestNameServer_chkd);
+
 		try {
 		    Map response = uploadToServer.uploadToTheServer(jiraUrlServer_chkd, username_chkd, password_chkd, apikeyServer_chkd, fileServer_chkd.trim().replace("\\", "/"),
 			    attachFileServer, matchTestStepsServer, formatServer_chkd, testCycleToReuseServer_chkd, environmentServer_chkd, buildServer_chkd,
@@ -1329,7 +1387,8 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 			    testCaseEstimatedTimeServer_chkd, testCaseLabelsServer_chkd, testCaseComponentsServer_chkd, testCasePriorityServer_chkd,
 			    testCaseStatusServer_chkd, testCaseSprintIdServer_chkd, testCaseFixVersionIdServer_chkd, testCaseCustomFieldsServer_chkd, buildnumber, run,
 			    listener, workspace, pluginName, serverAuthenticationType_chkd, personalAccessToken_chkd, testCycleFolderPathServer_chkd, testCaseFolderPathServer_chkd, testCasePreconditionServer_chkd,
-                testCaseExecutionCommentServer_chkd, testCaseExecutionActualTimeServer_chkd, testCaseExecutionAssigneeServer_chkd, testCaseExecutionCustomFieldsServer_chkd, testCaseExecutionPlannedDateServer_chkd);
+                testCaseExecutionCommentServer_chkd, testCaseExecutionActualTimeServer_chkd, testCaseExecutionAssigneeServer_chkd, testCaseExecutionCustomFieldsServer_chkd, testCaseExecutionPlannedDateServer_chkd,
+                automationHierarchyServer_chkd, appendTestNameServer_chkd);
 		    if (response != null) {
 			if (response.get("success").equals("true")) {
 			    if (response.get("message").equals("false")) {
@@ -1458,6 +1517,78 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		    new Option("hpuft/XML", "hpuft/xml", formatServer.matches("hpuft/xml")),
 		    new Option("SpecFlow/JSON", "specflow/json", formatServer.matches("specflow/json")));
 	}
+
+    public ListBoxModel doFillAutomationHierarchyItems(@QueryParameter String format) {
+        ListBoxModel items = new ListBoxModel();
+        if (format.equals(QTM4JConstants.JUNIT_FORMAT_TYPE))
+        {
+            items.add(QTM4JConstants.QMETRY_AUTOMATION_SETTINGS_DEFAULT, QTM4JConstants.OPTION_DEFAULT);
+            items.add(QTM4JConstants.JUNIT_AUTOMATION_HIERARCHY_OPTION_1, QTM4JConstants.OPTION_1);
+            items.add(QTM4JConstants.JUNIT_AUTOMATION_HIERARCHY_OPTION_2, QTM4JConstants.OPTION_2);
+            items.add(QTM4JConstants.JUNIT_AUTOMATION_HIERARCHY_OPTION_3, QTM4JConstants.OPTION_3);
+        }
+        else if(format.equals(QTM4JConstants.TESTNG_FORMAT_TYPE))
+        {
+            items.add(QTM4JConstants.QMETRY_AUTOMATION_SETTINGS_DEFAULT, QTM4JConstants.OPTION_DEFAULT);
+            items.add(QTM4JConstants.TESTNG_AUTOMATION_HIERARCHY_OPTION_1, QTM4JConstants.OPTION_1);
+            items.add(QTM4JConstants.TESTNG_AUTOMATION_HIERARCHY_OPTION_2, QTM4JConstants.OPTION_2);
+            items.add(QTM4JConstants.TESTNG_AUTOMATION_HIERARCHY_OPTION_3, QTM4JConstants.OPTION_3);
+        }
+        return items;
+    }
+
+    public ListBoxModel doFillAppendTestNameItems(@QueryParameter String format, @QueryParameter String automationHierarchy) {
+        ListBoxModel items = new ListBoxModel();
+        if (format.equals(QTM4JConstants.JUNIT_FORMAT_TYPE) && !automationHierarchy.equals(QTM4JConstants.OPTION_1))
+        {
+            items.add(QTM4JConstants.QMETRY_AUTOMATION_SETTINGS_DEFAULT, QTM4JConstants.OPTION_DEFAULT);
+            items.add(QTM4JConstants.JUNIT_APPEND_TESTNAME_OPTION_YES, QTM4JConstants.OPTION_TRUE);
+            items.add(QTM4JConstants.JUNIT_APPEND_TESTNAME_OPTION_NO, QTM4JConstants.OPTION_FALSE);
+        }
+        else if(format.equals(QTM4JConstants.TESTNG_FORMAT_TYPE) && !automationHierarchy.equals(QTM4JConstants.OPTION_1))
+        {
+            items.add(QTM4JConstants.QMETRY_AUTOMATION_SETTINGS_DEFAULT, QTM4JConstants.OPTION_DEFAULT);
+            items.add(QTM4JConstants.TESTNG_APPEND_TESTNAME_OPTION_YES, QTM4JConstants.OPTION_TRUE);
+            items.add(QTM4JConstants.TESTNG_APPEND_TESTNAME_OPTION_NO, QTM4JConstants.OPTION_FALSE);
+        }
+        return items;
+    }
+
+    public ListBoxModel doFillAutomationHierarchyServerItems(@QueryParameter String formatServer) {
+        ListBoxModel items = new ListBoxModel();
+        if (formatServer.equals(QTM4JConstants.JUNIT_FORMAT_TYPE))
+        {
+            items.add(QTM4JConstants.QMETRY_AUTOMATION_SETTINGS_DEFAULT, QTM4JConstants.OPTION_DEFAULT);
+            items.add(QTM4JConstants.JUNIT_AUTOMATION_HIERARCHY_OPTION_1, QTM4JConstants.OPTION_1);
+            items.add(QTM4JConstants.JUNIT_AUTOMATION_HIERARCHY_OPTION_2, QTM4JConstants.OPTION_2);
+            items.add(QTM4JConstants.JUNIT_AUTOMATION_HIERARCHY_OPTION_3, QTM4JConstants.OPTION_3);
+        }
+        else if(formatServer.equals(QTM4JConstants.TESTNG_FORMAT_TYPE))
+        {
+            items.add(QTM4JConstants.QMETRY_AUTOMATION_SETTINGS_DEFAULT, QTM4JConstants.OPTION_DEFAULT);
+            items.add(QTM4JConstants.TESTNG_AUTOMATION_HIERARCHY_OPTION_1, QTM4JConstants.OPTION_1);
+            items.add(QTM4JConstants.TESTNG_AUTOMATION_HIERARCHY_OPTION_2, QTM4JConstants.OPTION_2);
+            items.add(QTM4JConstants.TESTNG_AUTOMATION_HIERARCHY_OPTION_3, QTM4JConstants.OPTION_3);
+        }
+        return items;
+    }
+
+    public ListBoxModel doFillAppendTestNameServerItems(@QueryParameter String formatServer, @QueryParameter String automationHierarchyServer) {
+        ListBoxModel items = new ListBoxModel();
+        if (formatServer.equals(QTM4JConstants.JUNIT_FORMAT_TYPE) && !automationHierarchyServer.equals(QTM4JConstants.OPTION_1))
+        {
+            items.add(QTM4JConstants.QMETRY_AUTOMATION_SETTINGS_DEFAULT, QTM4JConstants.OPTION_DEFAULT);
+            items.add(QTM4JConstants.JUNIT_APPEND_TESTNAME_OPTION_YES, QTM4JConstants.OPTION_TRUE);
+            items.add(QTM4JConstants.JUNIT_APPEND_TESTNAME_OPTION_NO, QTM4JConstants.OPTION_FALSE);
+        }
+        else if(formatServer.equals(QTM4JConstants.TESTNG_FORMAT_TYPE) && !automationHierarchyServer.equals(QTM4JConstants.OPTION_1))
+        {
+            items.add(QTM4JConstants.QMETRY_AUTOMATION_SETTINGS_DEFAULT, QTM4JConstants.OPTION_DEFAULT);
+            items.add(QTM4JConstants.TESTNG_APPEND_TESTNAME_OPTION_YES, QTM4JConstants.OPTION_TRUE);
+            items.add(QTM4JConstants.TESTNG_APPEND_TESTNAME_OPTION_NO, QTM4JConstants.OPTION_FALSE);
+        }
+        return items;
+    }
 
 	/**
 	 * In order to load the persisted global configuration, you have to call load()
