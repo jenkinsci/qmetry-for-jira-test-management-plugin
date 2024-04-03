@@ -303,7 +303,7 @@
                   <f:textbox />
                </f:entry>
                <f:entry title="Planned On" field="testCaseExecutionPlannedDateServer" >
-                  <f:textbox />
+                  <f:textbox title="Execution Planned Date" />
                </f:entry>
                <f:entry title="Assignee" field="testCaseExecutionAssigneeServer" >
                   <f:textbox />
