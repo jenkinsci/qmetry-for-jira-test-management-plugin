@@ -30,6 +30,8 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
 import org.apache.commons.io.IOUtils;
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 import org.json.JSONArray;
@@ -67,7 +69,8 @@ public class UploadToServerV4 {
 			String testCasePriority, String testCaseStatus,	String testCaseSprintId, String testCaseFixVersionId, 
 			String testCaseCustomFields, int buildnumber, Run<?, ?> run, TaskListener listener, FilePath workspace, String pluginName,
 			String serverAuthenticationType, String personalAccessToken, String testCycleFolderPath, String testCaseFolderPath, String testCasePrecondition,
-			String testCaseExecutionComment, String testCaseExecutionActualTime, String testCaseExecutionAssignee, String testCaseExecutionCustomFields)
+			String testCaseExecutionComment, String testCaseExecutionActualTime, String testCaseExecutionAssignee, String testCaseExecutionCustomFields, String testCaseExecutionPlannedDate,
+			String automationHierarchy, String appendTestName)
 			throws MalformedURLException, IOException, UnsupportedEncodingException, ProtocolException, ParseException,
 			FileNotFoundException, InterruptedException {
 
@@ -145,6 +148,19 @@ public class UploadToServerV4 {
 		} else if (String.valueOf(format).equals("specflow/json")) {
 			format_short = "specflow";
 		}
+
+		//automationHierarchy & appendTestName applicable only for JUnit/TestNG frameworks
+		if (format.equals(QTM4JConstants.JUNIT_FORMAT_TYPE) || format.equals(QTM4JConstants.TESTNG_FORMAT_TYPE)) {
+			//set automationHierarchy value for option 1/2/3. As per design, Default option is treated as null.
+			if (automationHierarchy != null && !automationHierarchy.isEmpty() && !automationHierarchy.equals(QTM4JConstants.OPTION_DEFAULT)) {
+				requestDataMap.put("automationHierarchy", Integer.parseInt(automationHierarchy));
+			}
+			//set appendTestName value if automationHierarchy is 2/3/Default (Not applicable for Hierarchy 1). As per design, Default option is treated as null.
+			if (appendTestName != null && !appendTestName.isEmpty() && !Objects.equals(automationHierarchy, QTM4JConstants.OPTION_1) && !appendTestName.equals(QTM4JConstants.OPTION_DEFAULT)) {
+				requestDataMap.put("appendTestName", Boolean.parseBoolean(appendTestName));
+			}
+		}
+
 		requestDataMap.put("format", String.valueOf(format_short));
 		requestDataMap.put("isZip", String.valueOf(iszip));
 		if (attachFile) {
@@ -304,6 +320,10 @@ public class UploadToServerV4 {
 			JSONParser parser = new JSONParser();
 			org.json.simple.JSONArray testCaseExecutionCustomFieldsJson = (org.json.simple.JSONArray) parser.parse(testCaseExecutionCustomFields);
 			testCaseExecutionDataMap.put("customFields", testCaseExecutionCustomFieldsJson);
+		}
+		if (testCaseExecutionPlannedDate != null && !testCaseExecutionPlannedDate.isEmpty()) {
+			isTestCaseExecution = true;
+			testCaseExecutionDataMap.put("executionPlannedDate", testCaseExecutionPlannedDate.trim());
 		}
 
 		Map<String, Object> testCaseCycleTcExecutionDataMap = new HashMap<>();
