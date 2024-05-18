@@ -65,7 +65,7 @@ public class UploadToCloudV4 {
 			String testCasePrecondition, String testCaseAssignee, String testCaseReporter, String testCaseEstimatedTime, 
 			String testCaseLabels, String testCaseComponents, String testCasePriority, String testCaseStatus, String testCaseSprintId, 
 			String testCaseFixVersionId, String testCaseCustomFields, String testCaseFolderId, int buildnumber, Run<?, ?> run, TaskListener listener,
-			FilePath workspace, String automationHierarchy, String appendTestName) throws MalformedURLException, IOException, UnsupportedEncodingException, ProtocolException,
+			FilePath workspace, String automationHierarchy, String appendTestName, String testCaseExecutionComment, String testCaseExecutionActualTime, String testCaseExecutionAssignee, String testCaseExecutionCustomFields, String testCaseExecutionPlannedDate) throws MalformedURLException, IOException, UnsupportedEncodingException, ProtocolException,
 			ParseException, FileNotFoundException, InterruptedException {
 
 		PrintStream logger = listener.getLogger();
@@ -287,17 +287,46 @@ public class UploadToCloudV4 {
 			testcaseDataMap.put("customFields", testcaseCustomFieldsJson);
 		}
 
-		Map<String, Object> testCaseCycleDataMap = new HashMap<>();
+		Map<String, Object> testCaseExecutionDataMap = new HashMap<>();
+		boolean isTestCaseExecution = false;
+		if (testCaseExecutionComment != null && !testCaseExecutionComment.isEmpty()) {
+			isTestCaseExecution = true;
+			testCaseExecutionDataMap.put("comment", testCaseExecutionComment.trim());
+		}
+		if (testCaseExecutionActualTime != null && !testCaseExecutionActualTime.isEmpty()) {
+			isTestCaseExecution = true;
+			testCaseExecutionDataMap.put("actualTime", testCaseExecutionActualTime.trim());
+		}
+		if (testCaseExecutionAssignee != null && !testCaseExecutionAssignee.isEmpty()) {
+			isTestCaseExecution = true;
+			testCaseExecutionDataMap.put("assignee", testCaseExecutionAssignee.trim());
+		}
+		if (testCaseExecutionCustomFields != null && !testCaseExecutionCustomFields.isEmpty()) {
+			isTestCaseExecution = true;
+			JSONParser parser = new JSONParser();
+			org.json.simple.JSONArray testCaseExecutionCustomFieldsJson = (org.json.simple.JSONArray) parser.parse(testCaseExecutionCustomFields);
+			testCaseExecutionDataMap.put("customFields", testCaseExecutionCustomFieldsJson);
+		}
+		if (testCaseExecutionPlannedDate != null && !testCaseExecutionPlannedDate.isEmpty()) {
+			isTestCaseExecution = true;
+			testCaseExecutionDataMap.put("executionPlannedDate", testCaseExecutionPlannedDate.trim());
+		}
+
+		Map<String, Object> testCaseCycleTcExecutionDataMap = new HashMap<>();
 		if (isTestcycle) {
-			testCaseCycleDataMap.put("testCycle", testcycleDataMap);
+			testCaseCycleTcExecutionDataMap.put("testCycle", testcycleDataMap);
 			logger.println("QMetry for JIRA :" + " TestCycle  : " + testcycleDataMap);
 		}
 		if (isTestcase) {
-			testCaseCycleDataMap.put("testCase", testcaseDataMap);
+			testCaseCycleTcExecutionDataMap.put("testCase", testcaseDataMap);
 			logger.println("QMetry for JIRA :" + " TestCase : " + testcaseDataMap);
 		}
+		if (isTestCaseExecution) {
+			testCaseCycleTcExecutionDataMap.put("testCaseExecution", testCaseExecutionDataMap);
+			logger.println("QMetry for JIRA :" + " TestCaseExecution : " + testCaseExecutionDataMap);
+		}
 
-		requestDataMap.put("fields", testCaseCycleDataMap);
+		requestDataMap.put("fields", testCaseCycleTcExecutionDataMap);
 
 		JSONObject jsonbody = new JSONObject(requestDataMap);
 
