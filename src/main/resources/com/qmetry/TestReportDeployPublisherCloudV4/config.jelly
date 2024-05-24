@@ -138,6 +138,24 @@
                </f:entry>
             </f:section>
 
+            <f:section title="${instance.isTestType('CLOUD')?'Test Case Execution':null}">
+               <f:entry title="Comment" field="testCaseExecutionComment" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Actual Time" field="testCaseExecutionActualTime" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Planned On" field="testCaseExecutionPlannedDate" >
+                  <f:textbox title="Execution Planned Date" />
+               </f:entry>
+               <f:entry title="Assignee" field="testCaseExecutionAssignee" >
+                  <f:textbox />
+               </f:entry>
+               <f:entry title="Custom Fields" field="testCaseExecutionCustomFields" >
+                  <f:textarea />
+               </f:entry>
+            </f:section>
+
          </f:nested>
       </f:radioBlock>
 
