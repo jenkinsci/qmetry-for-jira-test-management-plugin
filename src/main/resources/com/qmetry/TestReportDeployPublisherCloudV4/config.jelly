@@ -11,6 +11,10 @@
    <f:section title="">
       <f:radioBlock name="testToRun" value="CLOUD" checked="${instance.isTestType('CLOUD')}" title="Cloud" inline="true">
          <f:nested>
+            <f:entry title="Region" field="region">
+               <f:select/>
+            </f:entry>
+
             <f:entry title="Automation API Key" field="apikey">
                <f:textbox />
             </f:entry>
