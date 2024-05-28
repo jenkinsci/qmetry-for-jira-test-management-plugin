@@ -65,7 +65,7 @@ public class UploadToCloudV4 {
 			String testCasePrecondition, String testCaseAssignee, String testCaseReporter, String testCaseEstimatedTime, 
 			String testCaseLabels, String testCaseComponents, String testCasePriority, String testCaseStatus, String testCaseSprintId, 
 			String testCaseFixVersionId, String testCaseCustomFields, String testCaseFolderId, int buildnumber, Run<?, ?> run, TaskListener listener,
-			FilePath workspace, String automationHierarchy, String appendTestName, String testCaseExecutionComment, String testCaseExecutionActualTime, String testCaseExecutionAssignee, String testCaseExecutionCustomFields, String testCaseExecutionPlannedDate) throws MalformedURLException, IOException, UnsupportedEncodingException, ProtocolException,
+			FilePath workspace, String automationHierarchy, String appendTestName, String testCaseExecutionComment, String testCaseExecutionActualTime, String testCaseExecutionAssignee, String testCaseExecutionCustomFields, String testCaseExecutionPlannedDate, String region) throws MalformedURLException, IOException, UnsupportedEncodingException, ProtocolException,
 			ParseException, FileNotFoundException, InterruptedException {
 
 		PrintStream logger = listener.getLogger();
@@ -85,7 +85,13 @@ public class UploadToCloudV4 {
 		Properties p = new Properties();
 
 		p.load(is);
-		uploadcloudurlv4 = p.getProperty("uploadcloudurlv4");
+
+		if (region != null && !region.isEmpty() && Objects.equals(region, QTM4JConstants.REGION_AUSTRALIA)) {
+			uploadcloudurlv4 = p.getProperty("uploadcloudurlv4.aus");
+		} else {
+			uploadcloudurlv4 = p.getProperty("uploadcloudurlv4.us");
+		}
+		logger.println("QMetry for JIRA :" + " Using cloud URL : " + uploadcloudurlv4);
 
 		String encoding = "UTF-8";
 		URL url = new URL(uploadcloudurlv4);

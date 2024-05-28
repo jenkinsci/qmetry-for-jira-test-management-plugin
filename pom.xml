@@ -32,18 +32,13 @@
 
 	<profiles>
 		<profile>
-			<id>dev</id>
-			<properties>
-				<upload.cloud.url>https://importresults.qmetry.com/QmetryWisdom/importresults-qtm4j</upload.cloud.url>
-			</properties>
-		</profile>
-		<profile>
-			<id>production</id>
+			<id>preprod2</id>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<activeByDefault>false</activeByDefault>
 			</activation>
 			<properties>
-				<upload.cloud.url>https://importresults.qmetry.com/prod/importresults-qtm4j</upload.cloud.url>
+				<upload.cloud.url.v4.us>https://qtm4j-cloud-preprod2.qmetry.com/rest/api/automation/importresult</upload.cloud.url.v4.us>
+				<upload.cloud.url.v4.aus>https://syd-qtm4j-cloud-preprod.qmetry.com/rest/api/automation/importresult</upload.cloud.url.v4.aus>
 			</properties>
 		</profile>
 		<profile>
@@ -52,7 +47,8 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<upload.cloud.url.v4>https://qtmcloud.qmetry.com/rest/api/automation/importresult</upload.cloud.url.v4>
+				<upload.cloud.url.v4.us>https://qtmcloud.qmetry.com/rest/api/automation/importresult</upload.cloud.url.v4.us>
+				<upload.cloud.url.v4.aus>https://syd-qtmcloud.qmetry.com/rest/api/automation/importresult</upload.cloud.url.v4.aus>
 			</properties>
 		</profile>
 	</profiles>

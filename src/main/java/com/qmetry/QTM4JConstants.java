@@ -33,4 +33,8 @@ public class QTM4JConstants {
     public final static String OPTION_2 = "2";
     public final static String OPTION_3 = "3";
 
+    // Region Options
+    public final static String REGION_USA = "USA";
+    public final static String REGION_AUSTRALIA = "Australia";
+
 }

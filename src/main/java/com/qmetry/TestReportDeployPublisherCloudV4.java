@@ -78,6 +78,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     private boolean disableaction;
     public String testToRun;
 
+    private String region;
     private String apikey;
     private String format;
     private String file;
@@ -181,6 +182,12 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     private String appendTestNameServer;
 
     //Cloud getter setter
+    public String getRegion() {
+        return region;
+    }
+    public void setRegion(String region) {
+        this.region = region;
+    }
     public String getTestCycleToReuse() {
 	return testCycleToReuse;
     }
@@ -779,12 +786,13 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
         String serverAuthenticationType, String personalAccessToken, String testCycleFolderPathServer, String testCaseFolderPathServer, String testCasePreconditionServer, String testCaseExecutionCommentServer,
         String testCaseExecutionActualTimeServer, String testCaseExecutionAssigneeServer, String testCaseExecutionCustomFieldsServer, String testCaseExecutionPlannedDateServer,
         String automationHierarchyServer, String appendTestNameServer, String automationHierarchy, String appendTestName,
-        String testCaseExecutionComment, String testCaseExecutionActualTime, String testCaseExecutionAssignee, String testCaseExecutionCustomFields, String testCaseExecutionPlannedDate) throws AbortException {
+        String testCaseExecutionComment, String testCaseExecutionActualTime, String testCaseExecutionAssignee, String testCaseExecutionCustomFields, String testCaseExecutionPlannedDate, String region) throws AbortException {
 
 	this.testToRun = testToRun;
 	this.disableaction = disableaction;
 
 	//Cloud fields
+    this.region = region;
 	this.attachFile = attachFile;
     this.matchTestSteps = matchTestSteps;
 	this.apikey = apikey;
@@ -959,6 +967,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		String file_chkd = env.expand(this.getFile());
 		String format_chkd = env.expand(this.getFormat());
 		String apikey_chkd = env.expand(this.getApikey());
+        String region_chkd = env.expand(this.getRegion());
 
 		String testCycleToReuse_chkd = env.expand(this.getTestCycleToReuse());
 		String environment_chkd = env.expand(this.getEnvironment());
@@ -1014,6 +1023,9 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		    logger.println(pluginName + " [ERROR] : Enter format for test result files.");
 		    throw new AbortException();
 		}
+
+        if (region_chkd != null && !region_chkd.isEmpty())
+            logger.println(pluginName + " Region : " + region_chkd);
 
 		logger.println(pluginName + " File path : " + file_chkd);
 		logger.println(pluginName + " Format : " + format_chkd);
@@ -1142,7 +1154,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 			    testCycleEndDate_chkd, testCycleFolderId_chkd, testCaseDescription_chkd, testCasePrecondition_chkd, testCaseAssignee_chkd, testCaseReporter_chkd,
 			    testCaseEstimatedTime_chkd, testCaseLabels_chkd, testCaseComponents_chkd, testCasePriority_chkd, testCaseStatus_chkd, 
 			    testCaseSprintId_chkd, testCaseFixVersionId_chkd, testCaseCustomFields_chkd, testCaseFolderId_chkd, buildnumber, run, listener, workspace,
-                automationHierarchy_chkd, appendTestName_chkd, testCaseExecutionComment_chkd, testCaseExecutionActualTime_chkd, testCaseExecutionAssignee_chkd, testCaseExecutionCustomFields_chkd, testCaseExecutionPlannedDate_chkd);
+                automationHierarchy_chkd, appendTestName_chkd, testCaseExecutionComment_chkd, testCaseExecutionActualTime_chkd, testCaseExecutionAssignee_chkd, testCaseExecutionCustomFields_chkd, testCaseExecutionPlannedDate_chkd, region_chkd);
 		    if (response != null) {
 			if (response.get("success").equals("true")) {
 			    if (response.get("message").equals("false")) {
@@ -1587,6 +1599,13 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		    new Option("hpuft/XML", "hpuft/xml", formatServer.matches("hpuft/xml")),
 		    new Option("SpecFlow/JSON", "specflow/json", formatServer.matches("specflow/json")));
 	}
+
+    public ListBoxModel doFillRegionItems(@QueryParameter String region) {
+        ListBoxModel items = new ListBoxModel();
+        items.add(QTM4JConstants.REGION_USA);
+        items.add(QTM4JConstants.REGION_AUSTRALIA);
+        return items;
+    }
 
     public ListBoxModel doFillAutomationHierarchyItems(@QueryParameter String format) {
         ListBoxModel items = new ListBoxModel();
