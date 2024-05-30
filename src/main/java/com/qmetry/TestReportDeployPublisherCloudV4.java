@@ -78,6 +78,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     private boolean disableaction;
     public String testToRun;
 
+    private String region;
     private String apikey;
     private String format;
     private String file;
@@ -115,6 +116,12 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     private String testCaseReporter;
     private String testCaseEstimatedTime;
     private String testCaseFolderId;
+
+    private String testCaseExecutionComment;
+    private String testCaseExecutionActualTime;
+    private String testCaseExecutionAssignee;
+    private String testCaseExecutionCustomFields;
+    private String testCaseExecutionPlannedDate;
 
     private String automationHierarchy;
     private String appendTestName;
@@ -175,6 +182,12 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     private String appendTestNameServer;
 
     //Cloud getter setter
+    public String getRegion() {
+        return region;
+    }
+    public void setRegion(String region) {
+        this.region = region;
+    }
     public String getTestCycleToReuse() {
 	return testCycleToReuse;
     }
@@ -395,6 +408,41 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 
     public void setTestCaseFolderId(String testCaseFolderId) {
         this.testCaseFolderId = testCaseFolderId;
+    }
+
+    public String getTestCaseExecutionComment() {
+        return testCaseExecutionComment;
+    }
+    public void setTestCaseExecutionComment(String testCaseExecutionComment) {
+        this.testCaseExecutionComment = testCaseExecutionComment;
+    }
+
+    public String getTestCaseExecutionActualTime() {
+        return testCaseExecutionActualTime;
+    }
+    public void setTestCaseExecutionActualTime(String testCaseExecutionActualTime) {
+        this.testCaseExecutionActualTime = testCaseExecutionActualTime;
+    }
+
+    public String getTestCaseExecutionAssignee() {
+        return testCaseExecutionAssignee;
+    }
+    public void setTestCaseExecutionAssignee(String testCaseExecutionAssignee) {
+        this.testCaseExecutionAssignee = testCaseExecutionAssignee;
+    }
+
+    public String getTestCaseExecutionCustomFields() {
+        return testCaseExecutionCustomFields;
+    }
+    public void setTestCaseExecutionCustomFields(String testCaseExecutionCustomFields) {
+        this.testCaseExecutionCustomFields = testCaseExecutionCustomFields;
+    }
+
+    public String getTestCaseExecutionPlannedDate() {
+        return testCaseExecutionPlannedDate;
+    }
+    public void setTestCaseExecutionPlannedDate(String testCaseExecutionPlannedDate) {
+        this.testCaseExecutionPlannedDate = testCaseExecutionPlannedDate;
     }
 
     public String getAutomationHierarchy() {
@@ -737,12 +785,14 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	    String testCaseComponentsServer, String testCasePriorityServer, String testCaseStatusServer, String testCaseSprintIdServer, String testCaseFixVersionIdServer,
         String serverAuthenticationType, String personalAccessToken, String testCycleFolderPathServer, String testCaseFolderPathServer, String testCasePreconditionServer, String testCaseExecutionCommentServer,
         String testCaseExecutionActualTimeServer, String testCaseExecutionAssigneeServer, String testCaseExecutionCustomFieldsServer, String testCaseExecutionPlannedDateServer,
-        String automationHierarchyServer, String appendTestNameServer, String automationHierarchy, String appendTestName) throws AbortException {
+        String automationHierarchyServer, String appendTestNameServer, String automationHierarchy, String appendTestName,
+        String testCaseExecutionComment, String testCaseExecutionActualTime, String testCaseExecutionAssignee, String testCaseExecutionCustomFields, String testCaseExecutionPlannedDate, String region) throws AbortException {
 
 	this.testToRun = testToRun;
 	this.disableaction = disableaction;
 
 	//Cloud fields
+    this.region = region;
 	this.attachFile = attachFile;
     this.matchTestSteps = matchTestSteps;
 	this.apikey = apikey;
@@ -780,6 +830,12 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	this.testCaseDescription = testCaseDescription;
 	this.testCasePrecondition = testCasePrecondition;
     this.testCaseFolderId = testCaseFolderId;
+
+    this.testCaseExecutionComment = testCaseExecutionComment;
+    this.testCaseExecutionActualTime = testCaseExecutionActualTime;
+    this.testCaseExecutionAssignee = testCaseExecutionAssignee;
+    this.testCaseExecutionCustomFields = testCaseExecutionCustomFields;
+    this.testCaseExecutionPlannedDate = testCaseExecutionPlannedDate;
 
     this.automationHierarchy = automationHierarchy;
     this.appendTestName = appendTestName;
@@ -911,6 +967,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		String file_chkd = env.expand(this.getFile());
 		String format_chkd = env.expand(this.getFormat());
 		String apikey_chkd = env.expand(this.getApikey());
+        String region_chkd = env.expand(this.getRegion());
 
 		String testCycleToReuse_chkd = env.expand(this.getTestCycleToReuse());
 		String environment_chkd = env.expand(this.getEnvironment());
@@ -945,6 +1002,12 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		String testCasePrecondition_chkd = env.expand(this.getTestCasePrecondition());
         String testCaseFolderId_chkd = env.expand(this.getTestCaseFolderId());
 
+        String testCaseExecutionComment_chkd = env.expand(this.getTestCaseExecutionComment());
+        String testCaseExecutionActualTime_chkd = env.expand(this.getTestCaseExecutionActualTime());
+        String testCaseExecutionAssignee_chkd = env.expand(this.getTestCaseExecutionAssignee());
+        String testCaseExecutionCustomFields_chkd = env.expand(this.getTestCaseExecutionCustomFields());
+        String testCaseExecutionPlannedDate_chkd = env.expand(this.getTestCaseExecutionPlannedDate());
+
         String automationHierarchy_chkd = env.expand(this.getAutomationHierarchy());
         String appendTestName_chkd = env.expand(this.getAppendTestName());
 
@@ -960,6 +1023,9 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		    logger.println(pluginName + " [ERROR] : Enter format for test result files.");
 		    throw new AbortException();
 		}
+
+        if (region_chkd != null && !region_chkd.isEmpty())
+            logger.println(pluginName + " Region : " + region_chkd);
 
 		logger.println(pluginName + " File path : " + file_chkd);
 		logger.println(pluginName + " Format : " + format_chkd);
@@ -1058,6 +1124,22 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
         if (testCaseFolderId_chkd != null && !testCaseFolderId_chkd.isEmpty())
             logger.println(pluginName + " Test case folder id : " + testCaseFolderId_chkd);
 
+        //TestCaseExecution fields
+        if (testCaseExecutionComment_chkd!= null && !testCaseExecutionComment_chkd.isEmpty())
+            logger.println(pluginName + " Test case execution comment : " + testCaseExecutionComment_chkd);
+
+        if (testCaseExecutionActualTime_chkd!= null && !testCaseExecutionActualTime_chkd.isEmpty())
+            logger.println(pluginName + " Test case execution actual time : " + testCaseExecutionActualTime_chkd);
+
+        if (testCaseExecutionAssignee_chkd!= null && !testCaseExecutionAssignee_chkd.isEmpty())
+            logger.println(pluginName + " Test case execution assignee : " + testCaseExecutionAssignee_chkd);
+
+        if (testCaseExecutionCustomFields_chkd!= null && !testCaseExecutionCustomFields_chkd.isEmpty())
+            logger.println(pluginName + " Test case execution custom fields : " + testCaseExecutionCustomFields_chkd);
+
+        if (testCaseExecutionPlannedDate_chkd != null && !testCaseExecutionPlannedDate_chkd.isEmpty())
+            logger.println(pluginName + " Test case execution planned date : " + testCaseExecutionPlannedDate_chkd);
+
         if (automationHierarchy_chkd != null && !automationHierarchy_chkd.isEmpty())
                 logger.println(pluginName + "Automation Hierarchy : " + automationHierarchy_chkd);
 
@@ -1072,7 +1154,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 			    testCycleEndDate_chkd, testCycleFolderId_chkd, testCaseDescription_chkd, testCasePrecondition_chkd, testCaseAssignee_chkd, testCaseReporter_chkd,
 			    testCaseEstimatedTime_chkd, testCaseLabels_chkd, testCaseComponents_chkd, testCasePriority_chkd, testCaseStatus_chkd, 
 			    testCaseSprintId_chkd, testCaseFixVersionId_chkd, testCaseCustomFields_chkd, testCaseFolderId_chkd, buildnumber, run, listener, workspace,
-                automationHierarchy_chkd, appendTestName_chkd);
+                automationHierarchy_chkd, appendTestName_chkd, testCaseExecutionComment_chkd, testCaseExecutionActualTime_chkd, testCaseExecutionAssignee_chkd, testCaseExecutionCustomFields_chkd, testCaseExecutionPlannedDate_chkd, region_chkd);
 		    if (response != null) {
 			if (response.get("success").equals("true")) {
 			    if (response.get("message").equals("false")) {
@@ -1518,6 +1600,13 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		    new Option("SpecFlow/JSON", "specflow/json", formatServer.matches("specflow/json")));
 	}
 
+    public ListBoxModel doFillRegionItems(@QueryParameter String region) {
+        ListBoxModel items = new ListBoxModel();
+        items.add(QTM4JConstants.REGION_USA);
+        items.add(QTM4JConstants.REGION_AUSTRALIA);
+        return items;
+    }
+
     public ListBoxModel doFillAutomationHierarchyItems(@QueryParameter String format) {
         ListBoxModel items = new ListBoxModel();
         if (format.equals(QTM4JConstants.JUNIT_FORMAT_TYPE))
@@ -1829,6 +1918,47 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
     }
 
     public FormValidation doCheckTestCaseExecutionPlannedDateServer(@QueryParameter String value) throws IOException, ServletException {
+        if (value.length() != 0) {
+            try
+            {
+                SimpleDateFormat format = new SimpleDateFormat("dd/MMM/yyyy");
+                format.setLenient(false);
+                format.parse(value);
+            } catch (ParseException e) {
+                return FormValidation.error("Either Invalid date passed or format is not correct for planned on date. Pass in 'dd/MMM/yyyy' format");
+            }
+        }
+        return FormValidation.ok();
+    }
+
+
+    public FormValidation doCheckTestCaseExecutionActualTime(@QueryParameter String value) throws IOException, ServletException {
+        if (value.length() != 0) {
+            String regex = "([0-1][0-9]|2[0-3]):[0-5][0-9]";
+            Pattern p = Pattern.compile(regex);
+            Matcher m = p.matcher(value);
+            Boolean result = m.matches();
+            if (!result)
+                return FormValidation.error("Either invalid time or invalid time format for actual time. Pass in 'HH:mm' format");
+        }
+        return FormValidation.ok();
+    }
+
+    @SuppressFBWarnings(value = "DLS_DEAD_LOCAL_STORE")
+    public FormValidation doCheckTestCaseExecutionCustomFields(@QueryParameter String value) throws IOException, ServletException {
+        if (value.length() != 0) {
+            try {
+                JSONParser parser = new JSONParser();
+                JSONArray j = (JSONArray) parser.parse(value);
+                value = j.toString();
+            } catch (Exception ex) {
+                return FormValidation.error("Invalid JSON Array");
+            }
+        }
+            return FormValidation.ok();
+    }
+
+    public FormValidation doCheckTestCaseExecutionPlannedDate(@QueryParameter String value) throws IOException, ServletException {
         if (value.length() != 0) {
             try
             {
