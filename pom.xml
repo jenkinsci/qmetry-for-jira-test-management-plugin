@@ -32,6 +32,16 @@
 
 	<profiles>
 		<profile>
+			<id>stag</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<upload.cloud.url.v4.us>https://qtm4j-cloud-new-stag.qmetry.com/rest/api/automation/importresult</upload.cloud.url.v4.us>
+				<upload.cloud.url.v4.aus>https://qtm4j-cloud-new-stag.qmetry.com/rest/api/automation/importresult</upload.cloud.url.v4.aus>
+			</properties>
+		</profile>
+		<profile>
 			<id>preprod2</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>
