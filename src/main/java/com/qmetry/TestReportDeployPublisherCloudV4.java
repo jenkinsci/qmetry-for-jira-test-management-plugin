@@ -1832,12 +1832,12 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 	
 	public FormValidation doCheckTestCaseEstimatedTime(@QueryParameter String value) throws IOException, ServletException {
 	    if (value.length() != 0) {
-		String regex = "([0-1][0-9]|2[0-3]):[0-5][0-9]";
+		String regex = "([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]";
 		Pattern p = Pattern.compile(regex);
 		Matcher m = p.matcher(value);
 		Boolean result = m.matches();
 		if (!result) 
-		    return FormValidation.error("Either invalid time or invalid time format for estimated time. Pass in 'HH:mm' format");
+		    return FormValidation.error("Either invalid time or invalid time format for estimated time. Pass in 'HH:mm:ss' format");
 	    } //try-catch
 	    return FormValidation.ok();
 	}
@@ -1934,12 +1934,12 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 
     public FormValidation doCheckTestCaseExecutionActualTime(@QueryParameter String value) throws IOException, ServletException {
         if (value.length() != 0) {
-            String regex = "([0-1][0-9]|2[0-3]):[0-5][0-9]";
+            String regex = "([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]";
             Pattern p = Pattern.compile(regex);
             Matcher m = p.matcher(value);
             Boolean result = m.matches();
             if (!result)
-                return FormValidation.error("Either invalid time or invalid time format for actual time. Pass in 'HH:mm' format");
+                return FormValidation.error("Either invalid time or invalid time format for actual time. Pass in 'HH:mm:ss' format");
         }
         return FormValidation.ok();
     }
