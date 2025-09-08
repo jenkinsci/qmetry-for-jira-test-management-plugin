@@ -622,35 +622,35 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 					if (e.getMessage() != null) {
 						logger.println(pluginName + "Exception Message: " + e.getMessage());
 					}
-					logger.println(pluginName + "[ERROR] : MalformedURLException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
+					logger.println(pluginName + "[ERROR] : MalformedURLException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_3X + " for more information");
 					e.printStackTrace();
 					throw new AbortException();
 				} catch (UnsupportedEncodingException e) {
 					if (e.getMessage() != null) {
 						logger.println(pluginName + "Exception Message: " + e.getMessage());
 					}
-					logger.println(pluginName + "[ERROR] : UnsupportedEncodingException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
+					logger.println(pluginName + "[ERROR] : UnsupportedEncodingException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_3X + " for more information");
 					e.printStackTrace();
 					throw new AbortException();
 				} catch (ProtocolException e) {
 					if (e.getMessage() != null) {
 						logger.println(pluginName + "Exception Message: " + e.getMessage());
 					}
-					logger.println(pluginName + "[ERROR] : ProtocolException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
+					logger.println(pluginName + "[ERROR] : ProtocolException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_3X + " for more information");
 					e.printStackTrace();
 					throw new AbortException();
 				} catch (FileNotFoundException e) {
 					if (e.getMessage() != null) {
 						logger.println(pluginName + "Exception Message: " + e.getMessage());
 					}
-					logger.println(pluginName + "[ERROR] : FileNotFoundException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
+					logger.println(pluginName + "[ERROR] : FileNotFoundException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_3X + " for more information");
 					e.printStackTrace();
 					throw new AbortException();
 				} catch (IOException e) {
 					if (e.getMessage() != null) {
 						if (!(e.getMessage()).equals("CustomException")) {
 							logger.println(pluginName + "Exception Message: " + e.getMessage());
-							logger.println(pluginName + "[ERROR] : IOException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
+							logger.println(pluginName + "[ERROR] : IOException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_3X + " for more information");
 							e.printStackTrace();
 						}
 					}
@@ -660,7 +660,7 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 					if (e.getMessage() != null) {
 						logger.println(pluginName + "Exception Message: " + e.getMessage());
 					}
-					logger.println(pluginName + "[ERROR] : ParseException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
+					logger.println(pluginName + "[ERROR] : ParseException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_3X + " for more information");
 					e.printStackTrace();
 					throw new AbortException();
 				} catch (Exception e) {
@@ -668,7 +668,7 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 					if (e.getMessage() != null) {
 						logger.println(pluginName + "Exception Message: " + e.getMessage());
 					}
-					logger.println(pluginName + "[ERROR] : GeneralException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
+					logger.println(pluginName + "[ERROR] : GeneralException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_3X + " for more information");
 					throw new AbortException();
 				} finally {
 					if (FindFile.getOnSlave()) {
@@ -795,12 +795,12 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 						if (response.get("success").equals("error")) {
 							logger.println(pluginName + "Error has occurred while uploading the file with response code: "
 									+ response.get("responseCode") + " : " + response.get("errorMessage")
-									+ ". Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
+									+ ". Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_3X + " for more information");
 							throw new AbortException();
 						} else if (response.get("success").equals("false")) {
 
 							logger.println(pluginName + "Error has occurred in publishing result QMetry - Test Management for JIRA");
-							logger.println(pluginName + "Error Message: " + response.get("errorMessage") + " Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
+							logger.println(pluginName + "Error Message: " + response.get("errorMessage") + " Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_3X + " for more information");
 							throw new AbortException();
 						} else if (response.get("success").equals("true")) {
 							logger.println(pluginName + "Publishing results has been successful.");
@@ -826,21 +826,21 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 					if (e.getMessage() != null) {
 						logger.println(pluginName + "Exception Message: " + e.getMessage());
 					}
-					logger.println(pluginName + "[ERROR] : ProtocolException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
+					logger.println(pluginName + "[ERROR] : ProtocolException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_3X + " for more information");
 					e.printStackTrace();
 					throw new AbortException();
 				} catch (org.apache.http.auth.InvalidCredentialsException e) {
 					if (e.getMessage() != null) {
 						logger.println(pluginName + "Exception Message: " + e.getMessage());
 					}
-					logger.println(pluginName + "[ERROR] : InvalidCredentialsException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
+					logger.println(pluginName + "[ERROR] : InvalidCredentialsException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_3X + " for more information");
 					e.printStackTrace();
 					throw new AbortException();
 				} catch (FileNotFoundException e) {
 					if (e.getMessage() != null) {
 						logger.println(pluginName + "Exception Message: " + e.getMessage());
 					}
-					logger.println(pluginName + "[ERROR] : FileNotFoundException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
+					logger.println(pluginName + "[ERROR] : FileNotFoundException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_3X + " for more information");
 
 					e.printStackTrace();
 					throw new AbortException();
@@ -849,7 +849,7 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 
 						if (!(e.getMessage()).equals("CustomException")) {
 							logger.println(pluginName + "Exception Message: " + e.getMessage());
-							logger.println(pluginName + "[ERROR] : IOException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
+							logger.println(pluginName + "[ERROR] : IOException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_3X + " for more information");
 							e.printStackTrace();
 						}
 					}
@@ -859,7 +859,7 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 					if (e.getMessage() != null) {
 						logger.println(pluginName + "Exception Message: " + e.getMessage());
 					}
-					logger.println(pluginName + "[ERROR] : ParseException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
+					logger.println(pluginName + "[ERROR] : ParseException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_3X + " for more information");
 					e.printStackTrace();
 					throw new AbortException();
 
@@ -867,7 +867,7 @@ public class TestReportDeployPublisher extends Recorder implements SimpleBuildSt
 					if (e.getMessage() != null) {
 						logger.println(pluginName + "Exception Message: " + e.getMessage());
 					}
-					logger.println(pluginName + "[ERROR] : GeneralException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qtmfj@qmetrysupport.atlassian.net for more information");
+					logger.println(pluginName + "[ERROR] : GeneralException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_3X + " for more information");
 
 					e.printStackTrace();
 					throw new AbortException();

@@ -1174,35 +1174,35 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		    if (e.getMessage() != null) {
 			logger.println(pluginName + " Exception Message: " + e.getMessage());
 		    }
-		    logger.println(pluginName + " [ERROR] : MalformedURLException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qmetryforjira@qmetrysupport.atlassian.net for more information");
+		    logger.println(pluginName + " [ERROR] : MalformedURLException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_4X + " for more information");
 		    e.printStackTrace();
 		    throw new AbortException();
 		} catch (UnsupportedEncodingException e) {
 		    if (e.getMessage() != null) {
 			logger.println(pluginName + " Exception Message: " + e.getMessage());
 		    }
-		    logger.println(pluginName + " [ERROR] : UnsupportedEncodingException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qmetryforjira@qmetrysupport.atlassian.net for more information");
+		    logger.println(pluginName + " [ERROR] : UnsupportedEncodingException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_4X + " for more information");
 		    e.printStackTrace();
 		    throw new AbortException();
 		} catch (ProtocolException e) {
 		    if (e.getMessage() != null) {
 			logger.println(pluginName + " Exception Message: " + e.getMessage());
 		    }
-		    logger.println(pluginName + " [ERROR] : ProtocolException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qmetryforjira@qmetrysupport.atlassian.net for more information");
+		    logger.println(pluginName + " [ERROR] : ProtocolException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_4X + " for more information");
 		    e.printStackTrace();
 		    throw new AbortException();
 		} catch (FileNotFoundException e) {
 		    if (e.getMessage() != null) {
 			logger.println(pluginName + " Exception Message: " + e.getMessage());
 		    }
-		    logger.println(pluginName + " [ERROR] : FileNotFoundException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qmetryforjira@qmetrysupport.atlassian.net for more information");
+		    logger.println(pluginName + " [ERROR] : FileNotFoundException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_4X + " for more information");
 		    e.printStackTrace();
 		    throw new AbortException();
 		} catch (IOException e) {
 		    if (e.getMessage() != null) {
 			if (!(e.getMessage()).equals("CustomException")) {
 			    logger.println(pluginName + " Exception Message: " + e.getMessage());
-			    logger.println(pluginName + " [ERROR] : IOException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qmetryforjira@qmetrysupport.atlassian.net for more information");
+			    logger.println(pluginName + " [ERROR] : IOException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_4X + " for more information");
 			    e.printStackTrace();
 			}
 		    }
@@ -1212,7 +1212,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		    if (e.getMessage() != null) {
 			logger.println(pluginName + " Exception Message: " + e.getMessage());
 		    }
-		    logger.println(pluginName + " [ERROR] : ParseException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qmetryforjira@qmetrysupport.atlassian.net for more information");
+		    logger.println(pluginName + " [ERROR] : ParseException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_4X + " for more information");
 		    e.printStackTrace();
 		    throw new AbortException();
 		} catch (Exception e) {
@@ -1220,7 +1220,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		    if (e.getMessage() != null) {
 			logger.println(pluginName + " Exception Message: " + e.getMessage());
 		    }
-		    logger.println(pluginName + " [ERROR] : GeneralException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qmetryforjira@qmetrysupport.atlassian.net for more information");
+		    logger.println(pluginName + " [ERROR] : GeneralException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_4X + " for more information");
 		    throw new AbortException();
 		} finally {
 		    if (FindFile.getOnSlave()) {
@@ -1490,35 +1490,35 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		    if (e.getMessage() != null) {
 			logger.println(pluginName + " Exception Message: " + e.getMessage());
 		    }
-		    logger.println(pluginName + " [ERROR] : MalformedURLException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qmetryforjira@qmetrysupport.atlassian.net for more information");
+		    logger.println(pluginName + " [ERROR] : MalformedURLException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_4X + " for more information");
 		    e.printStackTrace();
 		    throw new AbortException();
 		} catch (UnsupportedEncodingException e) {
 		    if (e.getMessage() != null) {
 			logger.println(pluginName + " Exception Message: " + e.getMessage());
 		    }
-		    logger.println(pluginName + " [ERROR] : UnsupportedEncodingException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qmetryforjira@qmetrysupport.atlassian.net for more information");
+		    logger.println(pluginName + " [ERROR] : UnsupportedEncodingException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_4X + " for more information");
 		    e.printStackTrace();
 		    throw new AbortException();
 		} catch (ProtocolException e) {
 		    if (e.getMessage() != null) {
 			logger.println(pluginName + " Exception Message: " + e.getMessage());
 		    }
-		    logger.println(pluginName + " [ERROR] : ProtocolException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qmetryforjira@qmetrysupport.atlassian.net for more information");
+		    logger.println(pluginName + " [ERROR] : ProtocolException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_4X + " for more information");
 		    e.printStackTrace();
 		    throw new AbortException();
 		} catch (FileNotFoundException e) {
 		    if (e.getMessage() != null) {
 			logger.println(pluginName + " Exception Message: " + e.getMessage());
 		    }
-		    logger.println(pluginName + " [ERROR] : FileNotFoundException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qmetryforjira@qmetrysupport.atlassian.net for more information");
+		    logger.println(pluginName + " [ERROR] : FileNotFoundException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_4X + " for more information");
 		    e.printStackTrace();
 		    throw new AbortException();
 		} catch (IOException e) {
 		    if (e.getMessage() != null) {
 			if (!(e.getMessage()).equals("CustomException")) {
 			    logger.println(pluginName + " Exception Message: " + e.getMessage());
-			    logger.println(pluginName + " [ERROR] : IOException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qmetryforjira@qmetrysupport.atlassian.net for more information");
+			    logger.println(pluginName + " [ERROR] : IOException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_4X + " for more information");
 			    e.printStackTrace();
 			}
 		    }
@@ -1527,7 +1527,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		    if (e.getMessage() != null) {
 			logger.println(pluginName + " Exception Message: " + e.getMessage());
 		    }
-		    logger.println(pluginName + " [ERROR] : ParseException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qmetryforjira@qmetrysupport.atlassian.net for more information");
+		    logger.println(pluginName + " [ERROR] : ParseException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_4X + " for more information");
 		    e.printStackTrace();
 		    throw new AbortException();
 		} catch (Exception e) {
@@ -1535,7 +1535,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
 		    if (e.getMessage() != null) {
 			logger.println(pluginName + " Exception Message: " + e.getMessage());
 		    }
-		    logger.println(pluginName + " [ERROR] : GeneralException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to qmetryforjira@qmetrysupport.atlassian.net for more information");
+		    logger.println(pluginName + " [ERROR] : GeneralException has occurred in QMetry - Test Management for JIRA plugin.Please send these logs to " + QTM4JConstants.SUPPORT_EMAIL_4X + " for more information");
 		    throw new AbortException();
 		} finally {
 		    if (FindFile.getOnSlave()) {
