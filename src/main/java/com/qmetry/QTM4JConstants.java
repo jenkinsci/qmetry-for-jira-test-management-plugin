@@ -37,4 +37,8 @@ public class QTM4JConstants {
     public final static String REGION_USA = "USA";
     public final static String REGION_AUSTRALIA = "Australia";
 
+    // Support Emails
+    public static final String SUPPORT_EMAIL_3X = "qtmforjira3support@smartbear.com";
+    public static final String SUPPORT_EMAIL_4X = "qtmforjira4support@smartbear.com";
+
 }
