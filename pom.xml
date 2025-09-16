@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>qmetry-for-jira-test-management</artifactId>
-	<version>1.26</version>
+	<version>1.27-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 	<name>QMetry for JIRA - Test Management Plugin </name>
 	<description>QMetry Test Management for JIRA plugin for Jenkins has been designed to seamlessly integrate your CI/CD pipeline with QMetry.
@@ -125,7 +125,7 @@
 		<connection>scm:git:git://github.com/jenkinsci/qmetry-for-jira-test-management-plugin.git</connection>
 		<developerConnection>scm:git:git@github.com:jenkinsci/qmetry-for-jira-test-management-plugin.git</developerConnection>
 		<url>https://github.com/jenkinsci/qmetry-for-jira-test-management-plugin/</url>
-		<tag>qmetry-for-jira-test-management-1.26</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<repositories>
