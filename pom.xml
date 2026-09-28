@@ -14,7 +14,7 @@
 	<name>QMetry for JIRA - Test Management Plugin </name>
 	<description>QMetry Test Management for JIRA plugin for Jenkins has been designed to seamlessly integrate your CI/CD pipeline with QMetry.
   	</description>
-	<url>https://qmetrysupport.atlassian.net/wiki/spaces/JQTMJP/overview</url>
+	<url>https://support.smartbear.com/qmetry-test-management-for-jira-cloud/docs/en/automation/import-test-results/import-results-using-jenkins-plugin/qmetry-test-management-for-jira-plugin.html</url>
 	<licenses>
 		<license>
 			<name>GNU General Public License v3.0</name>
@@ -39,6 +39,7 @@
 			<properties>
 				<upload.cloud.url.v4.us>https://qtm4j-cloud-new-stag.qmetry.com/rest/api/automation/importresult</upload.cloud.url.v4.us>
 				<upload.cloud.url.v4.aus>https://qtm4j-cloud-new-stag.qmetry.com/rest/api/automation/importresult</upload.cloud.url.v4.aus>
+				<upload.cloud.url.v4.eu>https://eu-qtm4j-cloud-preprod.qmetry.com/rest/api/automation/importresult</upload.cloud.url.v4.eu>
 			</properties>
 		</profile>
 		<profile>
@@ -49,6 +50,7 @@
 			<properties>
 				<upload.cloud.url.v4.us>https://qtm4j-cloud-preprod2.qmetry.com/rest/api/automation/importresult</upload.cloud.url.v4.us>
 				<upload.cloud.url.v4.aus>https://syd-qtm4j-cloud-preprod.qmetry.com/rest/api/automation/importresult</upload.cloud.url.v4.aus>
+				<upload.cloud.url.v4.eu>https://eu-qtm4j-cloud-preprod.qmetry.com/rest/api/automation/importresult</upload.cloud.url.v4.eu>
 			</properties>
 		</profile>
 		<profile>
@@ -59,6 +61,7 @@
 			<properties>
 				<upload.cloud.url.v4.us>https://qtmcloud.qmetry.com/rest/api/automation/importresult</upload.cloud.url.v4.us>
 				<upload.cloud.url.v4.aus>https://syd-qtmcloud.qmetry.com/rest/api/automation/importresult</upload.cloud.url.v4.aus>
+				<upload.cloud.url.v4.eu>https://eu-qtm4j-cloud.qmetry.com/rest/api/automation/importresult</upload.cloud.url.v4.eu>
 			</properties>
 		</profile>
 	</profiles>

@@ -88,6 +88,8 @@ public class UploadToCloudV4 {
 
 		if (region != null && !region.isEmpty() && Objects.equals(region, QTM4JConstants.REGION_AUSTRALIA)) {
 			uploadcloudurlv4 = p.getProperty("uploadcloudurlv4.aus");
+		} else if (region != null && !region.isEmpty() && Objects.equals(region, QTM4JConstants.REGION_EU)) {
+			uploadcloudurlv4 = p.getProperty("uploadcloudurlv4.eu");
 		} else {
 			uploadcloudurlv4 = p.getProperty("uploadcloudurlv4.us");
 		}

@@ -1604,6 +1604,7 @@ public class TestReportDeployPublisherCloudV4 extends Recorder implements Simple
         ListBoxModel items = new ListBoxModel();
         items.add(QTM4JConstants.REGION_USA);
         items.add(QTM4JConstants.REGION_AUSTRALIA);
+        items.add(QTM4JConstants.REGION_EU);
         return items;
     }
 
